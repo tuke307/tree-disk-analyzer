@@ -32,17 +32,17 @@ def build_boundary_poly(outward_ring, inward_ring):
     if outward_ring is None and inward_ring is None:
         return None
     if outward_ring is not None and inward_ring is not None:
-        x, y = outward_ring.exterior.coords.xy
+        x, y = outward_ring.geometry.exterior.coords.xy
         pts_ext = [[j, i] for i, j in zip(y, x)]
-        x, y = inward_ring.exterior.coords.xy
+        x, y = inward_ring.geometry.exterior.coords.xy
         pts_int = [[j, i] for i, j in zip(y, x)]
         poly = Polygon(pts_ext, [pts_int])
 
     else:
         if outward_ring is None:
-            x, y = inward_ring.exterior.coords.xy
+            x, y = inward_ring.geometry.exterior.coords.xy
         else:
-            x, y = outward_ring.exterior.coords.xy
+            x, y = outward_ring.geometry.exterior.coords.xy
 
         pts_ext = [[j, i] for i, j in zip(y, x)]
         poly = Polygon(pts_ext)
@@ -89,14 +89,16 @@ def from_shapely_to_chain(uncompleted_shapely_chain, uncomplete_chain, shapely_i
     return inward_chain_subset
 
 
-class Ring(Polygon):
-    def __init__(self, chain: ch.Chain, id: int):
+class Ring:
+    def __init__(self, chain, id: int):
+        # Create a list of points (coordinates) from the sorted dots in the chain
         lista_pts = [[node.x, node.y] for node in chain.sort_dots()]
         self.id = id
-        super(self.__class__, self).__init__(lista_pts)
+        # Store the Polygon as an attribute
+        self.geometry = Polygon(lista_pts)
 
     def draw(self, image):
-        x, y = self.exterior.coords.xy
+        x, y = self.geometry.exterior.coords.xy
         lista_pts = [[i, j] for i, j in zip(y, x)]
         pts = np.array(lista_pts,
                        np.int32)
@@ -187,7 +189,7 @@ class DiskContext:
         return Z
 
     def sort_shapely_list_and_chain_list(self, cadena_list, shapely_list):
-        idx_sort = [i[0] for i in sorted(enumerate(shapely_list), key=lambda x: x[1].area)]
+        idx_sort = [i[0] for i in sorted(enumerate(shapely_list), key=lambda x: x[1].geometry.area)]
         shapely_list = self.sort_list_by_index_array(idx_sort, shapely_list)
         cadena_list = self.sort_list_by_index_array(idx_sort, cadena_list)
         return cadena_list, shapely_list

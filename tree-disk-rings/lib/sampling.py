@@ -10,18 +10,21 @@ You should have received a copy of the GNU Affero General Public License along w
 import numpy as np
 import time
 from shapely.geometry import Point
-from shapely.geometry.linestring import LineString
+from shapely.geometry import LineString
 from lib.drawing import Drawing
 import cv2
 
 from lib.chain import Node, euclidean_distance, get_node_from_list_by_angle, Chain, TypeChains
 
 
-class Ray(LineString):
+class Ray:
     def __init__(self, direction, center, M, N):
         self.direction = direction
+        self.center = center
+        self.M = M
+        self.N = N
         self.border = self._image_border_radii_intersection(direction, center, M, N)
-        super().__init__([center, self.border])
+        self.geometry = LineString([center, self.border])
 
     @staticmethod
     def _image_border_radii_intersection(theta, origin, M, N):
@@ -114,7 +117,7 @@ def compute_intersection(l_rays, curve, chain_id, center):
     """
     l_curve_nodes = []
     for radii in l_rays:
-        inter = radii.intersection(curve)
+        inter = radii.geometry.intersection(curve.geometry)
         if not inter.is_empty:
             try:
                 y, x = get_coordinates_from_intersection(inter)

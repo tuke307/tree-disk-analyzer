@@ -12,29 +12,28 @@ import cv2
 import warnings
 
 warnings.filterwarnings("ignore")
-from shapely.geometry.linestring import LineString
+from shapely.geometry import LineString
 
 from lib.drawing import Color
 
 DELIMITE_CURVE_ROW = np.array([-1, -1])
 
 
-class Curve(LineString):
+class Curve:
     def __init__(self, pixels_list, name):
         self.id = name
-        super().__init__(np.array(pixels_list)[:, [1, 0]].tolist())
+        self.geometry = LineString(np.array(pixels_list)[:, [1, 0]].tolist())
 
-    def __setattr__(self, name, value) -> None:
-        object.__setattr__(self, name, value)
+    # Shapely 2.0 geometry objects are immutable, so no need for __setattr__
+    # Custom attributes can be assigned directly (e.g., self.id)
 
     def draw(self, img, thickness=1):
-        y, x = self.xy
+        y, x = self.geometry.xy
         y = np.array(y).astype(int)
         x = np.array(x).astype(int)
         pts = np.vstack((x, y)).T
         isClosed = False
-        img = cv2.polylines(img, [pts],
-                            isClosed, Color.black, thickness)
+        img = cv2.polylines(img, [pts], isClosed, Color.black, thickness)
         return img
 
 

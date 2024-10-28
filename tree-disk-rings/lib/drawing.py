@@ -74,7 +74,7 @@ class Drawing:
 
     @staticmethod
     def curve(curva, img, color=(0, 255, 0), thickness = 1):
-        y, x = curva.xy
+        y, x = curva.geometry.xy
         y = np.array(y).astype(int)
         x = np.array(x).astype(int)
         pts = np.vstack((x,y)).T
@@ -98,7 +98,7 @@ class Drawing:
 
     @staticmethod
     def radii(rayo, img, color=(255, 0, 0), debug=False, thickness=1):
-        y, x = rayo.xy
+        y, x = rayo.geometry.xy
         y = np.array(y).astype(int)
         x = np.array(x).astype(int)
         start_point = (x[0], y[0])
