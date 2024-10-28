@@ -2,9 +2,6 @@ import numpy as np
 import cv2
 
 
-
-
-
 def from_lines_to_matrix(l_lo):
     L = np.zeros((len(l_lo), 4))
     for idx, li in enumerate(l_lo):
@@ -13,6 +10,8 @@ def from_lines_to_matrix(l_lo):
         L[idx] = [x1, y1, x2, y2]
 
     return L
+
+
 def euclidean_distance(p1, p2):
     """
     Compute euclidean distance between two points
@@ -22,8 +21,19 @@ def euclidean_distance(p1, p2):
     """
     return np.linalg.norm(p1 - p2)
 
+
 class Line:
-    def __init__(self, p1_rel=None, p2_rel=None, p1=None, p2=None, certainty=1, a=None, b=None, c=None):
+    def __init__(
+        self,
+        p1_rel=None,
+        p2_rel=None,
+        p1=None,
+        p2=None,
+        certainty=1,
+        a=None,
+        b=None,
+        c=None,
+    ):
         """
         Line of symmetry. Line equation: a*x+b*y+c=0
         :param p1_rel: point 1 relative to the block. Pixel coordinates
@@ -41,7 +51,11 @@ class Line:
         self.a = a
         self.b = b
         self.c = c
-        self.length = euclidean_distance(self.p1, self.p2) if self.p1 is not None and self.p2 is not None else None
+        self.length = (
+            euclidean_distance(self.p1, self.p2)
+            if self.p1 is not None and self.p2 is not None
+            else None
+        )
 
     def get_slope_bias(self, H, W):
         """
@@ -54,10 +68,10 @@ class Line:
         y2, x2 = self.p2.ravel()
 
         # normalize coordinate
-        x1/= W
-        y1/= H
-        x2/= W
-        y2/= H
+        x1 /= W
+        y1 /= H
+        x2 /= W
+        y2 /= H
 
         # compute slope and bias
         if x2 == x1:
@@ -155,7 +169,11 @@ class Line:
             height, width, _ = img.shape
         else:
             height, width = img.shape
-        a, b, c = self.compute_line_coefficients(p1, p2) if self.a is None else (self.a, self.b, self.c)
+        a, b, c = (
+            self.compute_line_coefficients(p1, p2)
+            if self.a is None
+            else (self.a, self.b, self.c)
+        )
         if b == 0 and np.abs(a) > 0:
             # Vertical line
             x = int(p2[0])
@@ -183,37 +201,53 @@ class Line:
     def draw_line(x1, y1, x2, y2, block, thickness, color):
         # Draw the line
         integer = lambda x: int(np.round(x))
-        return cv2.line(block.copy(), (integer(x1), integer(y1)), (integer(x2), integer(y2)), color, thickness)
+        return cv2.line(
+            block.copy(),
+            (integer(x1), integer(y1)),
+            (integer(x2), integer(y2)),
+            color,
+            thickness,
+        )
 
-    def block_draw_line(self, block, color= (0,0,255), thickness=2, extended=True):
+    def block_draw_line(self, block, color=(0, 0, 255), thickness=2, extended=True):
 
         # convert binary block array to rgb
         if len(block.shape) == 2:
-            block = cv2.cvtColor(block.astype(np.uint8), cv2.COLOR_GRAY2RGB).astype(np.uint8)
+            block = cv2.cvtColor(block.astype(np.uint8), cv2.COLOR_GRAY2RGB).astype(
+                np.uint8
+            )
 
         if not extended:
             return block.copy()
 
         # Calculate the intersections with the image boundaries
-        x1, y1, x2, y2, x3, y3, x4, y4 = self.compute_intersection_with_block_boundaries(self.p1_rel, self.p2_rel,
-                                                                                         block)
+        x1, y1, x2, y2, x3, y3, x4, y4 = (
+            self.compute_intersection_with_block_boundaries(
+                self.p1_rel, self.p2_rel, block
+            )
+        )
         # Draw the line on the image
         extended_line = self.draw_line(x1, y1, x2, y2, block, thickness, color)
 
         return extended_line
 
-    def img_draw_line(self, img, color=(0,0,255), thickness=2):
+    def img_draw_line(self, img, color=(0, 0, 255), thickness=2):
         # Calculate the intersections with the image boundaries
-        x1, y1, x2, y2, x3, y3, x4, y4 = self.compute_intersection_with_block_boundaries(
-            self.p1.ravel(), self.p2.ravel(), img)
+        x1, y1, x2, y2, x3, y3, x4, y4 = (
+            self.compute_intersection_with_block_boundaries(
+                self.p1.ravel(), self.p2.ravel(), img
+            )
+        )
         # Draw the line on the image
         extended_line = self.draw_line(x1, y1, x2, y2, img, thickness, color)
 
         return extended_line
 
-    def img_draw_segment(self, img, color=(0,0,255), thickness=2):
+    def img_draw_segment(self, img, color=(0, 0, 255), thickness=2):
         # Draw the line on the image
-        extended_line = self.draw_line(self.p1[0], self.p1[1], self.p2[0], self.p2[1], img, thickness, color)
+        extended_line = self.draw_line(
+            self.p1[0], self.p1[1], self.p2[0], self.p2[1], img, thickness, color
+        )
 
         return extended_line
 
@@ -221,4 +255,4 @@ class Line:
         """Minimum distance between the line and the point"""
         a, b, c = self.compute_line_coefficients(self.p1, self.p2)
         x, y = point
-        return np.abs(a*x+b*y+c)/np.sqrt(a**2+b**2)
+        return np.abs(a * x + b * y + c) / np.sqrt(a**2 + b**2)
