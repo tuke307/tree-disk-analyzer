@@ -7,15 +7,18 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+
 import numpy as np
 from typing import List
 
 import lib.chain as ch
 
 
-def compute_interpolation_domain(endpoint: str, endpoint_cad1: ch.Node, endpoint_cad2: ch.Node, Nr):
+def compute_interpolation_domain(
+    endpoint: str, endpoint_cad1: ch.Node, endpoint_cad2: ch.Node, Nr
+):
     interpolation_domain = []
-    step = 360 / Nr if endpoint == ch.EndPoints.B else - 360 / Nr
+    step = 360 / Nr if endpoint == ch.EndPoints.B else -360 / Nr
     current_angle = endpoint_cad1.angle
     while current_angle % 360 != endpoint_cad2.angle:
         current_angle += step
@@ -31,25 +34,36 @@ def from_polar_to_cartesian(r, angulo, centro):
     return (y, x)
 
 
-def generate_node_list_between_two_support_chains_and_two_radial_distances(r2_ratio, r1_ratio, total_nodes,
-                                                                           interpolation_angle_domain, center,
-                                                                           inward_chain, outward_chain, chain):
+def generate_node_list_between_two_support_chains_and_two_radial_distances(
+    r2_ratio,
+    r1_ratio,
+    total_nodes,
+    interpolation_angle_domain,
+    center,
+    inward_chain,
+    outward_chain,
+    chain,
+):
     cad_id = chain.id
     generated_node_list = []
     m = (r2_ratio - r1_ratio) / total_nodes
     n = r1_ratio
     for idx_current_node, angle in enumerate(interpolation_angle_domain):
         dot_list_in_radial_direction = ch.get_closest_dots_to_angle_on_radial_direction_sorted_by_ascending_distance_to_center(
-            [inward_chain], angle % 360)
+            [inward_chain], angle % 360
+        )
         support_node = dot_list_in_radial_direction[0]
         radio_init = support_node.radial_distance
         dot_list_in_radial_direction = ch.get_closest_dots_to_angle_on_radial_direction_sorted_by_ascending_distance_to_center(
-            [outward_chain], angle % 360)
+            [outward_chain], angle % 360
+        )
         support_node = dot_list_in_radial_direction[0]
         radio_superior = support_node.radial_distance
         radial_distance_between_chains = radio_superior - radio_init
 
-        radio_inter = (m * (idx_current_node) + n) * radial_distance_between_chains + radio_init
+        radio_inter = (
+            m * (idx_current_node) + n
+        ) * radial_distance_between_chains + radio_init
         i, j = from_polar_to_cartesian(radio_inter, angle % 360, center)
         i = i if i < chain.img_height else chain.img_height - 1
         j = j if j < chain.img_width else chain.img_width - 1
@@ -60,7 +74,7 @@ def generate_node_list_between_two_support_chains_and_two_radial_distances(r2_ra
             "y": i,
             "angle": angle % 360,
             "radial_distance": radio_inter,
-            "chain_id": cad_id
+            "chain_id": cad_id,
         }
 
         node = ch.Node(**params)
@@ -69,8 +83,9 @@ def generate_node_list_between_two_support_chains_and_two_radial_distances(r2_ra
     return generated_node_list
 
 
-def generate_nodes_list_between_two_radial_distances(r2, r1, total_nodes, interpolation_angular_domain, center, sign,
-                                                     ch_i, ch_j):
+def generate_nodes_list_between_two_radial_distances(
+    r2, r1, total_nodes, interpolation_angular_domain, center, sign, ch_i, ch_j
+):
     """
     Generate a list of nodes between two radial distances.
     @param r2: radial distance of the last node.
@@ -90,7 +105,8 @@ def generate_nodes_list_between_two_radial_distances(r2, r1, total_nodes, interp
     for current_idx_node, angle in enumerate(interpolation_angular_domain):
         if ch_i is not None:
             dot_list_in_radial_direction = ch.get_closest_dots_to_angle_on_radial_direction_sorted_by_ascending_distance_to_center(
-                [ch_i], angle % 360)
+                [ch_i], angle % 360
+            )
 
             support_node = dot_list_in_radial_direction[0]
             radio_init = support_node.radial_distance
@@ -103,15 +119,25 @@ def generate_nodes_list_between_two_radial_distances(r2, r1, total_nodes, interp
         i = i if i < ch_j.img_height else ch_j.img_height - 1
         j = j if j < ch_j.img_width else ch_j.img_width - 1
 
-        l_generated_node.append(ch.Node(**{'x': j, 'y': i, 'angle': angle % 360, 'radial_distance': radio_inter,
-                                              'chain_id': cad_id}))
+        l_generated_node.append(
+            ch.Node(
+                **{
+                    "x": j,
+                    "y": i,
+                    "angle": angle % 360,
+                    "radial_distance": radio_inter,
+                    "chain_id": cad_id,
+                }
+            )
+        )
 
     return l_generated_node
 
 
 def get_radial_distance_to_chain(chain, dot):
     dot_list_in_radial_direction = ch.get_closest_dots_to_angle_on_radial_direction_sorted_by_ascending_distance_to_center(
-        [chain], dot.angle)
+        [chain], dot.angle
+    )
     soporte_pto1 = dot_list_in_radial_direction[0]
     rii = ch.euclidean_distance_between_nodes(soporte_pto1, dot)
     return rii
@@ -123,8 +149,15 @@ def compute_radial_ratio(cadena_inferior, cadena_superior, dot):
     return r1_inferior / (r1_superior + r1_inferior)
 
 
-def interpolate_in_angular_domain_via_2_chains(inward_support_chain, outward_support_chain, ch1_endpoint, ch2_endpoint,
-                                               endpoint, ch1, node_list):
+def interpolate_in_angular_domain_via_2_chains(
+    inward_support_chain,
+    outward_support_chain,
+    ch1_endpoint,
+    ch2_endpoint,
+    endpoint,
+    ch1,
+    node_list,
+):
     """
     Interpolate between ch_i endpoints via two support chains.
     @param inward_support_chain:
@@ -137,32 +170,50 @@ def interpolate_in_angular_domain_via_2_chains(inward_support_chain, outward_sup
     @return: None. Generated nodes are returned via node_list
     """
     # 1. Domain angle interpolation
-    domain_angle_interpolation = compute_interpolation_domain(endpoint, ch1_endpoint, ch2_endpoint, ch1.Nr)
+    domain_angle_interpolation = compute_interpolation_domain(
+        endpoint, ch1_endpoint, ch2_endpoint, ch1.Nr
+    )
     center = ch1.center
 
     # 2. Compute radial ratio
-    r1_ratio = compute_radial_ratio(inward_support_chain, outward_support_chain, ch1_endpoint)
-    r2_ratio = compute_radial_ratio(inward_support_chain, outward_support_chain, ch2_endpoint)
+    r1_ratio = compute_radial_ratio(
+        inward_support_chain, outward_support_chain, ch1_endpoint
+    )
+    r2_ratio = compute_radial_ratio(
+        inward_support_chain, outward_support_chain, ch2_endpoint
+    )
 
     # 3. Generate nodes
     total_nodes = len(domain_angle_interpolation)
     if total_nodes == 0:
         return
 
-    generated_nodes = generate_node_list_between_two_support_chains_and_two_radial_distances(r2_ratio, r1_ratio,
-                                                                                             total_nodes,
-                                                                                             domain_angle_interpolation,
-                                                                                             center,
-                                                                                             inward_support_chain,
-                                                                                             outward_support_chain, ch1)
+    generated_nodes = (
+        generate_node_list_between_two_support_chains_and_two_radial_distances(
+            r2_ratio,
+            r1_ratio,
+            total_nodes,
+            domain_angle_interpolation,
+            center,
+            inward_support_chain,
+            outward_support_chain,
+            ch1,
+        )
+    )
 
     node_list += generated_nodes
 
     return
 
 
-def domain_interpolation(ch_i: ch.Chain, ch_j_endpoint: ch.Node, ch_k_endpoint: ch.Node, endpoint: int, ch_j: ch.Chain,
-                         l_nodes: List[ch.Node]):
+def domain_interpolation(
+    ch_i: ch.Chain,
+    ch_j_endpoint: ch.Node,
+    ch_k_endpoint: ch.Node,
+    endpoint: int,
+    ch_j: ch.Chain,
+    l_nodes: List[ch.Node],
+):
     """
     Interpolate between endpoint ch_j_endpoint and ch_k_endpoint using ch_i as support ch_j. Ch_j is the source ch_j to
     be connected
@@ -174,18 +225,24 @@ def domain_interpolation(ch_i: ch.Chain, ch_j_endpoint: ch.Node, ch_k_endpoint: 
     @param l_nodes: list of nodes to be updated
     @return: Void. Generated nodes are added to list l_nodes.
     """
-    domain_angles = compute_interpolation_domain(endpoint, ch_j_endpoint, ch_k_endpoint, ch_j.Nr)
+    domain_angles = compute_interpolation_domain(
+        endpoint, ch_j_endpoint, ch_k_endpoint, ch_j.Nr
+    )
     center = ch_j.center
 
     if ch_i is not None:
         dot_list_in_radial_direction = ch.get_closest_dots_to_angle_on_radial_direction_sorted_by_ascending_distance_to_center(
-            [ch_i], ch_j_endpoint.angle)
+            [ch_i], ch_j_endpoint.angle
+        )
         node1_support = dot_list_in_radial_direction[0]
         r1 = ch.euclidean_distance_between_nodes(node1_support, ch_j_endpoint)
         dot_list_in_radial_direction = ch.get_closest_dots_to_angle_on_radial_direction_sorted_by_ascending_distance_to_center(
-            [ch_i], ch_k_endpoint.angle)
+            [ch_i], ch_k_endpoint.angle
+        )
         node2_support = dot_list_in_radial_direction[0]
-        sign = -1 if node2_support.radial_distance > ch_k_endpoint.radial_distance else +1
+        sign = (
+            -1 if node2_support.radial_distance > ch_k_endpoint.radial_distance else +1
+        )
         r2 = ch.euclidean_distance_between_nodes(node2_support, ch_k_endpoint)
     else:
         r1 = ch_j_endpoint.radial_distance
@@ -196,8 +253,9 @@ def domain_interpolation(ch_i: ch.Chain, ch_j_endpoint: ch.Node, ch_k_endpoint: 
     if total_nodes == 0:
         return
 
-    l_generated_nodes = generate_nodes_list_between_two_radial_distances(r2, r1, total_nodes, domain_angles, center, sign,
-                                                                       ch_i, ch_j)
+    l_generated_nodes = generate_nodes_list_between_two_radial_distances(
+        r2, r1, total_nodes, domain_angles, center, sign, ch_i, ch_j
+    )
 
     l_nodes += l_generated_nodes
 
@@ -216,8 +274,15 @@ def complete_chain_using_2_support_ring(inward_chain, outward_chain, chain):
     ch2_endpoint = chain.extA
     endpoint = ch.EndPoints.B
     generated_nodes = []
-    interpolate_in_angular_domain_via_2_chains(inward_chain, outward_chain, ch1_endpoint, ch2_endpoint, endpoint, chain,
-                                               generated_nodes)
+    interpolate_in_angular_domain_via_2_chains(
+        inward_chain,
+        outward_chain,
+        ch1_endpoint,
+        ch2_endpoint,
+        endpoint,
+        chain,
+        generated_nodes,
+    )
 
     change_border = chain.add_nodes_list(generated_nodes)
 
@@ -229,13 +294,17 @@ def complete_chain_using_support_ring(support_chain, ch1):
     ch2_endpoint = ch1.extA
     endpoint = ch.EndPoints.B
     generated_list_nodes = []
-    domain_interpolation(support_chain, ch1_endpoint, ch2_endpoint, endpoint, ch1, generated_list_nodes)
+    domain_interpolation(
+        support_chain, ch1_endpoint, ch2_endpoint, endpoint, ch1, generated_list_nodes
+    )
     change_border = ch1.add_nodes_list(generated_list_nodes)
 
     return change_border
 
 
-def connect_2_chain_via_inward_and_outward_ring(outward_chain, inward_chain, chain1, chain2, node_list, endpoint):
+def connect_2_chain_via_inward_and_outward_ring(
+    outward_chain, inward_chain, chain1, chain2, node_list, endpoint
+):
     """
     Connect 2 ch_i via inward and outward ring
     @param outward_chain: outward ch_i
@@ -252,8 +321,15 @@ def connect_2_chain_via_inward_and_outward_ring(outward_chain, inward_chain, cha
 
     # 1.0
     generated_node_list = []
-    interpolate_in_angular_domain_via_2_chains(inward_chain, outward_chain, ch1_endpoint, ch2_endpoint, endpoint,
-                                               chain1, generated_node_list)
+    interpolate_in_angular_domain_via_2_chains(
+        inward_chain,
+        outward_chain,
+        ch1_endpoint,
+        ch2_endpoint,
+        endpoint,
+        chain1,
+        generated_node_list,
+    )
     node_list += generated_node_list
 
     # 2.0

@@ -7,19 +7,26 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+
 import os
 import json
 from pathlib import Path
 import cv2
+
 
 def load_image(image_name):
     img = cv2.imread(image_name)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img
 
+
 def load_config(default=True):
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    return load_json(f"{dir_path}/../config/default.json") if default else load_json(f"{dir_path}/../config/general.json")
+    return (
+        load_json(f"{dir_path}/../config/default.json")
+        if default
+        else load_json(f"{dir_path}/../config/general.json")
+    )
 
 
 def load_json(filepath: str) -> dict:
@@ -28,7 +35,7 @@ def load_json(filepath: str) -> dict:
     :param filepath: file to json file
     :return: the loaded json as a dictionary
     """
-    with open(str(filepath), 'r') as f:
+    with open(str(filepath), "r") as f:
         data = json.load(f)
     return data
 
@@ -40,7 +47,7 @@ def write_json(dict_to_save: dict, filepath: str) -> None:
     :param filepath: path where to save
     :return: void
     """
-    with open(str(filepath), 'w') as f:
+    with open(str(filepath), "w") as f:
         json.dump(dict_to_save, f)
 
 
@@ -52,10 +59,12 @@ def get_path(*args):
     """
     dir_path = os.path.dirname(os.path.realpath(__file__))
     paths = load_json(f"{dir_path}/../paths_config.json")
-    hostname = 'henry-workstation'
-    assert hostname in paths.keys(), "Current host: {}, Possible hosts: {}".format(hostname, paths.keys())
-    assert all([arg in paths[hostname].keys() for arg in args]), "Args must be in {}".format(paths[hostname].keys())
+    hostname = "henry-workstation"
+    assert hostname in paths.keys(), "Current host: {}, Possible hosts: {}".format(
+        hostname, paths.keys()
+    )
+    assert all(
+        [arg in paths[hostname].keys() for arg in args]
+    ), "Args must be in {}".format(paths[hostname].keys())
     paths = tuple([Path(paths[hostname][arg]) for arg in args])
     return paths[0] if len(paths) == 1 else paths
-
-

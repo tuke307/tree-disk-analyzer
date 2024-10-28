@@ -21,8 +21,23 @@ from lib.connect_chains import connect_chains
 from lib.postprocessing import postprocessing
 from lib.utils import chain_2_labelme_json, save_config, saving_results
 
-def TreeRingDetection(im_in, cy, cx, sigma, th_low, th_high, height, width, alpha, nr, mc, debug,
-                      debug_image_input_path, debug_output_dir):
+
+def TreeRingDetection(
+    im_in,
+    cy,
+    cx,
+    sigma,
+    th_low,
+    th_high,
+    height,
+    width,
+    alpha,
+    nr,
+    mc,
+    debug,
+    debug_image_input_path,
+    debug_output_dir,
+):
     """
     Method for delineating tree ring over pine cross sections images. Implements Algorithm 1 from the paper.
     @param im_in: segmented input image. Background must be white (255,255,255).
@@ -60,16 +75,26 @@ def TreeRingDetection(im_in, cy, cx, sigma, th_low, th_high, height, width, alph
     # Line 4 Sampling edges. Algorithm 6 in the supplementary material.
     l_ch_s, l_nodes_s = sampling_edges(l_ch_f, cy, cx, im_pre, mc, nr, debug=debug)
     # Line 5 Connect chains. Algorithm 7 in the supplementary material. Im_pre is used for debug purposes
-    l_ch_c,  l_nodes_c = connect_chains(l_ch_s, cy, cx, nr, debug, im_pre, debug_output_dir)
+    l_ch_c, l_nodes_c = connect_chains(
+        l_ch_s, cy, cx, nr, debug, im_pre, debug_output_dir
+    )
     # Line 6 Postprocessing chains. Algorithm 19 in the paper. Im_pre is used for debug purposes
     l_ch_p = postprocessing(l_ch_c, l_nodes_c, debug, debug_output_dir, im_pre)
     # Line 7
     debug_execution_time = time.time() - to
-    l_rings = chain_2_labelme_json(l_ch_p, height, width, cy, cx, im_in, debug_image_input_path, debug_execution_time)
+    l_rings = chain_2_labelme_json(
+        l_ch_p,
+        height,
+        width,
+        cy,
+        cx,
+        im_in,
+        debug_image_input_path,
+        debug_execution_time,
+    )
 
     # Line 8
     return im_in, im_pre, m_ch_e, l_ch_f, l_ch_s, l_ch_c, l_ch_p, l_rings
-
 
 
 def main(args):
@@ -77,15 +102,31 @@ def main(args):
     im_in = load_image(args.input)
     Path(args.output_dir).mkdir(exist_ok=True)
 
-    res = TreeRingDetection(im_in, args.cy, args.cx, args.sigma, args.th_low, args.th_high, args.hsize, args.wsize,
-                            args.edge_th, args.nr, args.min_chain_length, args.debug, args.input, args.output_dir)
+    res = TreeRingDetection(
+        im_in,
+        args.cy,
+        args.cx,
+        args.sigma,
+        args.th_low,
+        args.th_high,
+        args.hsize,
+        args.wsize,
+        args.edge_th,
+        args.nr,
+        args.min_chain_length,
+        args.debug,
+        args.input,
+        args.output_dir,
+    )
 
     saving_results(res, args.output_dir, args.save_imgs)
 
     return 0
 
+
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=str, required=True)
     parser.add_argument("--cy", type=int, required=True)
@@ -93,8 +134,8 @@ if __name__ == "__main__":
     parser.add_argument("--root", type=str, required=True)
     parser.add_argument("--output_dir", type=str, required=True)
     parser.add_argument("--save_imgs", type=str, required=False)
-    parser.add_argument("--sigma", type=float, required=False,default=3)
-    parser.add_argument("--nr", type=int, required=False,default=360)
+    parser.add_argument("--sigma", type=float, required=False, default=3)
+    parser.add_argument("--nr", type=int, required=False, default=360)
     parser.add_argument("--hsize", type=int, required=False, default=0)
     parser.add_argument("--wsize", type=int, required=False, default=0)
     parser.add_argument("--edge_th", type=int, required=False, default=30)
@@ -105,8 +146,3 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     main(args)
-
-
-
-
-

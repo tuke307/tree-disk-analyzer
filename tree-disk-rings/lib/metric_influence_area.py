@@ -7,6 +7,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+
 import numpy as np
 import argparse
 from shapely.geometry import Polygon, LineString
@@ -15,7 +16,11 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 
 from lib.io import load_image, load_json
-from lib.sampling import build_rays, compute_intersection, draw_ray_curve_and_intersections
+from lib.sampling import (
+    build_rays,
+    compute_intersection,
+    draw_ray_curve_and_intersections,
+)
 import lib.chain as ch
 import lib.drawing as dr
 
@@ -30,7 +35,9 @@ class Polygon_node(Polygon):
 
 
 class InfluenceArea:
-    def __init__(self, gt_file, dt_file, img_filename, output_dir, threshold, cy, cx, Nr=360):
+    def __init__(
+        self, gt_file, dt_file, img_filename, output_dir, threshold, cy, cx, Nr=360
+    ):
         # 1.0 generate output directory
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -48,13 +55,17 @@ class InfluenceArea:
         self.gt_poly = self.get_sampled_polygon_rings(gt_file, l_rays, self.center)
         self.gt_poly.sort(key=lambda x: x.area)
         # 5.0 draw rays and rings
-        self.draw_ray_and_dt_and_gt(l_rays, self.gt_poly, self.dt_poly, self.img.copy(),
-                                    f'{self.output_dir}/dots_curve_and_rays.png')
+        self.draw_ray_and_dt_and_gt(
+            l_rays,
+            self.gt_poly,
+            self.dt_poly,
+            self.img.copy(),
+            f"{self.output_dir}/dots_curve_and_rays.png",
+        )
 
-
-
-
-    def draw_ray_and_dt_and_gt(self, rays_list, l_gt_poly, l_dt_poly, img_draw, filename):
+    def draw_ray_and_dt_and_gt(
+        self, rays_list, l_gt_poly, l_dt_poly, img_draw, filename
+    ):
         img_draw = cv.cvtColor(img_draw, cv.COLOR_BGR2RGB)
         for ray in rays_list:
             img_draw = dr.Drawing.radii(ray, img_draw)
@@ -88,8 +99,8 @@ class InfluenceArea:
         try:
             json_content = load_json(path)
             l_rings = []
-            for ring in json_content['shapes']:
-                l_rings.append(Polygon(np.array(ring['points'])[:, [1, 0]].tolist()))
+            for ring in json_content["shapes"]:
+                l_rings.append(Polygon(np.array(ring["points"])[:, [1, 0]].tolist()))
 
         except FileNotFoundError:
             l_rings = []
@@ -124,21 +135,24 @@ class InfluenceArea:
         img_aux = img.copy()
         # gt
         for poly in gt:
-            img_aux = self._add_poly_to_img(img_aux, poly, color=(0, 255, 0), thickness=n)
+            img_aux = self._add_poly_to_img(
+                img_aux, poly, color=(0, 255, 0), thickness=n
+            )
 
         # dt
         for poly in dt:
-            img_aux = self._add_poly_to_img(img_aux, poly, color=(255, 0, 0), thickness=n)
+            img_aux = self._add_poly_to_img(
+                img_aux, poly, color=(255, 0, 0), thickness=n
+            )
 
-        plt.figure(figsize=(10, 10));
-        plt.imshow(img_aux);
-        plt.axis('off');
+        plt.figure(figsize=(10, 10))
+        plt.imshow(img_aux)
+        plt.axis("off")
         if title is not None:
             plt.title(title)
-        plt.savefig(f'{self.output_dir}/dt_and_gt.png')
+        plt.savefig(f"{self.output_dir}/dt_and_gt.png")
         # plt.show();
         plt.close()
-
 
     def get_x_and_y_coordinates(self, poly: Polygon_node):
         # if type(poly) is Polygon:
@@ -147,6 +161,7 @@ class InfluenceArea:
         x = [int(node.x) for node in poly.node_list]
         y = [int(node.y) for node in poly.node_list]
         return x, y
+
     def extract_poly_coordinates(self, poly):
         x, y = self.get_x_and_y_coordinates(poly)
         pts = np.vstack((y, x)).T.astype(np.int32)
@@ -159,7 +174,7 @@ class InfluenceArea:
         """
         self.color_map = np.zeros((len(self.gt_poly), self.Nr)) + np.nan
         for idx, dt in enumerate(self.dt_poly):
-            dt_nodes = dt.node_list#self.extract_poly_coordinates(dt)
+            dt_nodes = dt.node_list  # self.extract_poly_coordinates(dt)
             if len(self.dt_and_gt_assignation) - 1 < idx:
                 continue
 
@@ -167,13 +182,23 @@ class InfluenceArea:
             if gt_idx == FP_ID:
                 continue
 
-            gt_nodes = self.gt_poly[gt_idx].node_list#.extract_poly_coordinates(self.gt_poly[gt_idx])
+            gt_nodes = self.gt_poly[
+                gt_idx
+            ].node_list  # .extract_poly_coordinates(self.gt_poly[gt_idx])
 
             for ray_direction_i in range(self.Nr):
-                dti_node = ch.get_node_from_list_by_angle(dt_nodes, ray_direction_i)#self.get_dot_by_ray_direction_index(ray_direction_i, dt_dots)
-                gti_node =ch.get_node_from_list_by_angle(gt_nodes, ray_direction_i)# self.get_dot_by_ray_direction_index(ray_direction_i, gt_dots)
-                radial_distance_dti = dti_node.radial_distance#self.compute_radial_distance(dti_dot)
-                radial_distance_gti = gti_node.radial_distance#self.compute_radial_distance(gti_dot)
+                dti_node = ch.get_node_from_list_by_angle(
+                    dt_nodes, ray_direction_i
+                )  # self.get_dot_by_ray_direction_index(ray_direction_i, dt_dots)
+                gti_node = ch.get_node_from_list_by_angle(
+                    gt_nodes, ray_direction_i
+                )  # self.get_dot_by_ray_direction_index(ray_direction_i, gt_dots)
+                radial_distance_dti = (
+                    dti_node.radial_distance
+                )  # self.compute_radial_distance(dti_dot)
+                radial_distance_gti = (
+                    gti_node.radial_distance
+                )  # self.compute_radial_distance(gti_dot)
                 radial_difference = radial_distance_dti - radial_distance_gti
 
                 self.color_map[gt_idx, int(ray_direction_i)] = radial_difference
@@ -197,7 +222,7 @@ class InfluenceArea:
             radial_distance_dt = self.compute_radial_distance(dt_dot)
             radial_distance_gt = self.compute_radial_distance(gt_dot)
             radial_difference = radial_distance_dt - radial_distance_gt
-            error.append(radial_difference ** 2)
+            error.append(radial_difference**2)
 
         return np.sqrt(np.mean(error))
 
@@ -209,15 +234,15 @@ class InfluenceArea:
         theta = np.linspace(0, 2 * np.pi, self.Nr)
         th, r = np.meshgrid(theta, rad)
 
-        cmaps = ['Spectral']
+        cmaps = ["Spectral"]
         for cmap_label in cmaps:
             fig = plt.figure(figsize=(10, 10))
-            ax = fig.add_subplot(111, projection='polar')
+            ax = fig.add_subplot(111, projection="polar")
             pcm = ax.pcolormesh(th, r, polar_heat_map, cmap=plt.get_cmap(cmap_label))
             ax.set_yticklabels([])
             ax.set_xticklabels([])
-            ax.set_theta_zero_location('S')
-            plt.title(f'Heat map radial error between dt and gt')
+            ax.set_theta_zero_location("S")
+            plt.title(f"Heat map radial error between dt and gt")
             fig.colorbar(pcm, ax=ax, orientation="vertical")
             fig.savefig(f"{self.output_dir}/heat_map_{cmap_label}.png")
 
@@ -249,8 +274,8 @@ class InfluenceArea:
         plt.figure()
         plt.bar(np.arange(0, len(l_rmse)), l_rmse)
         plt.title(f"RMSE global={overal_rmse:.3f}")
-        plt.xlabel('Number Ring')
-        plt.ylabel('RMSE (per gt)')
+        plt.xlabel("Number Ring")
+        plt.ylabel("RMSE (per gt)")
         plt.grid(True)
         plt.savefig(f"{self.output_dir}/rmse.png")
         # plt.show()
@@ -271,7 +296,7 @@ class InfluenceArea:
     def mirror_interpolation(self, dot1, dot2):
         return (dot1 + (dot1 - dot2)).astype(int).tolist()
 
-    def generate_new_poly(self, pol1, pol2, type_interpolation='mean'):
+    def generate_new_poly(self, pol1, pol2, type_interpolation="mean"):
         """
         Generate new polygon from two polygons. If type_interpolation is mean, compute mean interpolation between two dots.
         In other case, compute mirror interpolation between two dots. Mirror interpolation means that a new external
@@ -287,13 +312,25 @@ class InfluenceArea:
         pol2_dots = self.extract_poly_coordinates(pol2)
         dots_new_poly = []
         for ray_direction_idx in range(self.Nr):
-            angle_dot_1 = self.get_dot_by_ray_direction_index(ray_direction_idx, pol1_dots)
-            angle_dot_2 = self.get_dot_by_ray_direction_index(ray_direction_idx, pol2_dots)
-            new_dot = self.mean_interpolation(angle_dot_1, angle_dot_2) if type_interpolation in 'mean' else \
-                self.mirror_interpolation(angle_dot_1, angle_dot_2)
+            angle_dot_1 = self.get_dot_by_ray_direction_index(
+                ray_direction_idx, pol1_dots
+            )
+            angle_dot_2 = self.get_dot_by_ray_direction_index(
+                ray_direction_idx, pol2_dots
+            )
+            new_dot = (
+                self.mean_interpolation(angle_dot_1, angle_dot_2)
+                if type_interpolation in "mean"
+                else self.mirror_interpolation(angle_dot_1, angle_dot_2)
+            )
             # dot is an array [x, y]. We neet to convert it to node object
-            new_node = ch.Node(x = int(new_dot[1]), y = int(new_dot[0]), angle=ray_direction_idx,
-                            radial_distance = self.compute_radial_distance(new_dot), chain_id = -1)
+            new_node = ch.Node(
+                x=int(new_dot[1]),
+                y=int(new_dot[0]),
+                angle=ray_direction_idx,
+                radial_distance=self.compute_radial_distance(new_dot),
+                chain_id=-1,
+            )
             dots_new_poly.append(new_node)
         return Polygon_node(dots_new_poly)
 
@@ -313,9 +350,16 @@ class InfluenceArea:
             gt_i_plus_1 = l_gt_poly[i + 1] if i < len(l_gt_poly) - 1 else None
             gt_i_minus_1 = l_gt_poly[i - 1] if i > 0 else None
 
-            Cm = self.generate_new_poly(gt_i, gt_i_minus_1) if gt_i_minus_1 is not None else None
-            CM = self.generate_new_poly(gt_i, gt_i_plus_1) if gt_i_plus_1 is not None else \
-                self.generate_new_poly(gt_i, Cm, type_interpolation='mirror')
+            Cm = (
+                self.generate_new_poly(gt_i, gt_i_minus_1)
+                if gt_i_minus_1 is not None
+                else None
+            )
+            CM = (
+                self.generate_new_poly(gt_i, gt_i_plus_1)
+                if gt_i_plus_1 is not None
+                else self.generate_new_poly(gt_i, Cm, type_interpolation="mirror")
+            )
 
             if Cm is None:
                 # 1. First ring
@@ -380,9 +424,9 @@ class InfluenceArea:
         for poly in l_dt_poly:
             # 1.0 extract detection poly coordinates
             x, y = self.get_x_and_y_coordinates(poly)
-            #y, x = poly.exterior.coords.xy
-            #x = np.array(x).astype(int)
-            #y = np.array(y).astype(int)
+            # y, x = poly.exterior.coords.xy
+            # x = np.array(x).astype(int)
+            # y = np.array(y).astype(int)
 
             # 2.0 extract influence matrix values for detection poly coordinates
             gts = influence_matrix[x, y].astype(int)
@@ -397,15 +441,21 @@ class InfluenceArea:
                 continue
 
             # 4.0 Find the gt_poly that influences the most pixels of the detection poly
-            error_vector_between_detection_and_gt_lists = [self.compute_rmse_between_dt_and_gt(poly, gt_poly) for
-                                                           gt_poly in self.gt_poly]
+            error_vector_between_detection_and_gt_lists = [
+                self.compute_rmse_between_dt_and_gt(poly, gt_poly)
+                for gt_poly in self.gt_poly
+            ]
             gt_label = np.argmin(error_vector_between_detection_and_gt_lists)
             if gt_label in dt_and_gt_assignation:
                 # 4.1 the gt_poly has already been assigned to another detection poly.
                 # Check if the current detection poly has a lower rmse error
-                rmse_current = self.compute_rmse_between_dt_and_gt(poly, self.gt_poly[gt_label])
+                rmse_current = self.compute_rmse_between_dt_and_gt(
+                    poly, self.gt_poly[gt_label]
+                )
                 id_dt_former = np.where(dt_and_gt_assignation == gt_label)[0][0]
-                rmse_former = self.compute_rmse_between_dt_and_gt(self.dt_poly[id_dt_former], self.gt_poly[gt_label])
+                rmse_former = self.compute_rmse_between_dt_and_gt(
+                    self.dt_poly[id_dt_former], self.gt_poly[gt_label]
+                )
                 if rmse_current < rmse_former:
                     # 4.1.1 the current detection poly has a lower rmse error than the former one. Change former assignation
                     # to be a false positive
@@ -427,7 +477,9 @@ class InfluenceArea:
             accuracy_percentage.append(counts[gt_label] / self.Nr)
 
         # 7.0 assign as false positive the detection polys that have an accuracy percentage lower than the threshold
-        no_asigned_idx = np.where(np.array(accuracy_percentage) < threshold)[0].astype(int)
+        no_asigned_idx = np.where(np.array(accuracy_percentage) < threshold)[0].astype(
+            int
+        )
         dt_and_gt_assignation = np.array(dt_and_gt_assignation)
         dt_and_gt_assignation[no_asigned_idx] = FP_ID
         accuracy_percentage = np.array(accuracy_percentage)
@@ -440,9 +492,10 @@ class InfluenceArea:
     def _plot_assignation_between_gt_and_dt(self):
         import itertools
         import matplotlib.cm as cm
+
         M, N, _ = self.img.shape
         plt.figure(figsize=(10, 10))
-        plt.imshow(np.zeros((M, N)), cmap='gray')
+        plt.imshow(np.zeros((M, N)), cmap="gray")
 
         espaciado_color = 10
         index = np.linspace(0, 1, espaciado_color)
@@ -460,35 +513,44 @@ class InfluenceArea:
                 continue
             gt_idx = self.dt_and_gt_assignation[idx]
             if gt_idx == FP_ID:
-                plt.plot(x, y, color='w')
+                plt.plot(x, y, color="w")
                 continue
             y, x = self.gt_poly[gt_idx].exterior.coords.xy
             plt.plot(x, y, color=c)
             # plt.scatter( x,y, s=1)
 
-        plt.axis('off')
-        plt.savefig(f'{self.output_dir}/assigned_dt_gt.png')
+        plt.axis("off")
+        plt.savefig(f"{self.output_dir}/assigned_dt_gt.png")
         plt.close()
 
     def compute_indicators(self):
         influence_matrix = self._build_influence_area(self.img, self.gt_poly)
         self._plot_influece_area(influence_matrix, self.gt_poly)
-        self.dt_and_gt_assignation, self.accuracy_percentage = self._assign_gt_to_dt(influence_matrix, self.dt_poly)
+        self.dt_and_gt_assignation, self.accuracy_percentage = self._assign_gt_to_dt(
+            influence_matrix, self.dt_poly
+        )
         self._plot_assignation_between_gt_and_dt()
 
         TP = self.true_positive()
         FP = self.false_positive()
         TN = self.true_negative()
         FN = self.false_negative()
-        self._plot_gt_and_dt_polys(self.img, self.gt_poly, self.dt_poly, n=3, title=f"TP={TP} FP={FP} TN={TN} FN={FN}")
+        self._plot_gt_and_dt_polys(
+            self.img,
+            self.gt_poly,
+            self.dt_poly,
+            n=3,
+            title=f"TP={TP} FP={FP} TN={TN} FN={FN}",
+        )
         return TP, FP, TN, FN
 
     def _plot_influece_area(self, matriz, list_gt_poly):
         import itertools
         import matplotlib.cm as cm
+
         M, N, _ = self.img.shape
         plt.figure(figsize=(15, 15))
-        plt.imshow(np.zeros((M, N)), cmap='gray')
+        plt.imshow(np.zeros((M, N)), cmap="gray")
         espaciado_color = 10
         index = np.linspace(0, 1, espaciado_color)
         lista_colores = cm.rainbow(index)
@@ -503,16 +565,16 @@ class InfluenceArea:
 
             x, y = np.where(matriz == region)
             if region == -1:
-                plt.scatter(x, y, s=1, c='w')
+                plt.scatter(x, y, s=1, c="w")
             else:
                 plt.scatter(x, y, s=1, color=next(colors))
 
         for poly in list_gt_poly:
-            y, x = self.get_x_and_y_coordinates(poly)#poly.exterior.coords.xy
-            plt.plot(y, x, 'k')
+            y, x = self.get_x_and_y_coordinates(poly)  # poly.exterior.coords.xy
+            plt.plot(y, x, "k")
 
-        plt.axis('off')
-        plt.savefig(f'{self.output_dir}/influence_area.png')
+        plt.axis("off")
+        plt.savefig(f"{self.output_dir}/influence_area.png")
         plt.close()
 
 
@@ -543,7 +605,9 @@ def main(dt_file, gt_file, img_filename, output_dir, threshold, cx, cy):
     if threshold > 1:
         raise ValueError("The threshold must be between 0 and 1")
 
-    metrics = InfluenceArea(gt_file, dt_file, img_filename, output_dir, threshold, cx, cy)
+    metrics = InfluenceArea(
+        gt_file, dt_file, img_filename, output_dir, threshold, cx, cy
+    )
     TP, FP, TN, FN = metrics.compute_indicators()
 
     F = metrics.fscore(TP, FP, TN, FN)
@@ -566,9 +630,23 @@ if __name__ == "__main__":
     parser.add_argument("--img_filename", type=str, required=True)
     parser.add_argument("--cx", type=int, required=True, help="x pith coordinate")
     parser.add_argument("--cy", type=int, required=True, help="y pith coordinate")
-    parser.add_argument("--output_dir", type=str, required=True, help="output directory for the results")
-    parser.add_argument("--th", type=float, required=True,
-                        help="threshold to consider a detection as valid. Between 0 and 1")
+    parser.add_argument(
+        "--output_dir", type=str, required=True, help="output directory for the results"
+    )
+    parser.add_argument(
+        "--th",
+        type=float,
+        required=True,
+        help="threshold to consider a detection as valid. Between 0 and 1",
+    )
 
     args = parser.parse_args()
-    main(args.dt_filename, args.gt_filename, args.img_filename, args.output_dir, args.th, args.cx, args.cy)
+    main(
+        args.dt_filename,
+        args.gt_filename,
+        args.img_filename,
+        args.output_dir,
+        args.th,
+        args.cx,
+        args.cy,
+    )

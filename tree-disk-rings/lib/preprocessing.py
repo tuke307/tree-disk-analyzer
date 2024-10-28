@@ -7,13 +7,16 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+
 import cv2
 from PIL import Image
 import numpy as np
 
 
-WHITE=255
-NONE=0
+WHITE = 255
+NONE = 0
+
+
 def get_image_shape(im_in: np.array):
     """
     Get image shape
@@ -35,20 +38,23 @@ def resize(im_in: np.array, height_output, width_output, cy=1, cx=1):
     @param width_output: output image width_output. If None, the image is not resized.
     @param cy: y's center coordinate in pixel.
     @param cx: x's center coordinate in pixel.
-    @return: 
+    @return:
     """
     # Line 1
     img_r = resize_image_using_pil_lib(im_in, height_output, width_output)
     # Line 2
     height, width = get_image_shape(im_in)
     # Line 3
-    cy_output, cx_output = convert_center_coordinate_to_output_coordinate(cy, cx, height, width, height_output,
-                                                                          width_output)
+    cy_output, cx_output = convert_center_coordinate_to_output_coordinate(
+        cy, cx, height, width, height_output, width_output
+    )
     # Line 4
     return img_r, cy_output, cx_output
 
 
-def resize_image_using_pil_lib(im_in: np.array, height_output: object, width_output: object) -> np.ndarray:
+def resize_image_using_pil_lib(
+    im_in: np.array, height_output: object, width_output: object
+) -> np.ndarray:
     """
     Resize image using PIL library.
     @param im_in: input image
@@ -59,14 +65,16 @@ def resize_image_using_pil_lib(im_in: np.array, height_output: object, width_out
 
     pil_img = Image.fromarray(im_in)
     # Image.ANTIALIAS is deprecated, PIL recommends using Reampling.LANCZOS
-    #flag = Image.ANTIALIAS
+    # flag = Image.ANTIALIAS
     flag = Image.Resampling.LANCZOS
     pil_img = pil_img.resize((height_output, width_output), flag)
     im_r = np.array(pil_img)
     return im_r
 
 
-def convert_center_coordinate_to_output_coordinate(cy, cx, height, width, height_output, width_output):
+def convert_center_coordinate_to_output_coordinate(
+    cy, cx, height, width, height_output, width_output
+):
     """
     Convert center coordinate from input image to output image
     @param cy: y's center coordinate in pixel.
@@ -98,6 +106,7 @@ def change_background_intensity_to_mean(im_in):
     im_eq = change_background_to_value(im_eq, mask, np.mean(im_in[mask == 0]))
     return im_eq, mask
 
+
 def equalize_image_using_clahe(img_eq):
     """
     Equalize image using CLAHE algorithm
@@ -107,6 +116,7 @@ def equalize_image_using_clahe(img_eq):
     clahe = cv2.createCLAHE(clipLimit=10)
     img_eq = clahe.apply(img_eq)
     return img_eq
+
 
 def equalize(im_g):
     """
@@ -122,6 +132,7 @@ def equalize(im_g):
     im_pre = change_background_to_value(im_pre, mask, WHITE)
     # Line 4
     return im_pre
+
 
 def change_background_to_value(im_in, mask, value=255):
     """
@@ -158,9 +169,9 @@ def preprocessing(im_in, height_output=None, width_output=None, cy=None, cx=None
     """
     # Line 1 to 6
     if NONE in [height_output, width_output]:
-        im_r, cy_output, cx_output = ( im_in, cy, cx)
+        im_r, cy_output, cx_output = (im_in, cy, cx)
     else:
-        im_r, cy_output, cx_output = resize( im_in, height_output, width_output, cy, cx)
+        im_r, cy_output, cx_output = resize(im_in, height_output, width_output, cy, cx)
 
     # Line 7
     im_g = rgb2gray(im_r)

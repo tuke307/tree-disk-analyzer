@@ -7,6 +7,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+
 import numpy as np
 import time
 from shapely.geometry import Point
@@ -14,7 +15,13 @@ from shapely.geometry import LineString
 from lib.drawing import Drawing
 import cv2
 
-from lib.chain import Node, euclidean_distance, get_node_from_list_by_angle, Chain, TypeChains
+from lib.chain import (
+    Node,
+    euclidean_distance,
+    get_node_from_list_by_angle,
+    Chain,
+    TypeChains,
+)
 
 
 class Ray:
@@ -64,7 +71,7 @@ class Ray:
             xe = xc - np.tan((360 - theta) * degree_to_radians) * (ye - yc)
 
         else:
-            raise 'Error'
+            raise "Error"
 
         return (ye, xe)
 
@@ -85,20 +92,20 @@ def build_rays(Nr, M, N, center):
 
 def get_coordinates_from_intersection(inter):
     """Shapely intersection formating"""
-    if 'MULTI' in inter.wkt:
+    if "MULTI" in inter.wkt:
         inter = inter[0]
 
     if type(inter) == Point:
         y, x = inter.xy
-        y,x = y[0], x[0]
+        y, x = y[0], x[0]
 
-    elif 'LINESTRING' in inter.wkt:
+    elif "LINESTRING" in inter.wkt:
         y, x = inter.xy
-        y,x = y[1], x[1]
+        y, x = y[1], x[1]
 
-    elif 'STRING' in inter.wkt:
+    elif "STRING" in inter.wkt:
         y, x = inter.coords.xy
-        y,x = y[0], x[0]
+        y, x = y[0], x[0]
 
     else:
         raise
@@ -124,17 +131,27 @@ def compute_intersection(l_rays, curve, chain_id, center):
             except NotImplementedError:
                 continue
             i, j = np.array(y), np.array(x)
-            params = {'y': i, 'x': j, 'angle': int(radii.direction), 'radial_distance':
-                euclidean_distance([i, j], center), 'chain_id': chain_id}
+            params = {
+                "y": i,
+                "x": j,
+                "angle": int(radii.direction),
+                "radial_distance": euclidean_distance([i, j], center),
+                "chain_id": chain_id,
+            }
 
             dot = Node(**params)
-            if dot not in l_curve_nodes and get_node_from_list_by_angle(l_curve_nodes, radii.direction) is None:
+            if (
+                dot not in l_curve_nodes
+                and get_node_from_list_by_angle(l_curve_nodes, radii.direction) is None
+            ):
                 l_curve_nodes.append(dot)
 
     return l_curve_nodes
 
 
-def intersections_between_rays_and_devernay_curves(center, l_rays, l_curves, min_chain_length, nr, height, width):
+def intersections_between_rays_and_devernay_curves(
+    center, l_rays, l_curves, min_chain_length, nr, height, width
+):
     """
     Compute chains sampling devernay curves.  Sampling is made finding the intersection
     between rays and devernay curves. A chain is a list of nodes. A node is a point in the image with the following
@@ -180,12 +197,28 @@ def generate_virtual_center_chain(cy, cx, nr, chains_list, nodes_list, height, w
     :return: chain is added to the chain list and nodes are added to the nodes list
     """
     chain_id = len(chains_list) - 1
-    center_list = [Node(**{'x': cx, 'y': cy, 'angle': angle, 'radial_distance': 0,
-                           'chain_id': chain_id}) for angle in np.arange(0, 360, 360 / nr)]
+    center_list = [
+        Node(
+            **{
+                "x": cx,
+                "y": cy,
+                "angle": angle,
+                "radial_distance": 0,
+                "chain_id": chain_id,
+            }
+        )
+        for angle in np.arange(0, 360, 360 / nr)
+    ]
     nodes_list += center_list
 
-    chain = Chain(chain_id, nr, center=chains_list[0].center, img_height=height, img_width=width,
-                  type=TypeChains.center)
+    chain = Chain(
+        chain_id,
+        nr,
+        center=chains_list[0].center,
+        img_height=height,
+        img_width=width,
+        type=TypeChains.center,
+    )
     chain.add_nodes_list(center_list)
 
     chains_list.append(chain)
@@ -196,7 +229,9 @@ def generate_virtual_center_chain(cy, cx, nr, chains_list, nodes_list, height, w
     return 0
 
 
-def draw_ray_curve_and_intersections(dots_lists, rays_list, curves_list, img_draw, filename):
+def draw_ray_curve_and_intersections(
+    dots_lists, rays_list, curves_list, img_draw, filename
+):
 
     for ray in rays_list:
         img_draw = Drawing.radii(ray, img_draw)
@@ -229,15 +264,18 @@ def sampling_edges(l_ch_f, cy, cx, im_pre, min_chain_length, nr, debug=False):
     # Line 2
     l_rays = build_rays(nr, height, width, [cy, cx])
     # Line 3
-    l_nodes_s, l_ch_s = intersections_between_rays_and_devernay_curves([cy, cx], l_rays, l_ch_f, min_chain_length, nr,
-                                                                       height, width)
+    l_nodes_s, l_ch_s = intersections_between_rays_and_devernay_curves(
+        [cy, cx], l_rays, l_ch_f, min_chain_length, nr, height, width
+    )
     # Line 4
     generate_virtual_center_chain(cy, cx, nr, l_ch_s, l_nodes_s, height, width)
 
     # Debug purposes, not illustrated in the paper
     if debug:
         img_draw = np.zeros((im_pre.shape[0], im_pre.shape[1], 3))
-        draw_ray_curve_and_intersections(l_nodes_s, l_rays, l_ch_f, img_draw, './dots_curve_and_rays.png')
+        draw_ray_curve_and_intersections(
+            l_nodes_s, l_rays, l_ch_f, img_draw, "./dots_curve_and_rays.png"
+        )
 
     # Line 5
     return l_ch_s, l_nodes_s

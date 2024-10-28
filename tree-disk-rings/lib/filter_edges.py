@@ -7,6 +7,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+
 import numpy as np
 import cv2
 import warnings
@@ -38,7 +39,7 @@ class Curve:
 
 
 def normalized_row_matrix(matrix):
-    sqrt = np.sqrt((matrix ** 2).sum(axis=1))
+    sqrt = np.sqrt((matrix**2).sum(axis=1))
     normalized_array = matrix / sqrt[:, np.newaxis]
     return normalized_array
 
@@ -46,16 +47,22 @@ def normalized_row_matrix(matrix):
 def erosion(erosion_size, src):
     erosion_shape = cv2.MORPH_CROSS
 
-    element = cv2.getStructuringElement(erosion_shape, (2 * erosion_size + 1, 2 * erosion_size + 1),
-                                        (erosion_size, erosion_size))
+    element = cv2.getStructuringElement(
+        erosion_shape,
+        (2 * erosion_size + 1, 2 * erosion_size + 1),
+        (erosion_size, erosion_size),
+    )
     erosion_dst = cv2.erode(src, element)
     return erosion_dst
 
 
 def dilatation(dilatation_size, src):
     dilation_shape = cv2.MORPH_RECT
-    element = cv2.getStructuringElement(dilation_shape, (2 * dilatation_size + 1, 2 * dilatation_size + 1),
-                                        (dilatation_size, dilatation_size))
+    element = cv2.getStructuringElement(
+        dilation_shape,
+        (2 * dilatation_size + 1, 2 * dilatation_size + 1),
+        (dilatation_size, dilatation_size),
+    )
     dilatation_dst = cv2.dilate(src, element)
     return dilatation_dst
 
@@ -75,8 +82,10 @@ def thresholding(mask, threshold=0):
     return mask
 
 
-def padding_mask(mask, pad = 3):
-    mask = np.pad(mask, ((pad, pad), (pad, pad)), mode='constant', constant_values=255).astype(np.uint8)
+def padding_mask(mask, pad=3):
+    mask = np.pad(
+        mask, ((pad, pad), (pad, pad)), mode="constant", constant_values=255
+    ).astype(np.uint8)
     return mask
 
 
@@ -151,8 +160,9 @@ def change_reference_axis(ch_e_matrix, cy, cx):
     X = ch_e_matrix.copy()
 
     # change reference axis
-    Xb = np.array([[1, 0], [0, 1]]).dot(X.T) + (np.array([-1, -1]) * np.array(center, dtype=float)).reshape(
-        (-1, 1))
+    Xb = np.array([[1, 0], [0, 1]]).dot(X.T) + (
+        np.array([-1, -1]) * np.array(center, dtype=float)
+    ).reshape((-1, 1))
 
     # mask delimiting edge row by -1
     Xb[:, curve_border_index] = -1
@@ -165,7 +175,7 @@ def convert_masked_pixels_to_curves(X_edges_filtered):
     ch_f = []
     for end in curve_border_index:
         if end - start > 2:
-            pixel_list = X_edges_filtered[start + 1:end].tolist()
+            pixel_list = X_edges_filtered[start + 1 : end].tolist()
             curve = Curve(pixel_list, len(ch_f))
             ch_f.append(curve)
         start = end
@@ -175,12 +185,20 @@ def convert_masked_pixels_to_curves(X_edges_filtered):
 
 def get_gradient_vector_for_each_edge_pixel(ch_e, Gx, Gy):
     G = np.vstack(
-        (Gx[ch_e[:, 1].astype(int), ch_e[:, 0].astype(int)], Gy[ch_e[:, 1].astype(int), ch_e[:, 0].astype(int)])).T
+        (
+            Gx[ch_e[:, 1].astype(int), ch_e[:, 0].astype(int)],
+            Gy[ch_e[:, 1].astype(int), ch_e[:, 0].astype(int)],
+        )
+    ).T
     return G
 
 
 def compute_angle_between_gradient_and_edges(Xb_normed, gradient_normed):
-    theta = np.arccos(np.clip((gradient_normed * Xb_normed).sum(axis=1), -1.0, 1.0)) * 180 / np.pi
+    theta = (
+        np.arccos(np.clip((gradient_normed * Xb_normed).sum(axis=1), -1.0, 1.0))
+        * 180
+        / np.pi
+    )
     return theta
 
 
