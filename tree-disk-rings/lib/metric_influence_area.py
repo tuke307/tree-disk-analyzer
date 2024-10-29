@@ -14,6 +14,7 @@ from shapely.geometry import Polygon, LineString
 from pathlib import Path
 import cv2 as cv
 import matplotlib.pyplot as plt
+import logging
 
 from lib.io import load_image, load_json
 from lib.sampling import (
@@ -25,6 +26,7 @@ import lib.chain as ch
 import lib.drawing as dr
 
 FP_ID = -1
+logger = logging.getLogger(__name__)
 
 
 class Polygon_node(Polygon):
@@ -615,7 +617,9 @@ def main(dt_file, gt_file, img_filename, output_dir, threshold, cx, cy):
     R = metrics.recall(TP, FP, TN, FN)
 
     RMSE = metrics.compute_rmse_global()
-    print(f"{Path(img_filename).name} P={P:.2f} R={R:.2f} F={F:.2f} RMSE={RMSE:.2f}")
+    logger.info(
+        f"{Path(img_filename).name} P={P:.2f} R={R:.2f} F={F:.2f} RMSE={RMSE:.2f}"
+    )
 
     metrics.generate_radial_error_heat_map()
 
