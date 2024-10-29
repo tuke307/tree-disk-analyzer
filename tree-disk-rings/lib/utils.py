@@ -137,7 +137,7 @@ def chain_2_labelme_json(
         "imagePath": image_path,
         "imageHeight": None,
         "imageWidth": None,
-        "version": "5.0.1",
+        "version": "5.5.0",
         "flags": {},
         "shapes": [],
         "imageData": None,
