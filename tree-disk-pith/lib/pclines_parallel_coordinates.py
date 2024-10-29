@@ -1,11 +1,24 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+from typing import Tuple, Optional, List
 
 from lib.image import Drawing
 
 
-def pclines_straight_all(l, d=1):
+def pclines_straight_all(
+    l: np.ndarray, d: float = 1.0
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Computes the (u, v) coordinates in the straight TS-space for all lines.
+
+    Args:
+        l: An array of shape (n_lines, 4), where each row represents a line as [x1, y1, x2, y2].
+        d: A float parameter used in the transformation.
+
+    Returns:
+        A tuple (u, v), where u and v are arrays of coordinates in the TS-space.
+    """
     x1 = l[:, 0]
     y1 = l[:, 1]
     x2 = l[:, 2]
@@ -14,18 +27,37 @@ def pclines_straight_all(l, d=1):
     dy = y2 - y1
     dx = x2 - x1
 
-    m = dy / dx
-    b = (y1 * x2 - y2 * x1) / dx
+    # Handle vertical lines where dx == 0
+    with np.errstate(divide="ignore", invalid="ignore"):
+        m = np.divide(dy, dx)
+        b = np.divide(y1 * x2 - y2 * x1, dx)
 
-    PCline = np.array([np.ones(b.shape[0]) * d, b, 1 - m]).T  # homogeneous coordinates
+    # For vertical lines, set m to a large number and b to NaN
+    m[np.isinf(m)] = np.inf
+    b[np.isnan(b)] = np.nan
 
-    u = PCline[:, 0] / PCline[:, 2]
-    v = PCline[:, 1] / PCline[:, 2]
+    # Compute homogeneous coordinates
+    PCline = np.column_stack((np.full(b.shape, d), b, 1 - m))
+
+    # Avoid division by zero
+    with np.errstate(divide="ignore", invalid="ignore"):
+        u = PCline[:, 0] / PCline[:, 2]
+        v = PCline[:, 1] / PCline[:, 2]
 
     return u, v
 
 
-def pclines_twisted_all(l, d=1):
+def pclines_twisted_all(l: np.ndarray, d: float = 1.0) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Computes the (u, v) coordinates in the twisted TS-space for all lines.
+
+    Args:
+        l: An array of shape (n_lines, 4), where each row represents a line as [x1, y1, x2, y2].
+        d: A float parameter used in the transformation.
+
+    Returns:
+        A tuple (u, v), where u and v are arrays of coordinates in the TS-space.
+    """
     x1 = l[:, 0]
     y1 = l[:, 1]
     x2 = l[:, 2]
@@ -34,173 +66,263 @@ def pclines_twisted_all(l, d=1):
     dy = y2 - y1
     dx = x2 - x1
 
-    m = dy / dx
-    b = (y1 * x2 - y2 * x1) / dx
+    # Handle vertical lines where dx == 0
+    with np.errstate(divide="ignore", invalid="ignore"):
+        m = np.divide(dy, dx)
+        b = np.divide(y1 * x2 - y2 * x1, dx)
 
-    PCline = np.array(
-        [-np.ones(b.shape[0]) * d, -b, 1 + m]
-    ).T  # homogeneous coordinates
+    # For vertical lines, set m to a large number and b to NaN
+    m[np.isinf(m)] = np.inf
+    b[np.isnan(b)] = np.nan
 
-    u = PCline[:, 0] / PCline[:, 2]
-    v = PCline[:, 1] / PCline[:, 2]
+    # Compute homogeneous coordinates
+    PCline = np.column_stack((-np.full(b.shape, d), -b, 1 + m))
+
+    # Avoid division by zero
+    with np.errstate(divide="ignore", invalid="ignore"):
+        u = PCline[:, 0] / PCline[:, 2]
+        v = PCline[:, 1] / PCline[:, 2]
 
     return u, v
 
 
-def ts_space(img, lines, output_dir, d=1, debug=True):
-    H, W, _ = img.shape
-    v_maximum = np.maximum(W / 2, H / 2)
+def ts_space(
+    img: np.ndarray,
+    lines: np.ndarray,
+    output_dir: str,
+    d: float = 1.0,
+    debug: bool = True,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Transforms lines into TS-space coordinates for both straight and twisted spaces.
+
+    Args:
+        img: The input image array.
+        lines: An array of lines with shape (n_lines, 4).
+        output_dir: Directory to save debug plots.
+        d: Parameter used in the transformation.
+        debug: Whether to save debug plots.
+
+    Returns:
+        points_straight: TS-space points in the straight space.
+        points_twisted: TS-space points in the twisted space.
+        lines_straight: Lines corresponding to points in the straight space.
+        lines_twisted: Lines corresponding to points in the twisted space.
+    """
+    H, W = img.shape[:2]
+    v_maximum = max(W / 2, H / 2)
     l_lo = lines.reshape(-1, 4)
-    u, v = pclines_straight_all(l_lo / np.asarray([W, H, W, H]), d=d)
-    points_straight = np.vstack((u, v)).T
-    u, v = pclines_twisted_all(l_lo / np.array([W, H, W, H]), d=d)
-    points_twisted = np.vstack((u, v)).T
+    l_lo_norm = l_lo / np.array([W, H, W, H])
+
+    u_straight, v_straight = pclines_straight_all(l_lo_norm, d=d)
+    points_straight = np.vstack((u_straight, v_straight)).T
+
+    u_twisted, v_twisted = pclines_twisted_all(l_lo_norm, d=d)
+    points_twisted = np.vstack((u_twisted, v_twisted)).T
 
     # Impose boundaries of pclines space
-    ## Straight space boundaries (u,v) in ([0,d],[-v_maximum, v_maximum])
-    mask_idx_straight_half = (
-        np.where(0 <= points_straight[:, 0], 1, 0)
-        & np.where(d >= points_straight[:, 0], 1, 0)
-        & np.where(-v_maximum <= points_straight[:, 1], 1, 0)
-        & np.where(v_maximum >= points_straight[:, 1], 1, 0)
+    mask_straight = (
+        (points_straight[:, 0] >= 0)
+        & (points_straight[:, 0] <= d)
+        & (points_straight[:, 1] >= -v_maximum)
+        & (points_straight[:, 1] <= v_maximum)
     )
 
-    idx_straight_half = np.where(mask_idx_straight_half > 0)[0]
-    points_straight = points_straight[idx_straight_half]
-    lines_straight = l_lo[idx_straight_half]
+    points_straight = points_straight[mask_straight]
+    lines_straight = l_lo[mask_straight]
 
-    ## Twisted space boundaries (u,v) in ([-d,0],[-v_maximum, v_maximum])
-    mask_idx_twisted_half = (
-        np.where(-d <= points_twisted[:, 0], 1, 0)
-        & np.where(0 >= points_twisted[:, 0], 1, 0)
-        & np.where(-v_maximum <= points_twisted[:, 1], 1, 0)
-        & np.where(v_maximum >= points_twisted[:, 1], 1, 0)
+    mask_twisted = (
+        (points_twisted[:, 0] >= -d)
+        & (points_twisted[:, 0] <= 0)
+        & (points_twisted[:, 1] >= -v_maximum)
+        & (points_twisted[:, 1] <= v_maximum)
     )
 
-    idx_twisted_half = np.where(mask_idx_twisted_half > 0)[0]
-    points_twisted = points_twisted[idx_twisted_half]
-    lines_twisted = l_lo[idx_twisted_half]
+    points_twisted = points_twisted[mask_twisted]
+    lines_twisted = l_lo[mask_twisted]
 
     if debug:
-
-        # generate two subplots. One for points stragiht and one for points twisted. Use small dot size
-        fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(7, 7))
-        axes[1].scatter(points_straight[:, 0], points_straight[:, 1], s=0.1)
+        fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(14, 7))
         axes[0].scatter(points_twisted[:, 0], points_twisted[:, 1], s=0.1)
-        axes[1].set_title("Straight Space")
+        axes[1].scatter(points_straight[:, 0], points_straight[:, 1], s=0.1)
         axes[0].set_title("Twisted Space")
-        axes[1].set_xlabel("u")
-        axes[1].set_ylabel("v")
+        axes[1].set_title("Straight Space")
         axes[0].set_xlabel("u")
         axes[0].set_ylabel("v")
-        axes[1].grid(True)
+        axes[1].set_xlabel("u")
+        axes[1].set_ylabel("v")
         axes[0].grid(True)
+        axes[1].grid(True)
+        plt.tight_layout()
         plt.savefig(f"{output_dir}/pc_m_b_representation_ts_space_subplots.png")
         plt.close()
 
     return points_straight, points_twisted, lines_straight, lines_twisted
 
 
-def robust_line_estimation(X, y, residual_threshold=0.03):
+def robust_line_estimation(
+    X: np.ndarray, y: np.ndarray, residual_threshold: float = 0.03
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Estimates a robust line fit to the data using RANSAC.
+
+    Args:
+        X: Independent variable data as a 1D array.
+        y: Dependent variable data as a 1D array.
+        residual_threshold: Threshold for determining inliers.
+
+    Returns:
+        line: Array containing the coefficient and bias of the line [coefficient, bias].
+        residuals: Array of residuals for each data point.
+    """
     from sklearn.linear_model import RANSACRegressor
 
-    # Create the RANSAC regressor
-    min_samples = np.round(X.shape[0] * 0.05).astype(int)
-    min_samples = np.maximum(100, min_samples)
-    min_samples = np.minimum(X.shape[0], min_samples)
+    X = X.flatten()
+    y = y.flatten()
+
+    min_samples = max(100, int(round(X.shape[0] * 0.05)))
+    min_samples = min(min_samples, X.shape[0])
     ransac = RANSACRegressor(
         min_samples=min_samples,
         max_trials=1000,
         residual_threshold=residual_threshold,
         random_state=42,
     )
-    # Fit the regressor to the data
     try:
         ransac.fit(X.reshape(-1, 1), y.reshape(-1, 1))
     except ValueError:
-        """ransac not convergs"""
-        return [0, 0], np.ones(X.shape[0]) * np.inf
+        return np.array([0, 0]), np.full(X.shape[0], np.inf)
 
-    # Get the model coefficient and bias
-    coefficient = ransac.estimator_.coef_
-    bias = ransac.estimator_.intercept_
-    line = np.array([coefficient.ravel(), bias.ravel()]).ravel()
-    residual = np.abs(line[0] * X + line[1] - y)
+    coefficient = ransac.estimator_.coef_[0][0]
+    bias = ransac.estimator_.intercept_[0]
+    line = np.array([coefficient, bias])
+    residuals = np.abs(coefficient * X + bias - y)
 
-    return line, residual
+    return line, residuals
 
 
 def find_detections(
-    points, output_path, debug=False, outliers_threshold=0.1, alineation_threshold=0.45
-):
+    points: np.ndarray,
+    output_path: str,
+    debug: bool = False,
+    outliers_threshold: float = 0.1,
+    alineation_threshold: float = 0.45,
+) -> Tuple[np.ndarray, Optional[float], Optional[float], np.ndarray, bool]:
+    """
+    Finds inlier points that align along a line using robust estimation.
 
+    Args:
+        points: Array of points in TS-space.
+        output_path: Path to save debug plots.
+        debug: Whether to save debug plots.
+        outliers_threshold: Residual threshold for inliers.
+        alineation_threshold: Threshold for considering good alignment.
+
+    Returns:
+        inliers: Indices of inlier points.
+        line_slope: Slope of the estimated line.
+        line_bias: Bias of the estimated line.
+        residuals: Residuals of the inlier points.
+        good_alignment: Whether the alignment is considered good.
+    """
     v = points[:, 1]
     u = points[:, 0]
-    if v.ravel().shape[0] < 2:
+
+    if v.size < 2:
         return np.array([], dtype=int), None, None, np.array([]), False
 
-    line, residual = robust_line_estimation(
-        u.reshape(-1, 1), v.reshape(-1, 1), residual_threshold=outliers_threshold
+    line, residuals = robust_line_estimation(
+        u, v, residual_threshold=outliers_threshold
     )
+    inliers = np.where(residuals <= outliers_threshold)[0]
 
-    inliers = np.where(residual <= outliers_threshold)[0]
-    inliers = inliers.astype(int)
-    # percentile 99 residual
-    p90 = np.percentile(residual, 99)
-    mean = np.mean(residual)
-    median = np.median(residual)
+    p90 = np.percentile(residuals, 99)
+    good_alignment = p90 < alineation_threshold
 
     if debug:
         plt.figure()
-        plt.scatter(u, v, s=0.1, c="b", label="data")
-        plt.scatter(u[inliers], v[inliers], s=0.1, c="g", label="inliers")
+        plt.scatter(u, v, s=0.1, c="b", label="Data")
+        plt.scatter(u[inliers], v[inliers], s=0.1, c="g", label="Inliers")
         plt.plot(u, line[0] * u + line[1], color="red", label="Line estimation")
         plt.legend(loc="lower right")
-        # plt.title(f" Mean: {mean:.2f}  Percentile 90: {p90:.2f} \n median: {median:.2f}")
         plt.xlabel("u")
         plt.ylabel("v")
         plt.savefig(output_path)
         plt.close()
 
-    return inliers, line[0], line[1], residual[inliers], p90 < alineation_threshold
+    return inliers, line[0], line[1], residuals[inliers], good_alignment
 
 
-def get_duplicated_elements_in_array(l: np.array):
-    unique, counts = np.unique(l, return_counts=True, axis=0)
-    duplicated_row = unique[counts > 1]
-    return duplicated_row
+def get_duplicated_elements_in_array(arr: np.ndarray) -> np.ndarray:
+    """
+    Finds duplicated rows in a 2D array.
+
+    Args:
+        arr: A 2D NumPy array.
+
+    Returns:
+        An array of duplicated rows.
+    """
+    unique_rows, counts = np.unique(arr, axis=0, return_counts=True)
+    duplicated_rows = unique_rows[counts > 1]
+    return duplicated_rows
 
 
-def get_indexes_relative_to_src_list_if_there_is_more_than_one(src_array, dst_array):
-    """Get indexes of src_array in dst_array
-    params:
-        dst_array: 2D array to search in src_array
-        src_array: 2D array where dst_array is searched
+def get_indexes_relative_to_src_list_if_there_is_more_than_one(
+    src_array: np.ndarray, dst_array: np.ndarray
+) -> List[int]:
+    """
+    Gets indexes of src_array in dst_array when there are duplicates.
+
+    Args:
+        src_array: 2D array to search for in dst_array.
+        dst_array: 2D array where src_array is searched.
+
+    Returns:
+        List of indices in dst_array where elements of src_array are found.
     """
     idx = []
     for i in range(src_array.shape[0]):
         indexes = np.where((dst_array == src_array[i]).all(axis=1))[0][:-1].tolist()
-        idx += indexes
+        idx.extend(indexes)
     return idx
 
 
 def get_converging_lines_pc(
-    img, m_lsd, coherence, output_dir, outlier_th=0.05, debug=False
-):
+    img: np.ndarray,
+    m_lsd: np.ndarray,
+    coherence: Optional[np.ndarray],
+    output_dir: Optional[str],
+    outlier_th: float = 0.05,
+    debug: bool = False,
+) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray], bool]:
+    """
+    Identifies converging lines in the image using TS-space.
+
+    Args:
+        img: The input image array.
+        m_lsd: Array of line segments.
+        coherence: Optional array of coherence values.
+        output_dir: Directory to save debug outputs.
+        outlier_th: Residual threshold for inliers.
+        debug: Whether to save debug outputs.
+
+    Returns:
+        converging_lines: Array of converging line segments.
+        idx_lines: Indices of the converging lines in m_lsd.
+        coherence: Coherence values for the converging lines.
+        good_alignment: Whether the alignment is considered good.
+    """
     if output_dir is not None:
         vp_output_dir = Path(output_dir)
+        vp_output_dir.mkdir(parents=True, exist_ok=True)
     else:
         vp_output_dir = Path(".")
 
-    if debug:
-        vp_output_dir.mkdir(parents=True, exist_ok=True)
-
-    # 1.0 convert to TS-Space
     m_pc_straight, m_pc_twisted, m_img_straight, m_img_twisted = ts_space(
-        img, m_lsd, output_dir=f"{vp_output_dir}", debug=debug
+        img, m_lsd, output_dir=str(vp_output_dir), d=1, debug=debug
     )
 
-    # 2.0 Get converging m_lsd on each space
     idx_inliers_straight, m1, b1, residual_straight, alineation_st = find_detections(
         m_pc_straight,
         output_path=f"{vp_output_dir}/ts_straight.png",
@@ -214,6 +336,7 @@ def get_converging_lines_pc(
         outliers_threshold=outlier_th,
         debug=debug,
     )
+
     if debug:
         Drawing.draw_lsd_lines(
             m_lsd, img, output_path=f"{vp_output_dir}/lsd.png", lines_all=m_lsd
@@ -233,27 +356,22 @@ def get_converging_lines_pc(
             lines_all=m_lsd,
         )
 
-    # 3.0 Remove duplicated m_lsd
     converging_lines = np.vstack(
         (m_img_straight[idx_inliers_straight], m_img_twisted[idx_inliers_twisted])
     )
-    residual = np.vstack(
-        (residual_straight.reshape((-1, 1)), residual_twisted.reshape((-1, 1)))
-    )
+    residuals = np.concatenate((residual_straight, residual_twisted))
     if coherence is not None:
-        coherence = np.hstack(
+        coherence = np.concatenate(
             (coherence[idx_inliers_straight], coherence[idx_inliers_twisted])
         )
-    idx_lines = np.hstack((idx_inliers_straight, idx_inliers_twisted))
+    idx_lines = np.concatenate((idx_inliers_straight, idx_inliers_twisted))
 
     duplicated_lines = get_duplicated_elements_in_array(converging_lines)
-    # get row index for duplicated m_lsd
     idx_duplicated_lines = get_indexes_relative_to_src_list_if_there_is_more_than_one(
         duplicated_lines, converging_lines
     )
-    # remove duplicated elements
     converging_lines = np.delete(converging_lines, idx_duplicated_lines, axis=0)
-    residual = np.delete(residual, idx_duplicated_lines, axis=0)
+    residuals = np.delete(residuals, idx_duplicated_lines, axis=0)
     if coherence is not None:
         coherence = np.delete(coherence, idx_duplicated_lines, axis=0)
     idx_lines = np.delete(idx_lines, idx_duplicated_lines, axis=0)
@@ -272,86 +390,124 @@ def get_converging_lines_pc(
             output_path=f"{vp_output_dir}/converging_lo_in_image.png",
         )
 
-    # idx_lines = get_indexes_relative_to_src_list(m_lsd, converging_lines)
     return converging_lines, idx_lines, coherence, alineation_st and alineation_tw
 
 
-def rotate_lines(L, degrees=90):
+def rotate_lines(L: np.ndarray, degrees: float = 90.0) -> np.ndarray:
+    """
+    Rotates lines by a specified angle.
+
+    Args:
+        L: Array of lines with shape (n_lines, 4).
+        degrees: Angle in degrees to rotate the lines.
+
+    Returns:
+        Rotated lines as an array of shape (n_lines, 4).
+    """
     X1, Y1, X2, Y2 = L[:, 0], L[:, 1], L[:, 2], L[:, 3]
-    # 1.0 compute the center of the line
-    C = (np.array([X1 + X2, Y1 + Y2]) * 0.5).T
-    Cx = C[:, 0]
-    Cy = C[:, 1]
-    # rotate
-    angle = np.deg2rad(degrees)
-    X1r = np.cos(angle) * (X1 - Cx) - np.sin(angle) * (Y1 - Cy) + Cx
-    Y1r = np.sin(angle) * (X1 - Cx) + np.cos(angle) * (Y1 - Cy) + Cy
-    X2r = np.cos(angle) * (X2 - Cx) - np.sin(angle) * (Y2 - Cy) + Cx
-    Y2r = np.sin(angle) * (X2 - Cx) + np.cos(angle) * (Y2 - Cy) + Cy
-    L_rotated = np.array([X1r, Y1r, X2r, Y2r]).T
+    Cx = (X1 + X2) / 2
+    Cy = (Y1 + Y2) / 2
+    angle_rad = np.deg2rad(degrees)
+    cos_angle = np.cos(angle_rad)
+    sin_angle = np.sin(angle_rad)
+    X1r = cos_angle * (X1 - Cx) - sin_angle * (Y1 - Cy) + Cx
+    Y1r = sin_angle * (X1 - Cx) + cos_angle * (Y1 - Cy) + Cy
+    X2r = cos_angle * (X2 - Cx) - sin_angle * (Y2 - Cy) + Cx
+    Y2r = sin_angle * (X2 - Cx) + cos_angle * (Y2 - Cy) + Cy
+    L_rotated = np.column_stack((X1r, Y1r, X2r, Y2r))
     return L_rotated
 
 
 def new_remove_segmented_that_are_selected_twice(
-    sub_1, idx_1, coh_1, sub_2, idx_2, coh2
-):
-    sub_1_c = sub_1.copy()
-    sub_2_c = sub_2.copy()
+    sub_1: np.ndarray,
+    idx_1: np.ndarray,
+    coh_1: Optional[np.ndarray],
+    sub_2: np.ndarray,
+    idx_2: np.ndarray,
+    coh_2: Optional[np.ndarray],
+) -> Tuple[np.ndarray, Optional[np.ndarray], np.ndarray, Optional[np.ndarray]]:
+    """
+    Removes segments that are selected in both subsets.
 
-    idx_1_rm = []
-    idx_2_rm = []
-    idx_2 = idx_2.tolist()
-    idx_1 = idx_1.tolist()
-    # for idx, ele1 in enumerate(idx_1):
-    #     if ele1 in idx_2:
-    #         idx_1_rm.append(idx)
-    #         idx_2_rm.append(idx_2.index(ele1))
+    Args:
+        sub_1: First subset of lines.
+        idx_1: Indices of the first subset in the original array.
+        coh_1: Coherence values for the first subset.
+        sub_2: Second subset of lines.
+        idx_2: Indices of the second subset in the original array.
+        coh_2: Coherence values for the second subset.
 
-    set_idx_2 = set(idx_2)
-    idx_1_rm = [idx for idx, ele1 in enumerate(idx_1) if ele1 in set_idx_2]
-    idx_2_rm = [idx_2.index(ele1) for ele1 in idx_1 if ele1 in set_idx_2]
+    Returns:
+        sub_1_c: Filtered first subset without duplicates.
+        coh_1_c: Coherence values for the filtered first subset.
+        sub_2_c: Filtered second subset without duplicates.
+        coh_2_c: Coherence values for the filtered second subset.
+    """
+    idx_1_set = set(idx_1.tolist())
+    idx_2_set = set(idx_2.tolist())
+    common_indices = idx_1_set & idx_2_set
 
-    sub_1_c = np.delete(sub_1_c, idx_1_rm, axis=0)
-    coh_1_c = np.delete(coh_1, idx_1_rm, axis=0) if coh_1 is not None else None
-    sub_2_c = np.delete(sub_2_c, idx_2_rm, axis=0)
-    coh_2_c = np.delete(coh2, idx_2_rm, axis=0) if coh2 is not None else None
+    idx_1_rm = [i for i, idx in enumerate(idx_1) if idx in common_indices]
+    idx_2_rm = [i for i, idx in enumerate(idx_2) if idx in common_indices]
+
+    sub_1_c = np.delete(sub_1, idx_1_rm, axis=0)
+    coh_1_c = np.delete(coh_1, idx_1_rm) if coh_1 is not None else None
+
+    sub_2_c = np.delete(sub_2, idx_2_rm, axis=0)
+    coh_2_c = np.delete(coh_2, idx_2_rm) if coh_2 is not None else None
 
     return sub_1_c, coh_1_c, sub_2_c, coh_2_c
 
 
 def pclines_local_orientation_filtering(
-    img_in, m_lsd, coherence=None, lo_dir=None, outlier_th=0.03, debug=True
-):
+    img_in: np.ndarray,
+    m_lsd: np.ndarray,
+    coherence: Optional[np.ndarray] = None,
+    lo_dir: Optional[Path] = None,
+    outlier_th: float = 0.03,
+    debug: bool = True,
+) -> Tuple[np.ndarray, Optional[np.ndarray], bool]:
+    """
+    Filters lines based on local orientation using TS-space transformations.
+
+    Args:
+        img_in: Input image array.
+        m_lsd: Array of line segments.
+        coherence: Optional array of coherence values.
+        lo_dir: Directory to save debug outputs.
+        outlier_th: Residual threshold for inliers.
+        debug: Whether to save debug outputs.
+
+    Returns:
+        m_lsd_intersecting: Filtered array of line segments after local orientation filtering.
+        coherence_intersecting: Coherence values for the filtered line segments.
+        radial_alineation: Whether the radial alignment is considered good.
+    """
     m_lsd_radial, idx_lsd_radial, coherence_radial, _ = get_converging_lines_pc(
         img_in,
         m_lsd,
         coherence,
-        lo_dir / "lsd_converging_lines" if lo_dir is not None else None,
+        str(lo_dir / "lsd_converging_lines") if lo_dir is not None else None,
         outlier_th=outlier_th,
         debug=debug,
     )
-    # 2.1
+
     l_rotated_lsd_lines = rotate_lines(m_lsd)
-    # outlier_th = 0.1
     sub_2, idx_2, coherence_2, radial_alineation = get_converging_lines_pc(
         img_in,
         l_rotated_lsd_lines,
         coherence,
-        lo_dir / "lsd_rotated_converging_lines" if lo_dir is not None else None,
+        str(lo_dir / "lsd_rotated_converging_lines") if lo_dir is not None else None,
         outlier_th=outlier_th,
         debug=debug,
     )
-    # if not radial_alineation:
-    #     return m_lsd, coherence, radial_alineation
 
-    # 2.2 Remove segments that where selected twice
     m_lsd_radial, coherence_radial, sub_2, coherence_2 = (
         new_remove_segmented_that_are_selected_twice(
             m_lsd_radial, idx_lsd_radial, coherence_radial, sub_2, idx_2, coherence_2
         )
     )
 
-    # 3.0 get rotated and radial intersecting segments
     converging_lines = np.vstack((m_lsd_radial, sub_2))
     converging_coherence = (
         np.hstack((coherence_radial, coherence_2)) if coherence is not None else None
@@ -360,7 +516,7 @@ def pclines_local_orientation_filtering(
         img_in,
         converging_lines,
         converging_coherence,
-        lo_dir / "both_subset_convering_lines" if lo_dir is not None else None,
+        str(lo_dir / "both_subset_convering_lines") if lo_dir is not None else None,
         outlier_th=outlier_th,
         debug=debug,
     )
