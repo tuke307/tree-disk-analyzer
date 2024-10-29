@@ -12,6 +12,7 @@ import os
 import json
 from pathlib import Path
 import cv2
+import shutil
 
 
 def load_image(image_name: str) -> cv2.typing.MatLike:
@@ -49,3 +50,12 @@ def write_json(dict_to_save: dict, filepath: str) -> None:
     """
     with open(str(filepath), "w") as f:
         json.dump(dict_to_save, f)
+
+
+def clear_dir(dir: Path) -> None:
+    """Clears all files and directories in the output directory."""
+    for item in dir.iterdir():
+        if item.is_file():
+            item.unlink()
+        elif item.is_dir():
+            shutil.rmtree(item)
