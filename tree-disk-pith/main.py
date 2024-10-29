@@ -2,53 +2,93 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-import numpy as np
-import cv2
-import pandas as pd
-from pathlib import Path
-import time
 import argparse
+import os
+import shutil
+import time
+from enum import Enum
+from pathlib import Path
+from typing import Optional
+
+import cv2
+import numpy as np
+import pandas as pd
 
 from lib.image import resize_image_using_pil_lib, Color
 from lib.automatic_wood_pith_detector import apd, apd_pcl, apd_dl
 
 
+class Method(Enum):
+    apd = "apd"
+    apd_pcl = "apd_pcl"
+    apd_dl = "apd_dl"
+
+
+def clear_output_dir(output_dir: Path) -> None:
+    """Clears all files and subdirectories in the output directory."""
+    for item in output_dir.iterdir():
+        if item.is_file():
+            item.unlink()
+        elif item.is_dir():
+            shutil.rmtree(item)
+
+
 def main(
-    filename,
-    output_dir,
-    percent_lo=0.7,
-    st_w=3,
-    method=0,
-    new_shape=640,
-    debug=True,
-    lo_w=3,
-    st_sigma=1.2,
-    weigths_path=None,
-):
+    filename: str,
+    output_dir: str,
+    method: Method = Method.apd,
+    percent_lo: float = 0.7,
+    st_w: int = 3,
+    lo_w: int = 3,
+    st_sigma: float = 1.2,
+    new_shape: int = 0,
+    debug: bool = False,
+    weights_path: Optional[str] = None,
+) -> np.ndarray:
+    """Main function for pith detection.
 
-    to = time.time()
-    output_dir = Path(output_dir)
-    output_dir.mkdir(exist_ok=True, parents=True)
-    import os
+    Args:
+        filename (str): Input image file path.
+        output_dir (str): Output directory path.
+        method (Method): Detection method to use.
+        percent_lo (float): Percent_lo parameter.
+        st_w (int): ST_W parameter.
+        lo_w (int): LO_W parameter.
+        st_sigma (float): ST_Sigma parameter.
+        new_shape (int): New shape for resizing the image.
+        debug (bool): Enable debug mode.
+        weights_path (Optional[str]): Path to the weights file (required for 'apd_dl' method).
 
-    os.system(f"rm -rf {output_dir}/*")
-    # 1.0 load image
+    Returns:
+        np.ndarray: Coordinates of the detected pith point.
+    """
+    start_time = time.time()
+    output_dir_path = Path(output_dir)
+    output_dir_path.mkdir(exist_ok=True, parents=True)
+
+    # Clear output directory
+    clear_output_dir(output_dir_path)
+
+    # Load image
     img_in = cv2.imread(filename)
-    o_height, o_width = img_in.shape[:2]
-    # 1.1 resize image
+    if img_in is None:
+        raise FileNotFoundError(f"Image file '{filename}' not found.")
+
+    original_height, original_width = img_in.shape[:2]
+
+    # Resize image if needed
     if new_shape > 0:
         img_in = resize_image_using_pil_lib(
             img_in, height_output=new_shape, width_output=new_shape
         )
 
     if debug:
-        cv2.imwrite(
-            str(output_dir / "resized.png"),
-            resize_image_using_pil_lib(img_in, 640, 640),
-        )
+        resized_debug_image = resize_image_using_pil_lib(img_in, 640, 640)
+        cv2.imwrite(str(output_dir_path / "resized.png"), resized_debug_image)
 
+    # Run detection method
     if method == Method.apd:
-        print("apd")
+        print("Using method: apd")
         peak = apd(
             img_in,
             st_sigma,
@@ -57,12 +97,12 @@ def main(
             rf=7,
             percent_lo=percent_lo,
             max_iter=11,
-            epsilon=10**-3,
+            epsilon=1e-3,
             debug=debug,
-            output_dir=output_dir,
+            output_dir=output_dir_path,
         )
     elif method == Method.apd_pcl:
-        print("apd_pcl")
+        print("Using method: apd_pcl")
         peak = apd_pcl(
             img_in,
             st_sigma,
@@ -71,92 +111,103 @@ def main(
             rf=7,
             percent_lo=percent_lo,
             max_iter=11,
-            epsilon=10**-3,
+            epsilon=1e-3,
             debug=debug,
-            output_dir=output_dir,
+            output_dir=output_dir_path,
         )
-
     elif method == Method.apd_dl:
-        print("apd_dl")
-        peak = apd_dl(img_in, output_dir, weigths_path)
-
+        print("Using method: apd_dl")
+        if weights_path is None:
+            raise ValueError("weights_path must be provided for method 'apd_dl'")
+        peak = apd_dl(img_in, output_dir_path, weights_path)
     else:
-        raise ValueError(f"method {method} not found")
+        raise ValueError(f"Method '{method}' not recognized.")
 
     if debug:
-        img = img_in.copy()
-        H, W, _ = img.shape
-        dot_size = H // 200
+        img_debug = img_in.copy()
+        height, width = img_debug.shape[:2]
+        dot_size = max(height // 200, 1)
         x, y = peak
-        img = cv2.circle(
-            img,
-            (np.round(x).astype(int), np.round(y).astype(int)),
+        cv2.circle(
+            img_debug,
+            (int(round(x)), int(round(y))),
             dot_size,
             Color.blue,
             -1,
         )
-        cv2.imwrite(
-            str(Path(output_dir) / "peak.png"),
-            resize_image_using_pil_lib(img, 640, 640),
-        )
+        img_debug_resized = resize_image_using_pil_lib(img_debug, 640, 640)
+        cv2.imwrite(str(output_dir_path / "peak.png"), img_debug_resized)
 
-    tf = time.time()
-    # 3.0 save results
-    new_shape_h, new_shape_w = img_in.shape[:2]
-    convert_original_scale = lambda peak: (
-        peak * np.array([o_width / new_shape_w, o_height / new_shape_h])
-    ).tolist()
+    # Convert peak coordinates to original scale
+    new_height, new_width = img_in.shape[:2]
+    if new_shape > 0:
+        scale_x = original_width / new_width
+        scale_y = original_height / new_height
+        peak = np.array(peak) * np.array([scale_x, scale_y])
 
-    peak = convert_original_scale(peak) if new_shape > 0 else peak
+    execution_time = time.time() - start_time
 
-    data = {"coarse": np.array(peak), "exec_time(s)": tf - to}
-
+    # Save results
+    data = {
+        "coarse_x": [peak[0]],
+        "coarse_y": [peak[1]],
+        "exec_time(s)": [execution_time],
+    }
     df = pd.DataFrame(data)
-    # print(df)
-    df.to_csv(str(output_dir / "pith.csv"), index=False)
+    df.to_csv(str(output_dir_path / "pith.csv"), index=False)
 
     return peak
 
 
-class Method:
-    apd = 0
-    apd_pcl = 1
-    apd_dl = 2
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Pith detector")
-    # input arguments parser.
-    parser.add_argument("--filename", type=str, required=True, help="input image")
     parser.add_argument(
-        "--output_dir", type=str, required=True, help="output directory"
+        "--filename", type=str, required=True, help="Input image file path"
+    )
+    parser.add_argument(
+        "--output_dir", type=str, required=True, help="Output directory"
     )
 
-    # method parameters
-    parser.add_argument("--new_shape", type=int, default=0, help="new shape")
-    ##add pclines parameter
+    # Method parameters
     parser.add_argument(
         "--method",
-        type=int,
-        default=False,
-        help="method: 0 for apd, 1 for apd_pcl, 2 for apd_dl",
+        type=str,
+        choices=["apd", "apd_pcl", "apd_dl"],
+        default="apd",
+        help="Method to use: 'apd', 'apd_pcl', or 'apd_dl'",
     )
     parser.add_argument(
-        "--weigths_path",
+        "--weights_path",
         type=str,
-        default="checkpoints/yolo/all_best_yolov8.pt",
-        help="weigths_path",
+        default=None,
+        help="Path to the weights file (required for method 'apd_dl')",
     )
-    parser.add_argument("--debug", type=bool, default=False, help="debug")
+    parser.add_argument(
+        "--percent_lo", type=float, default=0.7, help="percent_lo parameter"
+    )
+    parser.add_argument("--st_w", type=int, default=3, help="st_w parameter")
+    parser.add_argument("--lo_w", type=int, default=3, help="lo_w parameter")
+    parser.add_argument(
+        "--st_sigma", type=float, default=1.2, help="st_sigma parameter"
+    )
+    parser.add_argument(
+        "--new_shape", type=int, default=0, help="New shape for resizing image"
+    )
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
 
     args = parser.parse_args()
 
-    params = dict(
+    method = Method(args.method)
+
+    main(
         filename=args.filename,
         output_dir=args.output_dir,
+        method=method,
+        percent_lo=args.percent_lo,
+        st_w=args.st_w,
+        lo_w=args.lo_w,
+        st_sigma=args.st_sigma,
         new_shape=args.new_shape,
         debug=args.debug,
-        method=args.method,
-        weigths_path=args.weigths_path,
+        weights_path=args.weights_path,
     )
-    main(**params)
