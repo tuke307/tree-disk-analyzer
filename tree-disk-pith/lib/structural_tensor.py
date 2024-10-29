@@ -233,9 +233,9 @@ def compute_local_orientation(img, W=35, Sigma=1.2, C_threshold=0.75, debug=Fals
     return L, coherence
 
 
-def main(filename="./Input/F02c.png"):
+def main(filename="./input/F02c.png"):
 
-    output_folder = Path("./Output") / "StructuralTensor"
+    output_folder = Path("./output") / "StructuralTensor"
     output_folder.mkdir(exist_ok=True)
     import os
 
@@ -255,8 +255,8 @@ def main(filename="./Input/F02c.png"):
 
 
 if __name__ == "__main__":
-    filename = "./Input/D01-L1-BBF-4.jpg"
-    filename = "./Input/F02c.png"
-    # filename = "./Input/F02b.png"
+    filename = "./input/D01-L1-BBF-4.jpg"
+    filename = "./input/F02c.png"
+    # filename = "./input/F02b.png"
     filename = "/data/maestria/datasets/TreeTrace_Douglas_format/logs_zoom_in/images/segmented/A11b.png"
     main(filename)

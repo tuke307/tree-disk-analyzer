@@ -23,17 +23,17 @@ python fetch_pretrained_model.py
 ## Usage Examples
 ### Using the Default Method (apd)
 ```bash
-python main.py --filename ./Input/F02c.png --output_dir Output/ --new_shape 640 --debug
+python main.py --filename ./input/F02c.png --output_dir output/ --new_shape 640 --debug
 ```
 
 ### Using the apd_pcl Method (with PCLines Postprocessing)
 ```bash
-python main.py --filename ./Input/F02b.png --output_dir Output/ --new_shape 640 --debug --method apd_pcl
+python main.py --filename ./input/F02b.png --output_dir output/ --new_shape 640 --debug --method apd_pcl
 ```
 
 ### Using the apd_dl Method (Deep Learning-Based)
 ```bash
-python main.py --filename ./Input/F02c.png --output_dir Output/ --new_shape 640 --debug --method apd_dl --weights_path checkpoints/yolo/all_best_yolov8.pt
+python main.py --filename ./input/F02c.png --output_dir output/ --new_shape 640 --debug --method apd_dl --weights_path checkpoints/yolo/all_best_yolov8.pt
 ```
 
 Note: Replace checkpoints/yolo/all_best_yolov8.pt with the actual path to your weights file if different.

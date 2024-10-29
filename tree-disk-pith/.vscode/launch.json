@@ -11,17 +11,16 @@
             "program": "${workspaceFolder}/main.py",
             "args": [
                 "--filename",
-                "./Input/F02c.png",
+                "./input/F02c.png",
                 "--output_dir",
-                "Output/",
+                "output/",
                 "--new_shape",
                 "640",
                 "--method",
-                "0",
+                "apd_dl",
                 "--weigths_path",
                 "checkpoints/yolo/all_best_yolov8.pt",
-                "--debug",
-                "0"
+                "--debug"
             ],
             "console": "integratedTerminal"
         }
