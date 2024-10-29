@@ -3,7 +3,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Tuple
-
+import logging
 import cv2
 import numpy as np
 import torch
@@ -12,6 +12,9 @@ from PIL import Image
 from torchvision import transforms
 
 from lib.u2net import U2NET
+
+
+logger = logging.getLogger(__name__)
 
 
 def load_model(model_path: str = "u2net.pth") -> torch.nn.Module:
@@ -191,7 +194,7 @@ def main(
         os.makedirs(output_dir)
 
     remove_salient_object(input_image_path, output_image_path, model_path)
-    print(f"Salient object removed. Output saved to '{output_image_path}'.")
+    logger.info(f"Salient object removed. Output saved to '{output_image_path}'.")
 
 
 if __name__ == "__main__":
@@ -219,5 +222,5 @@ if __name__ == "__main__":
     try:
         main(args.input, args.output, args.model)
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error: {e}")
         sys.exit(1)
