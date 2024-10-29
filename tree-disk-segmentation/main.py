@@ -1,81 +1,163 @@
-import torch
-import torch.nn.functional as F
+import argparse
+import os
+import sys
+from pathlib import Path
+from typing import Tuple
+
 import cv2
 import numpy as np
-from torchvision import transforms
+import torch
+import torch.nn.functional as F
 from PIL import Image
+from torchvision import transforms
 
 from lib.u2net import U2NET
 
 
-# Función para cargar el modelo preentrenado
-def load_model(model_path="u2net.pth"):
+def load_model(model_path: str = "u2net.pth") -> torch.nn.Module:
+    """
+    Load the pre-trained U2NET model.
+
+    Args:
+        model_path (str): Path to the pre-trained model weights.
+
+    Returns:
+        torch.nn.Module: The loaded U2NET model in evaluation mode.
+    """
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model weights file '{model_path}' not found.")
+
     model = U2NET()
-    model.load_state_dict(
-        torch.load(model_path, map_location=torch.device("cpu"), weights_only=True)
+    state_dict = torch.load(
+        model_path, map_location=torch.device("cpu"), weights_only=True
     )
+    model.load_state_dict(state_dict)
     model.eval()
     return model
 
 
-# Preprocesamiento de la imagen de entrada (sin cambiar resolución)
-def preprocess_image(image_path):
+def preprocess_image(
+    image_path: str,
+) -> Tuple[torch.Tensor, Tuple[int, int], Image.Image]:
+    """
+    Preprocess the input image without changing its resolution.
+
+    Args:
+        image_path (str): Path to the input image.
+
+    Returns:
+        Tuple[torch.Tensor, Tuple[int, int], Image.Image]:
+            - The preprocessed image tensor ready for the model.
+            - The original image size (width, height).
+            - The original image as a PIL Image.
+    """
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Input image file '{image_path}' not found.")
+
     image = Image.open(image_path).convert("RGB")
-    original_size = image.size  # Guardar el tamaño original
+    original_size = image.size  # (width, height)
     transform = transforms.Compose(
         [
-            transforms.Resize((320, 320)),  # Mantener 320x320 solo para el modelo
+            transforms.Resize((320, 320)),  # Keep 320x320 for the model
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ]
     )
-    image_resized = transform(image).unsqueeze(0)  # Añadir batch
-    return (
-        image_resized,
-        original_size,
-        image,
-    )  # Retorna también la imagen original para usarla luego
+    image_resized = transform(image).unsqueeze(0)  # Add batch dimension
+    return image_resized, original_size, image
 
 
-# Función para procesar la imagen con el modelo U2-Net
-def salient_object_detection(model, image_tensor):
+def salient_object_detection(
+    model: torch.nn.Module, image_tensor: torch.Tensor
+) -> np.ndarray:
+    """
+    Process the image tensor with the U2NET model to get the saliency map.
+
+    Args:
+        model (torch.nn.Module): The pre-trained U2NET model.
+        image_tensor (torch.Tensor): The preprocessed image tensor.
+
+    Returns:
+        np.ndarray: The predicted saliency map as a numpy array.
+    """
     with torch.no_grad():
         d1, _, _, _, _, _, _ = model(image_tensor)
         pred = d1[:, 0, :, :]
+        # Upsample the prediction to 320x320 if necessary
         pred = F.interpolate(
             pred.unsqueeze(0), size=(320, 320), mode="bilinear", align_corners=False
         )
         pred = pred.squeeze().cpu().numpy()
-        pred = (pred - np.min(pred)) / (np.max(pred) - np.min(pred))  # Normalización
+        pred = (pred - np.min(pred)) / (np.max(pred) - np.min(pred))  # Normalize
     return pred
 
 
-# Postprocesamiento: Redimensionar la máscara a la resolución original
-def apply_mask(image, mask, original_size):
-    mask = cv2.resize(
-        mask, original_size
-    )  # Ajustar la máscara a la resolución original
-    mask = np.expand_dims(mask, axis=2)
-    image = np.array(image) * mask  # Aplicar la máscara a la imagen original
-    # change background to white
-    # convert mask to gray scale
-    mask = (mask * 255).astype(np.uint8)
-    y, x, _ = np.where(mask == 0)
-    image[y, x] = 255
-    return image, mask
+def apply_mask(
+    image: Image.Image, mask: np.ndarray, original_size: Tuple[int, int]
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Resize the mask to the original image size and apply it to the image.
+
+    Args:
+        image (Image.Image): The original image.
+        mask (np.ndarray): The saliency mask.
+        original_size (Tuple[int, int]): The original image size (width, height).
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]:
+            - The result image with the mask applied.
+            - The mask resized to the original image dimensions.
+    """
+    # Resize the mask to the original image size
+    mask_resized = cv2.resize(mask, original_size)
+    mask_resized = np.expand_dims(mask_resized, axis=2)  # Shape (height, width, 1)
+
+    # Convert image to numpy array
+    image_np = np.array(image)  # Shape (height, width, 3)
+
+    # Apply the mask
+    image_np = (image_np * mask_resized).astype(np.uint8)
+
+    # Change background to white
+    # Convert mask to 0-255 uint8
+    mask_uint8 = (mask_resized * 255).astype(np.uint8)
+
+    # Create a boolean mask where mask is zero
+    background_mask = mask_uint8.squeeze() == 0  # Shape (height, width)
+    image_np[background_mask] = 255
+
+    return image_np, mask_uint8
 
 
-# Guardar la imagen final sin el objeto saliente
-def save_image(output_path, result_image):
-    # conver to BGR
-    result_image = cv2.cvtColor(result_image, cv2.COLOR_RGB2BGR).astype(int)
-    cv2.imwrite(output_path, result_image)
+def save_image(output_path: str, result_image: np.ndarray) -> None:
+    """
+    Save the final image after removing the salient object.
+
+    Args:
+        output_path (str): Path to save the output image.
+        result_image (np.ndarray): The result image with the background set to white.
+    """
+    # Convert to BGR if needed
+    result_image_bgr = cv2.cvtColor(result_image, cv2.COLOR_RGB2BGR)
+    cv2.imwrite(output_path, result_image_bgr)
 
 
-# Pipeline para eliminar el objeto saliente manteniendo la resolución original
 def remove_salient_object(
-    image_path, output_path, model_path="./models/segmentation/u2net.pth"
-):
+    image_path: str,
+    output_path: str,
+    model_path: str = "./models/segmentation/u2net.pth",
+) -> np.ndarray:
+    """
+    Pipeline to remove the salient object while maintaining the original resolution.
+
+    Args:
+        image_path (str): Path to the input image.
+        output_path (str): Path to save the output image.
+        model_path (str): Path to the pre-trained model weights.
+
+    Returns:
+        np.ndarray: The mask resized to the original image dimensions.
+    """
     model = load_model(model_path)
     image_tensor, original_size, original_image = preprocess_image(image_path)
     mask = salient_object_detection(model, image_tensor)
@@ -84,27 +166,58 @@ def remove_salient_object(
     return mask_original_dim
 
 
-if __name__ == "__main__":
-    import argparse
+def main(
+    input_image_path: str,
+    output_image_path: str,
+    model_path: str = "./models/segmentation/u2net.pth",
+) -> None:
+    """
+    Main function to remove the salient object from an image.
 
+    Args:
+        input_image_path (str): Path to the input image.
+        output_image_path (str): Path to save the output image.
+        model_path (str): Path to the pre-trained model weights.
+    """
+    if not os.path.exists(input_image_path):
+        raise FileNotFoundError(f"Input image file '{input_image_path}' not found.")
+
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model weights file '{model_path}' not found.")
+
+    # Ensure output directory exists
+    output_dir = os.path.dirname(output_image_path)
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    remove_salient_object(input_image_path, output_image_path, model_path)
+    print(f"Salient object removed. Output saved to '{output_image_path}'.")
+
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Remove salient object from image")
     parser.add_argument(
         "--input",
         type=str,
-        default="./input/baumscheibe.jpg",
-        required=False,
-        help="Path to input image",
+        required=True,
+        help="Path to the input image",
     )
     parser.add_argument(
         "--output",
         type=str,
-        default="./output/output.jpg",
-        required=False,
-        help="Path to save output image",
+        required=True,
+        help="Path to save the output image",
     )
     parser.add_argument(
-        "--model", type=str, default="./input/u2net.pth", help="Path to model weights"
+        "--model",
+        type=str,
+        default="./models/segmentation/u2net.pth",
+        help="Path to the model weights",
     )
     args = parser.parse_args()
 
-    remove_salient_object(args.input, args.output, args.model)
+    try:
+        main(args.input, args.output, args.model)
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
