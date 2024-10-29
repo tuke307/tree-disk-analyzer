@@ -73,7 +73,7 @@ def tree_ring_detection(
             - l_ch_s (List[Any]): Sampled Devernay curves as Chain objects.
             - l_ch_c (List[Any]): Chain lists after connect stage.
             - l_ch_p (List[Any]): Chain lists after postprocessing stage.
-            - l_rings (Any): Final results (JSON file with rings coordinates).
+            - labelme_json (Any): Final results (JSON file with rings coordinates).
     """
     start_time = time.time()
 
@@ -99,7 +99,7 @@ def tree_ring_detection(
 
     # Line 7: Generate final results.
     debug_execution_time = time.time() - start_time
-    l_rings = chain_2_labelme_json(
+    labelme_json = chain_2_labelme_json(
         l_ch_p,
         height,
         width,
@@ -110,7 +110,7 @@ def tree_ring_detection(
         debug_execution_time,
     )
 
-    return im_in, im_pre, m_ch_e, l_ch_f, l_ch_s, l_ch_c, l_ch_p, l_rings
+    return im_in, im_pre, m_ch_e, l_ch_f, l_ch_s, l_ch_c, l_ch_p, labelme_json
 
 
 def main(
