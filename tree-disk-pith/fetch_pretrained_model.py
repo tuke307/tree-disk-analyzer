@@ -1,7 +1,7 @@
 import urllib.request, os
 
 URLS = {
-    "https://github.com/hmarichal93/apd/releases/download/v1.0_icpr_2024_submission/all_best_yolov8.pt": "checkpoints/yolo/all_best_yolov8.pt",
+    "https://github.com/hmarichal93/apd/releases/download/v1.0_icpr_2024_submission/all_best_yolov8.pt": "models/all_best_yolov8.pt",
 }
 
 for url, destination in URLS.items():

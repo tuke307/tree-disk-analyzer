@@ -19,7 +19,7 @@
                 "--method",
                 "apd_dl",
                 "--weigths_path",
-                "checkpoints/yolo/all_best_yolov8.pt",
+                "./models/all_best_yolov8.pt",
                 "--debug"
             ],
             "console": "integratedTerminal"

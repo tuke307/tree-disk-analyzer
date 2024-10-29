@@ -33,10 +33,10 @@ python main.py --filename ./input/F02b.png --output_dir output/ --new_shape 640 
 
 ### Using the apd_dl Method (Deep Learning-Based)
 ```bash
-python main.py --filename ./input/F02c.png --output_dir output/ --new_shape 640 --debug --method apd_dl --weights_path checkpoints/yolo/all_best_yolov8.pt
+python main.py --filename ./input/F02c.png --output_dir output/ --new_shape 640 --debug --method apd_dl --weights_path ./models/all_best_yolov8.pt
 ```
 
-Note: Replace checkpoints/yolo/all_best_yolov8.pt with the actual path to your weights file if different.
+Note: Replace models/all_best_yolov8.pt with the actual path to your weights file if different.
 
 ## Command-Line Arguments
 
