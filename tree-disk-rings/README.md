@@ -40,7 +40,7 @@ python main.py --input input/F02c.png --cx 1204 --cy 1264 \
 * `--input` (str, required): Path to input image.
 * `--cx` (int, required): Pith x-coordinate.
 * `--cy` (int, required): Pith y-coordinate.
-* `* `--output_dir` (str, required): Output directory path.
+* `--output_dir` (str, required): Output directory path.
 * `--root` (str, optional): Root directory of the repository.
 * `--sigma` (float, optional): Gaussian kernel parameter for edge detection. Default is 3.0.
 * `--th_low` (float, optional): Low threshold for gradient magnitude. Default is 5.0.
