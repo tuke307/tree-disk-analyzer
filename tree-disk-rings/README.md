@@ -84,6 +84,13 @@ Detecting pith center automatically can be done using software from IPOL paper "
 
 [link_ipol_pith_paper]: https://www.ipol.im/pub/art/2022/338/?utm_source=doi
 
+## Segmentation with U-Net
+Salient object segmentation is done using U-Net. The model should be downloaded to the input folder.
+
+```bash
+python salient_object_segmentation.py --input IMAGE_PATH --output OUTPUT_PATH --model ./input/u2net.pth
+```
+
 ## Docker Container
 You can run the algorithm in a docker container.
 
