@@ -12,7 +12,7 @@ import argparse
 import time
 from pathlib import Path
 from typing import Any, List, Optional, Tuple
-
+import logging
 import numpy as np
 
 from lib.io import load_image
@@ -23,6 +23,8 @@ from lib.sampling import sampling_edges
 from lib.connect_chains import connect_chains
 from lib.postprocessing import postprocessing
 from lib.utils import chain_2_labelme_json, save_config, saving_results
+
+logger = logging.getLogger(__name__)
 
 
 def tree_ring_detection(
@@ -167,10 +169,10 @@ def main(
         "root_dir": root_dir,
     }
 
-    print("\nConfiguration:")
+    logger.info("\nConfiguration:")
     for key, value in config.items():
-        print(f"{key}: {value}")
-    print()
+        logger.info(f"{key}: {value}")
+    logger.info()
 
     save_config(config, root_dir, output_dir)
 
