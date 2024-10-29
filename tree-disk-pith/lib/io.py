@@ -5,6 +5,9 @@ import cv2
 import shutil
 from typing import Union, Dict
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def load_image(image_name: str) -> np.ndarray:
@@ -108,4 +111,4 @@ def clear_dir(directory: Path) -> None:
             elif item.is_dir():
                 shutil.rmtree(item)
         except Exception as e:
-            print(f"Error deleting {item}: {e}")
+            logger.error(f"Error deleting {item}: {e}")

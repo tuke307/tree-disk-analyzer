@@ -3,7 +3,7 @@ import time
 from enum import Enum
 from pathlib import Path
 from typing import Optional
-
+import logging
 import cv2
 import numpy as np
 import pandas as pd
@@ -11,6 +11,8 @@ import pandas as pd
 from lib.image import resize_image_using_pil_lib, Color
 from lib.pith_detector import apd, apd_pcl, apd_dl
 from lib.io import clear_dir
+
+logger = logging.getLogger(__name__)
 
 
 class Method(Enum):
@@ -74,7 +76,7 @@ def main(
 
     # Run detection method
     if method == Method.apd:
-        print("Using method: apd")
+        logger.info("Using method: apd")
         peak = apd(
             img_in,
             st_sigma,
@@ -88,7 +90,7 @@ def main(
             output_dir=output_dir_path,
         )
     elif method == Method.apd_pcl:
-        print("Using method: apd_pcl")
+        logger.info("Using method: apd_pcl")
         peak = apd_pcl(
             img_in,
             st_sigma,
@@ -102,7 +104,7 @@ def main(
             output_dir=output_dir_path,
         )
     elif method == Method.apd_dl:
-        print("Using method: apd_dl")
+        logger.info("Using method: apd_dl")
         if weights_path is None:
             raise ValueError("weights_path must be provided for method 'apd_dl'")
         peak = apd_dl(img_in, output_dir_path, weights_path)

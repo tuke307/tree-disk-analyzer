@@ -4,10 +4,13 @@ from ultralytics import YOLO
 import pandas as pd
 from pathlib import Path
 from typing import Optional, Tuple, Union
+import logging
 
 from lib.structural_tensor import StructuralTensor, sampling_structural_tensor
 from lib.optimization import Optimization, LeastSquaresSolution, filter_lo_around_c
 from lib.pclines_parallel_coordinates import pclines_local_orientation_filtering
+
+logger = logging.getLogger(__name__)
 
 
 def local_orientation(
@@ -305,7 +308,7 @@ def apd_dl(
     if weights_path is None:
         raise ValueError("weights_path is None")
 
-    print(f"weights_path {weights_path}")
+    logger.info(f"weights_path {weights_path}")
     model = YOLO(weights_path, task="detect")
     _ = model(img_in, project=output_dir, save=True, save_txt=True, imgsz=640)
     label_path = output_dir / "predict/labels/image0.txt"
