@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Copyright (c) 2023 Author(s) Henry Marichal (hmarichal93@gmail.com
 
@@ -20,34 +18,34 @@ import lib.chain as ch
 from lib.preprocessing import resize
 
 
-def save_config(args, root_path, output_dir):
+def save_config(args: dict, root_path: str, output_dir: str) -> int:
     config = load_config()
 
     config["result_path"] = output_dir
 
-    if args.nr:
-        config["nr"] = args.nr
+    if "nr" in args and args["nr"]:
+        config["nr"] = args["nr"]
 
-    if args.hsize and args.wsize:
-        if args.hsize > 0 and args.wsize > 0:
-            config["resize"] = [args.hsize, args.wsize]
+    if "height" in args and "width" in args:
+        if args["height"] > 0 and args["width"] > 0:
+            config["resize"] = [args["height"], args["width"]]
 
-    if args.min_chain_length:
-        config["min_chain_length"] = args.min_chain_length
+    if "min_chain_length" in args and args["min_chain_length"]:
+        config["min_chain_length"] = args["min_chain_length"]
 
-    if args.edge_th:
-        config["edge_th"] = args.edge_th
+    if "alpha" in args and args["alpha"]:
+        config["edge_th"] = args["alpha"]
 
-    if args.sigma:
-        config["sigma"] = args.sigma
+    if "sigma" in args and args["sigma"]:
+        config["sigma"] = args["sigma"]
 
-    if args.th_high:
-        config["th_high"] = args.th_high
+    if "th_high" in args and args["th_high"]:
+        config["th_high"] = args["th_high"]
 
-    if args.th_low:
-        config["th_low"] = args.th_low
+    if "th_low" in args and args["th_low"]:
+        config["th_low"] = args["th_low"]
 
-    if args.debug:
+    if "debug" in args and args["debug"]:
         config["debug"] = True
 
     config["devernay_path"] = str(Path(root_path) / "externas/devernay_1.0")

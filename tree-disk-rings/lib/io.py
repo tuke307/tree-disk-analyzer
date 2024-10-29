@@ -14,13 +14,13 @@ from pathlib import Path
 import cv2
 
 
-def load_image(image_name):
+def load_image(image_name: str) -> cv2.typing.MatLike:
     img = cv2.imread(image_name)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img
 
 
-def load_config(default=True):
+def load_config(default=True) -> dict:
     dir_path = os.path.dirname(os.path.realpath(__file__))
     return (
         load_json(f"{dir_path}/../config/default.json")
@@ -49,22 +49,3 @@ def write_json(dict_to_save: dict, filepath: str) -> None:
     """
     with open(str(filepath), "w") as f:
         json.dump(dict_to_save, f)
-
-
-def get_path(*args):
-    """
-    Return the path of the requested dir/s
-    Possible arguments: "data", "bader_data", "training", "results"
-    :return: Path/s
-    """
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    paths = load_json(f"{dir_path}/../paths_config.json")
-    hostname = "henry-workstation"
-    assert hostname in paths.keys(), "Current host: {}, Possible hosts: {}".format(
-        hostname, paths.keys()
-    )
-    assert all(
-        [arg in paths[hostname].keys() for arg in args]
-    ), "Args must be in {}".format(paths[hostname].keys())
-    paths = tuple([Path(paths[hostname][arg]) for arg in args])
-    return paths[0] if len(paths) == 1 else paths
