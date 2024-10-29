@@ -1,10 +1,4 @@
-import warnings
-
-warnings.filterwarnings("ignore")
-
 import argparse
-import os
-import shutil
 import time
 from enum import Enum
 from pathlib import Path
@@ -15,22 +9,14 @@ import numpy as np
 import pandas as pd
 
 from lib.image import resize_image_using_pil_lib, Color
-from lib.automatic_wood_pith_detector import apd, apd_pcl, apd_dl
+from lib.pith_detector import apd, apd_pcl, apd_dl
+from lib.io import clear_dir
 
 
 class Method(Enum):
     apd = "apd"
     apd_pcl = "apd_pcl"
     apd_dl = "apd_dl"
-
-
-def clear_output_dir(output_dir: Path) -> None:
-    """Clears all files and subdirectories in the output directory."""
-    for item in output_dir.iterdir():
-        if item.is_file():
-            item.unlink()
-        elif item.is_dir():
-            shutil.rmtree(item)
 
 
 def main(
@@ -67,7 +53,7 @@ def main(
     output_dir_path.mkdir(exist_ok=True, parents=True)
 
     # Clear output directory
-    clear_output_dir(output_dir_path)
+    clear_dir(output_dir_path)
 
     # Load image
     img_in = cv2.imread(filename)
