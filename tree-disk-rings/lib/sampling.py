@@ -93,7 +93,7 @@ def build_rays(Nr, M, N, center):
 def get_coordinates_from_intersection(inter):
     """Shapely intersection formating"""
     if "MULTI" in inter.wkt:
-        inter = inter[0]
+        inter = inter.geoms[0]
 
     if type(inter) == Point:
         y, x = inter.xy
