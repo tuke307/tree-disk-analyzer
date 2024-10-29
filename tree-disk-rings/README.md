@@ -20,13 +20,13 @@ python main.py --input IMAGE_PATH --cx CX --cy CY --output_dir OUTPUT_DIR
 
 Example:
 ```bash
-python main.py --input input/F02c.png --cx 1204 --cy 1264 --output_dir output/
+python main.py --input input/tree-disk4.png --cx 1204 --cy 1264 --output_dir output/
 ```
 
 ### Saving Intermediate Results
 If you want to save intermediate results, you can use the --save_imgs flag:
 ```bash
-python main.py --input input/F02c.png --cx 1204 --cy 1264 --output_dir output/ --save_imgs
+python main.py --input input/tree-disk4.png --cx 1204 --cy 1264 --output_dir output/ --save_imgs
 ```
 
 ### Using Advanced Parameters
