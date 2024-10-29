@@ -15,7 +15,7 @@ from typing import Any, List, Optional, Tuple
 import logging
 import numpy as np
 
-from lib.io import load_image
+from lib.io import load_image, clear_dir
 from lib.preprocessing import preprocessing
 from lib.canny_devernay_edge_detector import canny_deverney_edge_detector
 from lib.filter_edges import filter_edges
@@ -79,18 +79,24 @@ def tree_ring_detection(
 
     # Line 1: Preprocess the image.
     im_pre, cy, cx = preprocessing(im_in, height, width, cy, cx)
+
     # Line 2: Edge detection using Canny-Devernay algorithm.
     m_ch_e, gx, gy = canny_deverney_edge_detector(im_pre, sigma, th_low, th_high)
+
     # Line 3: Edge filtering.
     l_ch_f = filter_edges(m_ch_e, cy, cx, gx, gy, alpha, im_pre)
+
     # Line 4: Sampling edges.
     l_ch_s, l_nodes_s = sampling_edges(l_ch_f, cy, cx, im_pre, mc, nr, debug=debug)
+
     # Line 5: Connect chains.
     l_ch_c, l_nodes_c = connect_chains(
         l_ch_s, cy, cx, nr, debug, im_pre, debug_output_dir
     )
+
     # Line 6: Postprocess chains.
     l_ch_p = postprocessing(l_ch_c, l_nodes_c, debug, debug_output_dir, im_pre)
+
     # Line 7: Generate final results.
     debug_execution_time = time.time() - start_time
     l_rings = chain_2_labelme_json(
@@ -122,7 +128,7 @@ def main(
     mc: int = 2,
     debug: bool = False,
     save_imgs: bool = False,
-    root_dir: Optional[str] = None,
+    root_dir: Optional[str] = "./",
 ) -> int:
     """
     Main function to run tree ring detection.
@@ -147,9 +153,6 @@ def main(
     Returns:
         int: Exit code.
     """
-    if root_dir is None:
-        root_dir = str(Path(__file__).parent)
-
     # Save configuration
     config = {
         "input_image_path": input_image_path,
@@ -172,7 +175,6 @@ def main(
     logger.info("\nConfiguration:")
     for key, value in config.items():
         logger.info(f"{key}: {value}")
-    logger.info()
 
     save_config(config, root_dir, output_dir)
 
@@ -183,7 +185,9 @@ def main(
             f"Input image '{input_image_path}' not found or could not be loaded."
         )
 
-    Path(output_dir).mkdir(exist_ok=True, parents=True)
+    output_dir = Path(output_dir)
+    output_dir.mkdir(exist_ok=True, parents=True)
+    clear_dir(output_dir)
 
     # Run tree ring detection
     res = tree_ring_detection(
@@ -218,7 +222,7 @@ if __name__ == "__main__":
         "--output_dir", type=str, required=True, help="Output directory"
     )
     parser.add_argument(
-        "--root", type=str, default=None, help="Root directory of the repository"
+        "--root", type=str, default="./", help="Root directory of the repository"
     )
 
     parser.add_argument(
