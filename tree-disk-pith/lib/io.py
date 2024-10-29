@@ -39,22 +39,3 @@ def write_json(dict_to_save: dict, filepath: str) -> None:
     """
     with open(str(filepath), "w") as f:
         json.dump(dict_to_save, f)
-
-
-def get_path(*args):
-    """
-    Return the path of the requested dir/s
-    Possible arguments: "data", "bader_data", "training", "results"
-    :return: Path/s
-    """
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    paths = load_json(f"{dir_path}/../config/paths_config.json")
-    hostname = os.uname()[1]
-    hostname = "cluster" if "cluster" in hostname else hostname
-    assert hostname in paths.keys(), "Current host: {}, Possible hosts: {}".format(
-        hostname, paths.keys()
-    )
-    assert all(
-        [arg in paths[hostname].keys() for arg in args]
-    ), "Args must be in {}".format(paths[hostname].keys())
-    return paths[hostname][args[0]]
