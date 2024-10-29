@@ -11,17 +11,29 @@
             "program": "${workspaceFolder}/main.py",
             "args": [
                 "--input",
-                "./input/F02c.png",
-                "--cy",
-                "1264",
+                "./input/tree-disk4.png",
                 "--cx",
                 "1204",
+                "--cy",
+                "1264",
                 "--output_dir",
                 "./output",
                 "--root",
                 "./",
+                "--sigma",
+                "3",
+                "--nr",
+                "360",
+                "--th_high",
+                "20",
+                "--th_low",
+                "5",
+                "--min_chain_length",
+                "2",
+                "--alpha",
+                "30",
                 "--save_imgs",
-                "1"
+                //"--debug"
             ],
             "console": "integratedTerminal"
         }
