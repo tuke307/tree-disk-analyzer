@@ -3,7 +3,7 @@ from PIL import Image
 import cv2
 from typing import Tuple, Optional, List
 
-from lib.geometry import Line
+from src.geometry import Line
 
 
 def compute_intersection_with_block_boundaries(

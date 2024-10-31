@@ -8,9 +8,9 @@ import cv2
 import numpy as np
 import pandas as pd
 
-from lib.image import resize_image_using_pil_lib, Color
-from lib.pith_detector import apd, apd_pcl, apd_dl
-from lib.io import clear_dir
+from src.image import resize_image_using_pil_lib, Color
+from src.pith_detector import apd, apd_pcl, apd_dl
+from src.io import clear_dir
 
 logger = logging.getLogger(__name__)
 

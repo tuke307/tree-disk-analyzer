@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from typing import Tuple, Optional, List
 
-from lib.image import Drawing
+from src.image import Drawing
 
 
 def pclines_straight_all(

@@ -6,9 +6,9 @@ from pathlib import Path
 from typing import Optional, Tuple, Union
 import logging
 
-from lib.structural_tensor import StructuralTensor, sampling_structural_tensor
-from lib.optimization import Optimization, LeastSquaresSolution, filter_lo_around_c
-from lib.pclines_parallel_coordinates import pclines_local_orientation_filtering
+from src.structural_tensor import StructuralTensor, sampling_structural_tensor
+from src.optimization import Optimization, LeastSquaresSolution, filter_lo_around_c
+from src.pclines_parallel_coordinates import pclines_local_orientation_filtering
 
 logger = logging.getLogger(__name__)
 

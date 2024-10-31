@@ -3,7 +3,7 @@ import cv2
 from scipy.optimize import minimize
 from typing import Optional, Tuple, Any
 
-from lib.image import Drawing, Color, resize_image_using_pil_lib
+from src.image import Drawing, Color, resize_image_using_pil_lib
 
 
 class Optimization:
