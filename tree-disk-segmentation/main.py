@@ -4,12 +4,14 @@ from typing import Tuple
 import logging
 import cv2
 import numpy as np
+from pathlib import Path
 import torch
 import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
 
 from src.u2net import U2NET
+from src.utils.file_utils import clear_dir, save_image
 
 
 logger = logging.getLogger(__name__)
@@ -35,6 +37,7 @@ def load_model(model_path: str) -> torch.nn.Module:
     )
     model.load_state_dict(state_dict)
     model.eval()
+
     return model
 
 
@@ -131,22 +134,6 @@ def apply_mask(
     return image_np, mask_uint8
 
 
-def save_image(output_path: str, result_image: np.ndarray) -> None:
-    """
-    Save the final image after removing the salient object.
-
-    Args:
-        output_path (str): Path to save the output image.
-        result_image (np.ndarray): The result image with the background set to white.
-
-    Returns:
-        None
-    """
-    # Convert to BGR if needed
-    result_image_bgr = cv2.cvtColor(result_image, cv2.COLOR_RGB2BGR)
-    cv2.imwrite(output_path, result_image_bgr)
-
-
 def remove_salient_object(
     image_path: str,
     output_path: str,
@@ -167,7 +154,8 @@ def remove_salient_object(
     image_tensor, original_size, original_image = preprocess_image(image_path)
     mask = salient_object_detection(model, image_tensor)
     result_image, mask_original_dim = apply_mask(original_image, mask, original_size)
-    save_image(output_path, result_image)
+    save_image(f"{output_path}/output.jpg", result_image)
+
     return mask_original_dim
 
 
@@ -193,10 +181,8 @@ def main(
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model weights file '{model_path}' not found.")
 
-    # Ensure output directory exists
-    output_dir = os.path.dirname(output_image_path)
-    if output_dir and not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    Path(output_image_path).mkdir(exist_ok=True, parents=True)
+    clear_dir(output_image_path)
 
     remove_salient_object(input_image_path, output_image_path, model_path)
     logger.info(f"Salient object removed. Output saved to '{output_image_path}'.")
