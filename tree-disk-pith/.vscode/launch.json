@@ -5,13 +5,53 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: main.py",
+            "name": "tree-disk1",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/main.py",
             "args": [
                 "--filename",
-                "./input/F02c.png",
+                "./input/tree-disk1.png",
+                "--output_dir",
+                "output/",
+                "--new_shape",
+                "640",
+                "--method",
+                "apd_dl",
+                "--weigths_path",
+                "./models/all_best_yolov8.pt",
+                "--debug"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "tree-disk2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": [
+                "--filename",
+                "./input/tree-disk2.png",
+                "--output_dir",
+                "output/",
+                "--new_shape",
+                "640",
+                "--method",
+                "apd_dl",
+                "--weigths_path",
+                "./models/all_best_yolov8.pt",
+                "--debug"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "tree-disk3",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": [
+                "--filename",
+                "./input/tree-disk3.png",
                 "--output_dir",
                 "output/",
                 "--new_shape",
