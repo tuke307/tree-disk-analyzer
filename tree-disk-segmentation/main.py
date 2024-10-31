@@ -1,7 +1,5 @@
 import argparse
 import os
-import sys
-from pathlib import Path
 from typing import Tuple
 import logging
 import cv2
@@ -11,13 +9,14 @@ import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
 
-from lib.u2net import U2NET
+from src.u2net import U2NET
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
-def load_model(model_path: str = "u2net.pth") -> torch.nn.Module:
+def load_model(model_path: str) -> torch.nn.Module:
     """
     Load the pre-trained U2NET model.
 
@@ -139,6 +138,9 @@ def save_image(output_path: str, result_image: np.ndarray) -> None:
     Args:
         output_path (str): Path to save the output image.
         result_image (np.ndarray): The result image with the background set to white.
+
+    Returns:
+        None
     """
     # Convert to BGR if needed
     result_image_bgr = cv2.cvtColor(result_image, cv2.COLOR_RGB2BGR)
@@ -148,7 +150,7 @@ def save_image(output_path: str, result_image: np.ndarray) -> None:
 def remove_salient_object(
     image_path: str,
     output_path: str,
-    model_path: str = "./models/segmentation/u2net.pth",
+    model_path: str,
 ) -> np.ndarray:
     """
     Pipeline to remove the salient object while maintaining the original resolution.
@@ -172,7 +174,7 @@ def remove_salient_object(
 def main(
     input_image_path: str,
     output_image_path: str,
-    model_path: str = "./models/segmentation/u2net.pth",
+    model_path: str,
 ) -> None:
     """
     Main function to remove the salient object from an image.
@@ -181,6 +183,9 @@ def main(
         input_image_path (str): Path to the input image.
         output_image_path (str): Path to save the output image.
         model_path (str): Path to the pre-trained model weights.
+
+    Returns:
+        None
     """
     if not os.path.exists(input_image_path):
         raise FileNotFoundError(f"Input image file '{input_image_path}' not found.")
@@ -219,8 +224,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    try:
-        main(args.input, args.output, args.model)
-    except Exception as e:
-        logger.error(f"Error: {e}")
-        sys.exit(1)
+    main(args.input, args.output, args.model)
