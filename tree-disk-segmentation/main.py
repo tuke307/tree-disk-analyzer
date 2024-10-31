@@ -219,7 +219,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model",
         type=str,
-        default="./models/segmentation/u2net.pth",
+        default="./models/u2net.pth",
         help="Path to the model weights",
     )
     args = parser.parse_args()
