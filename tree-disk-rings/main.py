@@ -1,28 +1,20 @@
-"""
-Tree Ring Detection Script
-
-This script implements a method for delineating tree rings over pine cross-section images.
-It is based on the algorithms described in the referenced paper.
-
-Author: Henry Marichal (hmarichal93@gmail.com)
-License: GNU Affero General Public License v3.0 or later
-"""
-
 import argparse
 import time
 from pathlib import Path
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, Dict
 import logging
 import numpy as np
 
-from lib.io import load_image, clear_dir
-from lib.preprocessing import preprocessing
-from lib.canny_devernay_edge_detector import canny_deverney_edge_detector
-from lib.filter_edges import filter_edges
-from lib.sampling import sampling_edges
-from lib.connect_chains import connect_chains
-from lib.postprocessing import postprocessing
-from lib.utils import chain_2_labelme_json, save_config, saving_results
+from src.geometry.curve import Curve
+from src.geometry.chain import Chain
+from src.utils.file_utils import load_image, clear_dir
+from src.processing.preprocessing import preprocessing
+from src.detection.canny_devernay_edge_detector import canny_deverney_edge_detector
+from src.detection.filter_edges import filter_edges
+from src.processing.sampling import sampling_edges
+from src.analysis.connect_chains import connect_chains
+from src.processing.postprocessing import postprocessing
+from src.utils.file_utils import chain_2_labelme_json, save_config, saving_results
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +35,14 @@ def tree_ring_detection(
     debug_image_input_path: str,
     debug_output_dir: str,
 ) -> Tuple[
-    np.ndarray, np.ndarray, Any, List[Any], List[Any], List[Any], List[Any], Any
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    List[Curve],
+    List[Chain],
+    List[Chain],
+    List[Chain],
+    Dict[str, Any],
 ]:
     """
     Delineate tree rings over pine cross-section images. Implements Algorithm 1 from the paper.
@@ -68,36 +67,38 @@ def tree_ring_detection(
         Tuple containing:
             - im_in (np.ndarray): Original input image.
             - im_pre (np.ndarray): Preprocessed image.
-            - m_ch_e (Any): Devernay curves in matrix format.
-            - l_ch_f (List[Any]): Filtered Devernay curves.
-            - l_ch_s (List[Any]): Sampled Devernay curves as Chain objects.
-            - l_ch_c (List[Any]): Chain lists after connect stage.
-            - l_ch_p (List[Any]): Chain lists after postprocessing stage.
-            - labelme_json (Any): Final results (JSON file with rings coordinates).
+            - m_ch_e (np.ndarray): Devernay curves in matrix format.
+            - l_ch_f (List[Curve]): Filtered Devernay curves.
+            - l_ch_s (List[Chain]): Sampled Devernay curves as Chain objects.
+            - l_ch_c (List[Chain]): Chain lists after connect stage.
+            - l_ch_p (List[Chain]): Chain lists after postprocessing stage.
+            - labelme_json (Dict[str, Any]): Final results (JSON file with rings coordinates).
     """
     start_time = time.time()
 
-    # Line 1: Preprocess the image.
+    # Preprocess the image.
     im_pre, cy, cx = preprocessing(im_in, height, width, cy, cx)
 
-    # Line 2: Edge detection using Canny-Devernay algorithm.
+    # Edge detection using Canny-Devernay algorithm.
     m_ch_e, gx, gy = canny_deverney_edge_detector(im_pre, sigma, th_low, th_high)
 
-    # Line 3: Edge filtering.
+    # Edge filtering.
     l_ch_f = filter_edges(m_ch_e, cy, cx, gx, gy, alpha, im_pre)
 
-    # Line 4: Sampling edges.
-    l_ch_s, l_nodes_s = sampling_edges(l_ch_f, cy, cx, im_pre, mc, nr, debug=debug)
+    # Sampling edges.
+    l_ch_s, l_nodes_s = sampling_edges(
+        l_ch_f, cy, cx, im_pre, mc, nr, debug, debug_output_dir
+    )
 
-    # Line 5: Connect chains.
+    # Connect chains.
     l_ch_c, l_nodes_c = connect_chains(
         l_ch_s, cy, cx, nr, debug, im_pre, debug_output_dir
     )
 
-    # Line 6: Postprocess chains.
+    # Postprocess chains.
     l_ch_p = postprocessing(l_ch_c, l_nodes_c, debug, debug_output_dir, im_pre)
 
-    # Line 7: Generate final results.
+    # Generate final results.
     debug_execution_time = time.time() - start_time
     labelme_json = chain_2_labelme_json(
         l_ch_p,
@@ -106,7 +107,7 @@ def tree_ring_detection(
         cy,
         cx,
         im_in,
-        debug_image_input_path,
+        f"../{debug_image_input_path}",
         debug_execution_time,
     )
 
@@ -172,6 +173,11 @@ def main(
         "root_dir": root_dir,
     }
 
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
     logger.info("\nConfiguration:")
     for key, value in config.items():
         logger.info(f"{key}: {value}")
@@ -185,8 +191,7 @@ def main(
             f"Input image '{input_image_path}' not found or could not be loaded."
         )
 
-    output_dir = Path(output_dir)
-    output_dir.mkdir(exist_ok=True, parents=True)
+    Path(output_dir).mkdir(exist_ok=True, parents=True)
     clear_dir(output_dir)
 
     # Run tree ring detection
