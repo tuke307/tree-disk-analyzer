@@ -52,3 +52,9 @@ python main.py --input input/F02c.png --cx 1204 --cy 1264 \
 * `--min_chain_length` (int, optional): Minimum chain length. Default is 2.
 * `--debug` (flag, optional): Enable debug mode.
 * `--save_imgs` (flag, optional): Save intermediate images.
+
+## Publishing Package
+```bash
+python setup.py sdist bdist_wheel
+twine upload dist/*
+```

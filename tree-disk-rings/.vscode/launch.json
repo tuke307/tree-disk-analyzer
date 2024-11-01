@@ -8,7 +8,8 @@
             "name": "tree-disk1",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "module": "src.cli",
+            "cwd": "${workspaceFolder}",
             "args": [
                 "--input",
                 "./input/tree-disk1.jpg",
@@ -41,7 +42,8 @@
             "name": "tree-disk2",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "module": "src.cli",
+            "cwd": "${workspaceFolder}",
             "args": [
                 "--input",
                 "./input/tree-disk2.jpg",
@@ -74,7 +76,8 @@
             "name": "tree-disk3",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "module": "src.cli",
+            "cwd": "${workspaceFolder}",
             "args": [
                 "--input",
                 "./input/tree-disk3.jpg",
@@ -107,7 +110,8 @@
             "name": "tree-disk4",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "module": "src.cli",
+            "cwd": "${workspaceFolder}",
             "args": [
                 "--input",
                 "./input/tree-disk4.png",
