@@ -4,15 +4,15 @@ import cv2
 import numpy as np
 from shapely.geometry import Point
 
-from .geometry.chain import (
+from ..geometry.chain import (
     Chain,
     Node,
     TypeChains,
 )
-from .visualization.drawing import Drawing
-from .geometry.ray import Ray
-from .geometry.curve import Curve
-from .geometry.geometry_utils import euclidean_distance, get_node_from_list_by_angle
+from ..visualization.drawing import Drawing
+from ..geometry.ray import Ray
+from ..geometry.curve import Curve
+from ..geometry.geometry_utils import euclidean_distance, get_node_from_list_by_angle
 
 
 def build_rays(nr: int, m: int, n: int, center: Tuple[float, float]) -> List[Ray]:
