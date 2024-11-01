@@ -1,6 +1,6 @@
 from typing import List
 
-from src.geometry.chain import Chain
+from ..geometry.chain import Chain
 
 
 class ChainsBag:

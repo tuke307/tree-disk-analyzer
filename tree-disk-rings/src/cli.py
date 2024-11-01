@@ -1,5 +1,5 @@
 import argparse
-from src.main import run_tree_ring_detection
+from .main import run_tree_ring_detection
 
 
 def parse_arguments() -> argparse.Namespace:

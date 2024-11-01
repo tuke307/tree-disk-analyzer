@@ -5,7 +5,7 @@ import numpy as np
 from typing import List
 
 
-from src.visualization.color import Color
+from ..visualization.color import Color
 
 
 class Drawing:
@@ -84,7 +84,7 @@ class Drawing:
         Returns:
             np.ndarray: The image with the marked intersection.
         """
-        from src.geometry.node import Node
+        from ..geometry.node import Node
 
         img[int(dot.y), int(dot.x), :] = color
 
@@ -109,7 +109,7 @@ class Drawing:
         Returns:
             np.ndarray: The image with the drawn curve.
         """
-        from src.geometry.curve import Curve
+        from ..geometry.curve import Curve
 
         y, x = curve.geometry.xy
         y = np.ndarray(y).astype(int)
@@ -139,7 +139,7 @@ class Drawing:
         Returns:
             np.ndarray: The image with the drawn chain.
         """
-        from src.geometry.chain import Chain
+        from ..geometry.chain import Chain
 
         y, x = chain.get_nodes_coordinates()
         pts = np.vstack((y, x)).T.astype(int)
@@ -167,7 +167,7 @@ class Drawing:
         Returns:
             np.ndarray: The image with the drawn radius.
         """
-        from src.geometry.ray import Ray
+        from ..geometry.ray import Ray
 
         y, x = ray.geometry.xy
         y = np.ndarray(y).astype(int)
@@ -192,7 +192,7 @@ class Drawing:
         Returns:
             np.ndarray: Image with curves drawn.
         """
-        from src.geometry.curve import Curve
+        from ..geometry.curve import Curve
 
         img_aux = np.full((img.shape[0], img.shape[1]), 255)
 

@@ -1,4 +1,4 @@
-from src.geometry.chain import Chain
+from ..geometry.chain import Chain
 
 
 class Set:

@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
-from src.utils.file_utils import load_image, clear_dir, save_config, saving_results
-from src.analyzer import tree_ring_detection
+from .utils.file_utils import load_image, clear_dir, save_config, saving_results
+from .analyzer import tree_ring_detection
 
 logger = logging.getLogger(__name__)
 

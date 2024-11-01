@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import pandas as pd
 
-from src.utils.file_utils import load_config
+from ..utils.file_utils import load_config
 
 
 def load_curves(output_txt: str) -> np.array:

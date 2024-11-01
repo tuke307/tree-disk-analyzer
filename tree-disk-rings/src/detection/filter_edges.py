@@ -3,8 +3,8 @@ from typing import List, Optional
 import cv2
 import numpy as np
 
-from src.visualization.drawing import Color
-from src.geometry.curve import Curve
+from ..visualization.color import Color
+from ..geometry.curve import Curve
 
 DELIMITE_CURVE_ROW = np.array([-1, -1])
 

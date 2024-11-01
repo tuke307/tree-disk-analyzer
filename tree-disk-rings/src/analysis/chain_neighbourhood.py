@@ -1,11 +1,10 @@
 import matplotlib.pyplot as plt
 
-from src.geometry.chain import Chain, EndPoints, ClockDirection
-from src.geometry.node import Node
-from src.analysis.interpolation_nodes import (
-    domain_interpolation,
-    euclidean_distance_between_nodes,
-)
+from ..geometry.chain import Chain, EndPoints, ClockDirection
+from ..geometry.node import Node
+from ..analysis.interpolation_nodes import domain_interpolation
+from ..geometry.geometry_utils import euclidean_distance_between_nodes
+
 from typing import List
 
 

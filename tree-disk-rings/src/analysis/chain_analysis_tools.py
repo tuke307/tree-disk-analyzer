@@ -3,15 +3,15 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.geometry.virtual_band_generator import VirtualBandGenerator
-from src.analysis.chain_neighbourhood import ChainNeighbourhood
-from src.geometry.node import Node
-from src.geometry.chain import Chain, EndPoints
-from src.geometry.geometry_utils import (
+from ..geometry.virtual_band_generator import VirtualBandGenerator
+from ..analysis.chain_neighbourhood import ChainNeighbourhood
+from ..geometry.node import Node
+from ..geometry.chain import Chain, EndPoints
+from ..geometry.geometry_utils import (
     get_node_from_list_by_angle,
     visualize_selected_ch_and_chains_over_image_,
 )
-from src.analysis.interpolation_nodes import (
+from ..analysis.interpolation_nodes import (
     domain_interpolation,
 )
 

@@ -1,7 +1,7 @@
 from typing import List
 
-from src.geometry.chain import Chain
-from src.geometry.node import Node
+from ..geometry.chain import Chain
+from ..geometry.node import Node
 
 
 class ConnectParameters:
@@ -39,7 +39,7 @@ class ConnectParameters:
         Returns:
             None
         """
-        from src.analysis.connect_chains import extract_border_chain_from_list
+        from ..analysis.connect_chains import extract_border_chain_from_list
 
         self.border_chain, self.ch_s_without_border, self.nodes_s_without_border = (
             extract_border_chain_from_list(ch_s, nodes_s)

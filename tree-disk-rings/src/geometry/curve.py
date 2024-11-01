@@ -2,7 +2,7 @@ from typing import List, Tuple
 import numpy as np
 import cv2
 from shapely.geometry import LineString
-from src.visualization.color import Color
+from ..visualization.color import Color
 
 
 class Curve:

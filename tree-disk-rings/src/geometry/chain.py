@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple, Any
 
 import numpy as np
 
-from src.geometry.node import Node
+from ..geometry.node import Node
 
 
 class TypeChains(Enum):
@@ -277,7 +277,7 @@ class Chain:
         Returns:
             Optional[Node]: The node with the specified angle, or None if not found.
         """
-        from src.geometry.geometry_utils import get_node_from_list_by_angle
+        from ..geometry.geometry_utils import get_node_from_list_by_angle
 
         return get_node_from_list_by_angle(self.l_nodes, angle)
 

@@ -2,11 +2,11 @@ from typing import List, Optional
 import numpy as np
 import cv2
 
-from src.geometry.node import Node
-from src.geometry.chain import Chain, EndPoints, TypeChains
-from src.geometry.geometry_utils import euclidean_distance_between_nodes
-from src.visualization.drawing import Color, Drawing
-from src.analysis.interpolation_nodes import (
+from ..geometry.node import Node
+from ..geometry.chain import Chain, EndPoints, TypeChains
+from ..geometry.geometry_utils import euclidean_distance_between_nodes
+from ..visualization.drawing import Color, Drawing
+from ..analysis.interpolation_nodes import (
     generate_nodes_list_between_two_radial_distances,
 )
 

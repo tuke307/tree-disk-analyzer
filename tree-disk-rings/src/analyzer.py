@@ -1,15 +1,15 @@
 import time
 import numpy as np
 from typing import List, Tuple, Dict, Any
-from src.geometry.curve import Curve
-from src.geometry.chain import Chain
-from src.utils.file_utils import chain_2_labelme_json
-from src.processing.preprocessing import preprocessing
-from src.detection.canny_devernay_edge_detector import canny_deverney_edge_detector
-from src.detection.filter_edges import filter_edges
-from src.processing.sampling import sampling_edges
-from src.analysis.connect_chains import connect_chains
-from src.processing.postprocessing import postprocessing
+from .geometry.curve import Curve
+from .geometry.chain import Chain
+from .utils.file_utils import chain_2_labelme_json
+from .processing.preprocessing import preprocessing
+from .detection.canny_devernay_edge_detector import canny_deverney_edge_detector
+from .detection.filter_edges import filter_edges
+from .processing.sampling import sampling_edges
+from .analysis.connect_chains import connect_chains
+from .processing.postprocessing import postprocessing
 
 
 def tree_ring_detection(

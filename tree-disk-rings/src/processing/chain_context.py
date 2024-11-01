@@ -1,9 +1,9 @@
 from shapely.geometry import Point, LineString
 from typing import List, Optional, Tuple
 
-from src.geometry.ring import Ring
-from src.geometry.chain import Chain
-from src.analysis.connect_chains import visualize_selected_ch_and_chains_over_image_
+from ..geometry.ring import Ring
+from ..geometry.chain import Chain
+from ..geometry.geometry_utils import visualize_selected_ch_and_chains_over_image_
 
 
 class ChainContext:
@@ -67,7 +67,7 @@ class ChainContext:
         """
         Update the context. The context is updated when the algorithm is executed over a new region.
         """
-        from src.processing.postprocessing import (
+        from ..processing.postprocessing import (
             search_shapely_inward_chain,
             from_shapely_to_chain,
         )

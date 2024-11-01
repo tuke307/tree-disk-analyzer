@@ -3,22 +3,22 @@ import cv2
 from shapely.geometry import Point, Polygon
 from typing import List, Optional, Tuple
 
-from src.geometry.chain import Chain
-from src.analysis.chains_bag import ChainsBag
-from src.processing.chain_context import ChainContext
-from src.analysis.chain_system_manager import ChainSystemManager
-from src.analysis.chain_analysis_tools import similarity_conditions
-from src.analysis.interpolation_nodes import (
+from ..geometry.chain import Chain
+from ..analysis.chains_bag import ChainsBag
+from ..processing.chain_context import ChainContext
+from ..analysis.chain_system_manager import ChainSystemManager
+from ..analysis.chain_analysis_tools import similarity_conditions
+from ..analysis.interpolation_nodes import (
     complete_chain_using_2_support_ring,
     connect_2_chain_via_inward_and_outward_ring,
     complete_chain_using_support_ring,
 )
-from src.analysis.connect_chains import (
+from ..analysis.connect_chains import (
     intersection_between_chains,
     get_inward_and_outward_visible_chains,
 )
-from src.geometry.chain import Node, EndPoints, ClockDirection, TypeChains
-from src.geometry.geometry_utils import (
+from ..geometry.chain import Node, EndPoints, ClockDirection, TypeChains
+from ..geometry.geometry_utils import (
     copy_node,
     copy_chain,
     get_nodes_angles_from_list_nodes,

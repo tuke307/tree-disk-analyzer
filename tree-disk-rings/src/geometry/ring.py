@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 from shapely.geometry import Polygon
-from src.visualization.drawing import Drawing
-from src.geometry.chain import Chain
+from ..visualization.drawing import Drawing
+from ..geometry.chain import Chain
 
 
 class Ring:

@@ -2,16 +2,16 @@ import numpy as np
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from src.geometry.geometry_utils import (
+from ..geometry.geometry_utils import (
     copy_chain,
     euclidean_distance_between_nodes,
     get_chain_from_list_by_id,
     get_chains_within_angle,
 )
-from src.geometry.chain import Chain, EndPoints
-from src.geometry.node import Node
-from src.analysis.interpolation_nodes import domain_interpolation
-from src.analysis.chain_analysis_tools import (
+from ..geometry.chain import Chain, EndPoints
+from ..geometry.node import Node
+from ..analysis.interpolation_nodes import domain_interpolation
+from ..analysis.chain_analysis_tools import (
     exist_chain_overlapping,
 )
 
@@ -245,7 +245,7 @@ class ChainSystemManager:
         Returns:
             None
         """
-        from src.analysis.connect_chains import get_inward_and_outward_visible_chains
+        from ..analysis.connect_chains import get_inward_and_outward_visible_chains
 
         dummy_chain = None
         for chain_p in l_chains_to_update_neighborhood:

@@ -7,10 +7,10 @@ from pathlib import Path
 from typing import List, Any, Tuple, Dict
 import numpy as np
 
-from src.geometry.curve import Curve
-from src.geometry.chain import Chain, TypeChains
-from src.geometry.geometry_utils import visualize_chains_over_image
-from src.processing.preprocessing import resize
+from .geometry.curve import Curve
+from .geometry.chain import Chain, TypeChains
+from .geometry.geometry_utils import visualize_chains_over_image
+from .processing.preprocessing import resize
 
 
 def save_config(args: dict, root_path: str, output_dir: str) -> int:

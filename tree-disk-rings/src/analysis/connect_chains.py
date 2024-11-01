@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Tuple, Optional
 
-from src.geometry.geometry_utils import (
+from ..geometry.geometry_utils import (
     copy_chain,
     angular_distance_between_chains,
     visualize_selected_ch_and_chains_over_image_,
@@ -11,17 +11,17 @@ from src.geometry.geometry_utils import (
     get_chains_within_angle,
     get_closest_dots_to_angle_on_radial_direction_sorted_by_ascending_distance_to_center,
 )
-from src.geometry.node import Node
-from src.geometry.angular_set import Set
-from src.analysis.chain_system_manager import ChainSystemManager
-from src.analysis.connect_parameters import ConnectParameters
-from src.geometry.chain import Chain, TypeChains, EndPoints, ChainLocation
-from src.geometry.node import Node
-from src.analysis.interpolation_nodes import (
+from ..geometry.node import Node
+from ..geometry.angular_set import Set
+from ..analysis.chain_system_manager import ChainSystemManager
+from ..analysis.connect_parameters import ConnectParameters
+from ..geometry.chain import Chain, TypeChains, EndPoints, ChainLocation
+from ..geometry.node import Node
+from ..analysis.interpolation_nodes import (
     compute_interpolation_domain,
     domain_interpolation,
 )
-from src.analysis.chain_analysis_tools import similarity_conditions
+from ..analysis.chain_analysis_tools import similarity_conditions
 
 
 def extract_border_chain_from_list(
