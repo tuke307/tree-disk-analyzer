@@ -5,7 +5,7 @@ from pathlib import Path
 from skimage.util.shape import view_as_windows
 
 
-def StructuralTensor(
+def structural_tensor(
     img: np.ndarray, sigma: float = 1.0, window_size: int = 5, mode: int = -1
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
@@ -125,7 +125,7 @@ def matrix_compute_local_orientation(
         Tuple containing lines array and coherence array
     """
     gray_image = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY).copy()
-    imgC, imgO = StructuralTensor(gray_image, window_size=W, sigma=Sigma)
+    imgC, imgO = structural_tensor(gray_image, window_size=W, sigma=Sigma)
 
     imgC, imgO, kernel_size = (
         sampling_structural_tensor(imgC, imgO, ST_window)

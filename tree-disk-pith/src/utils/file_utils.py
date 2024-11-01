@@ -23,30 +23,12 @@ def load_image(image_name: str) -> np.ndarray:
         FileNotFoundError: If the image file does not exist or cannot be read.
     """
     img = cv2.imread(image_name)
+
     if img is None:
         raise FileNotFoundError(f"Image not found or cannot be read: {image_name}")
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
     return img
-
-
-def load_config(default: bool = True) -> Dict:
-    """
-    Loads configuration from a JSON file.
-
-    Args:
-        default: If True, loads the default configuration. Otherwise, loads the general configuration.
-
-    Returns:
-        The configuration as a dictionary.
-
-    Raises:
-        FileNotFoundError: If the configuration file does not exist.
-        json.JSONDecodeError: If the configuration file contains invalid JSON.
-    """
-    dir_path = Path(__file__).resolve().parent
-    config_file = "default.json" if default else "general.json"
-    config_path = dir_path.parent / "config" / config_file
-    return load_json(config_path)
 
 
 def load_json(filepath: Union[str, Path]) -> Dict:
@@ -64,10 +46,12 @@ def load_json(filepath: Union[str, Path]) -> Dict:
         json.JSONDecodeError: If the file contains invalid JSON.
     """
     filepath = Path(filepath)
+
     if not filepath.is_file():
         raise FileNotFoundError(f"JSON file not found: {filepath}")
     with open(filepath, "r") as f:
         data = json.load(f)
+
     return data
 
 
@@ -83,6 +67,7 @@ def write_json(dict_to_save: Dict, filepath: Union[str, Path]) -> None:
         None
     """
     filepath = Path(filepath)
+
     with open(filepath, "w") as f:
         json.dump(dict_to_save, f, indent=4)
 
@@ -103,6 +88,7 @@ def clear_dir(directory: Path) -> None:
     """
     if not directory.exists():
         raise FileNotFoundError(f"Directory not found: {directory}")
+
     for item in directory.iterdir():
         try:
             if item.is_file():

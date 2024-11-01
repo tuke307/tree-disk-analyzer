@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from typing import Tuple, Optional, List
 
-from src.image import Drawing
+from src.visualization.drawing import Shapes, LineDrawing
 
 
 def pclines_straight_all(
@@ -338,18 +338,18 @@ def get_converging_lines_pc(
     )
 
     if debug:
-        Drawing.draw_lsd_lines(
+        LineDrawing.draw_lsd_lines(
             m_lsd, img, output_path=f"{vp_output_dir}/lsd.png", lines_all=m_lsd
         )
 
-        Drawing.draw_lsd_lines(
+        LineDrawing.draw_lsd_lines(
             m_img_straight[idx_inliers_straight],
             img,
             output_path=f"{vp_output_dir}/straight_lines_in_image.png",
             lines_all=m_lsd,
         )
 
-        Drawing.draw_lsd_lines(
+        LineDrawing.draw_lsd_lines(
             m_img_twisted[idx_inliers_twisted],
             img,
             output_path=f"{vp_output_dir}/twisted_lines_in_image.png",
@@ -377,14 +377,14 @@ def get_converging_lines_pc(
     idx_lines = np.delete(idx_lines, idx_duplicated_lines, axis=0)
 
     if debug:
-        Drawing.draw_lsd_lines(
+        LineDrawing.draw_lsd_lines(
             converging_lines,
             img,
             output_path=f"{vp_output_dir}/converging_segment_in_image.png",
             lines_all=m_lsd,
         )
 
-        Drawing.draw_lines(
+        LineDrawing.draw_lines(
             converging_lines,
             img,
             output_path=f"{vp_output_dir}/converging_lo_in_image.png",

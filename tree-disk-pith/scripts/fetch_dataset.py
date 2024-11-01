@@ -2,6 +2,7 @@ import urllib.request, os, zipfile
 import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 URLS = {
     "https://github.com/hmarichal93/apd/releases/download/v1.0_icpr_2024_submission/all.zip": "dataset/all.zip",

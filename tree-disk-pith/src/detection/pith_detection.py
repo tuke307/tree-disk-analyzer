@@ -6,9 +6,11 @@ from pathlib import Path
 from typing import Optional, Tuple, Union
 import logging
 
-from src.structural_tensor import StructuralTensor, sampling_structural_tensor
-from src.optimization import Optimization, LeastSquaresSolution, filter_lo_around_c
-from src.pclines_parallel_coordinates import pclines_local_orientation_filtering
+from src.geometry.structural_tensor import structural_tensor, sampling_structural_tensor
+from src.optimization.optimizer import Optimization
+from src.optimization.optimization_utils import filter_lo_around_c
+from src.geometry.line_transformations import pclines_local_orientation_filtering
+from src.optimization.least_squares_solver import LeastSquaresSolution
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +30,7 @@ def local_orientation(
         Tuple[np.ndarray, np.ndarray]: Tuple containing orientation tensor STo and coherence tensor STc.
     """
     gray_image = cv2.cvtColor(img_in, cv2.COLOR_RGB2GRAY).copy()
-    STc, STo = StructuralTensor(gray_image, sigma=st_sigma, window_size=st_window)
+    STc, STo = structural_tensor(gray_image, sigma=st_sigma, window_size=st_window)
     return STo, STc
 
 
@@ -119,7 +121,7 @@ def pclines_postprocessing(
 
 def optimization(
     img_in: np.ndarray,
-    m_lsd: np.ndarray,
+    line_segments: np.ndarray,
     ci: Optional[Union[Tuple[float, float], np.ndarray]] = None,
 ) -> np.ndarray:
     """
@@ -127,15 +129,20 @@ def optimization(
 
     Args:
         img_in (np.ndarray): Input image.
-        m_lsd (np.ndarray): Local orientations data.
+        line_segments (np.ndarray): Local orientations data.
         ci (Tuple[float, float] or np.ndarray, optional): Initial center point. If None, computed via least squares.
 
     Returns:
         np.ndarray: Optimized center point coordinates.
     """
-    xo, yo = LeastSquaresSolution(m_lsd=m_lsd, img=img_in).run() if ci is None else ci
-    peak = Optimization(m_lsd=m_lsd).run(xo, yo)
+    xo, yo = (
+        LeastSquaresSolution(line_segments=line_segments, img=img_in).run()
+        if ci is None
+        else ci
+    )
+    peak = Optimization(line_segments=line_segments).run(xo, yo)
     peak = (peak[0], peak[1])
+
     return np.array(peak)
 
 
