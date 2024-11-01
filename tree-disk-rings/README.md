@@ -7,6 +7,7 @@ forked from [hmarichal93/cstrd_ipol](https://github.com/hmarichal93/cstrd_ipol)
 python -m venv venv
 source venv/bin/activate # On Windows use: venv\Scripts\activate
 pip install -r requirements.txt
+pip install -e .
 cd ./externas/devernay_1.0 && make clean && make
 ```
 
@@ -15,23 +16,23 @@ cd ./externas/devernay_1.0 && make clean && make
 ### Basic Usage
 
 ```bash
-python main.py --input IMAGE_PATH --cx CX --cy CY --output_dir OUTPUT_DIR
+python -m src.cli --input IMAGE_PATH --cx CX --cy CY --output_dir OUTPUT_DIR
 ```
 
 Example:
 ```bash
-python main.py --input input/tree-disk4.png --cx 1204 --cy 1264 --output_dir output/
+python -m src.cli --input input/tree-disk4.png --cx 1204 --cy 1264 --output_dir output/
 ```
 
 ### Saving Intermediate Results
 If you want to save intermediate results, you can use the --save_imgs flag:
 ```bash
-python main.py --input input/tree-disk4.png --cx 1204 --cy 1264 --output_dir output/ --save_imgs
+python -m src.cli --input input/tree-disk4.png --cx 1204 --cy 1264 --output_dir output/ --save_imgs
 ```
 
 ### Using Advanced Parameters
 ```bash
-python main.py --input input/F02c.png --cx 1204 --cy 1264 \
+python -m src.cli --input input/F02c.png --cx 1204 --cy 1264 \
   --output_dir output/ --sigma 4.0 --th_low 10 --th_high 25 --debug
 ```
 
