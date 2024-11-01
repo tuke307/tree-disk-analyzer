@@ -8,26 +8,26 @@ WHITE = 255
 NONE = 0
 
 
-def get_image_shape(im_in: np.ndarray) -> Tuple[int, int]:
+def get_image_shape(img_in: np.ndarray) -> Tuple[int, int]:
     """
     Get image shape.
 
     Args:
-        im_in (np.ndarray): Input image.
+        img_in (np.ndarray): Input image.
 
     Returns:
         Tuple[int, int]: Image height, image width.
     """
-    if im_in.ndim > 2:
-        height, width, _ = im_in.shape
+    if img_in.ndim > 2:
+        height, width, _ = img_in.shape
     else:
-        height, width = im_in.shape
+        height, width = img_in.shape
 
     return height, width
 
 
 def resize(
-    im_in: np.ndarray,
+    img_in: np.ndarray,
     height_output: int,
     width_output: int,
     cy: int = 1,
@@ -37,7 +37,7 @@ def resize(
     Resize image and keep the center of the image in the same position. Implements Algorithm 2 in the supplementary material.
 
     Args:
-        im_in (np.ndarray): Gray image to resize.
+        img_in (np.ndarray): Gray image to resize.
         height_output (int): Output image height. If None, the image is not resized.
         width_output (int): Output image width. If None, the image is not resized.
         cy (int): Y's center coordinate in pixel.
@@ -46,8 +46,8 @@ def resize(
     Returns:
         Tuple[np.ndarray, int, int]: Resized image, resized y's center coordinate, resized x's center coordinate.
     """
-    img_r = resize_image_using_pil_lib(im_in, height_output, width_output)
-    height, width = get_image_shape(im_in)
+    img_r = resize_image_using_pil_lib(img_in, height_output, width_output)
+    height, width = get_image_shape(img_in)
     cy_output, cx_output = convert_center_coordinate_to_output_coordinate(
         cy, cx, height, width, height_output, width_output
     )
@@ -56,20 +56,20 @@ def resize(
 
 
 def resize_image_using_pil_lib(
-    im_in: np.ndarray, height_output: int, width_output: int
+    img_in: np.ndarray, height_output: int, width_output: int
 ) -> np.ndarray:
     """
     Resize image using PIL library.
 
     Args:
-        im_in (np.ndarray): Input image.
+        img_in (np.ndarray): Input image.
         height_output (int): Output image height.
         width_output (int): Output image width.
 
     Returns:
         np.ndarray: Matrix with the resized image.
     """
-    pil_img = Image.fromarray(im_in)
+    pil_img = Image.fromarray(img_in)
     flag = Image.Resampling.LANCZOS
     pil_img = pil_img.resize((height_output, width_output), flag)
     im_r = np.ndarray(pil_img)
@@ -104,20 +104,20 @@ def convert_center_coordinate_to_output_coordinate(
 
 
 def change_background_intensity_to_mean(
-    im_in: np.ndarray,
+    img_in: np.ndarray,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Change background intensity to mean intensity.
 
     Args:
-        im_in (np.ndarray): Input gray scale image. Background is white (255).
+        img_in (np.ndarray): Input gray scale image. Background is white (255).
 
     Returns:
         Tuple[np.ndarray, np.ndarray]: Image with changed background intensity, background mask.
     """
-    im_eq = im_in.copy()
-    mask = np.where(im_in == 255, 1, 0)
-    im_eq = change_background_to_value(im_eq, mask, np.mean(im_in[mask == 0]))
+    im_eq = img_in.copy()
+    mask = np.where(img_in == 255, 1, 0)
+    im_eq = change_background_to_value(im_eq, mask, np.mean(img_in[mask == 0]))
 
     return im_eq, mask
 
@@ -156,22 +156,22 @@ def equalize(im_g: np.ndarray) -> np.ndarray:
 
 
 def change_background_to_value(
-    im_in: np.ndarray, mask: np.ndarray, value: int = 255
+    img_in: np.ndarray, mask: np.ndarray, value: int = 255
 ) -> np.ndarray:
     """
     Change background intensity to white.
 
     Args:
-        im_in (np.ndarray): Input image.
+        img_in (np.ndarray): Input image.
         mask (np.ndarray): Background mask.
         value (int): Value to change the background to.
 
     Returns:
         np.ndarray: Image with changed background intensity.
     """
-    im_in[mask > 0] = value
+    img_in[mask > 0] = value
 
-    return im_in
+    return img_in
 
 
 def rgb2gray(img_r: np.ndarray) -> np.ndarray:
@@ -188,7 +188,7 @@ def rgb2gray(img_r: np.ndarray) -> np.ndarray:
 
 
 def preprocessing(
-    im_in: np.ndarray,
+    img_in: np.ndarray,
     height_output: int = None,
     width_output: int = None,
     cy: int = None,
@@ -202,7 +202,7 @@ def preprocessing(
     Implements Algorithm 1 in the supplementary material.
 
     Args:
-        im_in (np.ndarray): Segmented image.
+        img_in (np.ndarray): Segmented image.
         height_output (int): New image height.
         width_output (int): New image width.
         cy (int): Pith y's coordinate.
@@ -212,9 +212,9 @@ def preprocessing(
         Tuple[np.ndarray, int, int]: Equalized image, pith y's coordinate after resize, pith x's coordinate after resize.
     """
     if NONE in [height_output, width_output]:
-        im_r, cy_output, cx_output = (im_in, cy, cx)
+        im_r, cy_output, cx_output = (img_in, cy, cx)
     else:
-        im_r, cy_output, cx_output = resize(im_in, height_output, width_output, cy, cx)
+        im_r, cy_output, cx_output = resize(img_in, height_output, width_output, cy, cx)
 
     im_g = rgb2gray(im_r)
     im_pre = equalize(im_g)
