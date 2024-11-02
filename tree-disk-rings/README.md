@@ -16,24 +16,23 @@ cd ./externas/devernay_1.0 && make clean && make
 ### Basic Usage
 
 ```bash
-python -m src.cli --input IMAGE_PATH --cx CX --cy CY --output_dir OUTPUT_DIR
+tree-ring-analyzer --input IMAGE_PATH --cx CX --cy CY
 ```
 
 Example:
 ```bash
-python -m src.cli --input input/tree-disk4.png --cx 1204 --cy 1264 --output_dir output/
+tree-ring-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264
 ```
 
 ### Saving Intermediate Results
 If you want to save intermediate results, you can use the --save_imgs flag:
 ```bash
-python -m src.cli --input input/tree-disk4.png --cx 1204 --cy 1264 --output_dir output/ --save_imgs
+tree-ring-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264 --save_imgs
 ```
 
 ### Using Advanced Parameters
 ```bash
-python -m src.cli --input input/F02c.png --cx 1204 --cy 1264 \
-  --output_dir output/ --sigma 4.0 --th_low 10 --th_high 25 --debug
+tree-ring-analyzer --input input/F02c.png --cx 1204 --cy 1264 --output_dir custom_output/ --sigma 4.0 --th_low 10 --th_high 25 --save_imgs --debug
 ```
 
 ## Command-Line Arguments
@@ -41,7 +40,7 @@ python -m src.cli --input input/F02c.png --cx 1204 --cy 1264 \
 * `--input` (str, required): Path to input image.
 * `--cx` (int, required): Pith x-coordinate.
 * `--cy` (int, required): Pith y-coordinate.
-* `--output_dir` (str, required): Output directory path.
+* `--output_dir` (str, optional): Output directory path.
 * `--root` (str, optional): Root directory of the repository.
 * `--sigma` (float, optional): Gaussian kernel parameter for edge detection. Default is 3.0.
 * `--th_low` (float, optional): Low threshold for gradient magnitude. Default is 5.0.
