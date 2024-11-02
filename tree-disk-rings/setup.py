@@ -15,7 +15,7 @@ def read_readme():
 
 setup(
     name="tree-ring-analyzer",
-    version="0.1.3",
+    version="0.2.0",
     description="A package for tree ring detection in images",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
@@ -27,7 +27,7 @@ setup(
     install_requires=read_requirements(),
     entry_points={
         "console_scripts": [
-            "tree-ring-analyzer=src.cli:main",
+            "tree-ring-analyzer=treeringanalyzer.cli:main",
         ],
     },
     python_requires=">=3.7",
