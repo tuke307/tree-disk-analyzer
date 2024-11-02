@@ -5,6 +5,18 @@ from typing import Dict, List, Tuple
 import cv2
 import numpy as np
 import pandas as pd
+import pkg_resources
+
+# Get the path relative to the package directory
+# relative_path = pkg_resources.resource_filename(
+#    "treeringanalyzer", "externas/devernay_1.0/devernay.out"
+# )
+
+# Adjust the path to point to the correct location
+base_dir = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
+out_file = os.path.join(base_dir, "externas/devernay_1.0/devernay.out")
 
 from ..config import config
 
@@ -90,8 +102,9 @@ def execute_command(
     output_txt = config.output_dir / "output.txt"
     gx_path = config.output_dir / "gx.txt"
     gy_path = config.output_dir / "gy.txt"
+    print(out_file)
     command = (
-        f"{str(config.devernay_path)}/devernay.out {image_path} -s {sigma} -l {low} -h {high} "
+        f"{str(out_file)} {image_path} -s {sigma} -l {low} -h {high} "
         f"-t {output_txt} -x {gx_path} -y {gy_path}"
     )
     os.system(command)
