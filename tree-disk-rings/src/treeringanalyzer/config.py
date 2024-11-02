@@ -22,6 +22,9 @@ class Config:
     root_dir: str = "./"
     """Root directory of the project."""
 
+    devernay_path: str = "externas/devernay_1.0"
+    """Path to the Devernay executable, normally in the root directory."""
+
     cx: int = 0
     """Center x-coordinate in the image."""
 
@@ -91,17 +94,28 @@ class Config:
         if self.input_image_path:
             input_path = Path(self.input_image_path)
             if not input_path.is_absolute():
-                # Try relative to current directory first
-                if not input_path.exists():
-                    # Then try relative to root directory
-                    input_path = root_path / input_path
+                # Make the path relative to root directory
+                input_path = root_path / input_path
 
             if not input_path.exists():
                 raise ValueError(f"Input image file does not exist: {input_path}")
             if not input_path.is_file():
                 raise ValueError(f"Input image path is not a file: {input_path}")
 
-            self.input_image_path = input_path
+            self.input_image_path = input_path.resolve()
+
+        # Validate Devernay path
+        if self.devernay_path:
+            devernay_path = Path(self.devernay_path)
+            if not devernay_path.is_absolute():
+                devernay_path = root_path / devernay_path
+
+            if not devernay_path.exists():
+                raise ValueError(f"Devernay directory does not exist: {devernay_path}")
+            if not devernay_path.is_dir():
+                raise ValueError(f"Devernay path is not a directory: {devernay_path}")
+
+            self.devernay_path = devernay_path
 
     @classmethod
     def from_dict(cls, config_dict: dict) -> "Config":
