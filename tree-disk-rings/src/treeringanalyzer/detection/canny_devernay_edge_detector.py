@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import pandas as pd
 
-from ..utils.file_utils import load_config
+from ..config import config
 
 
 def load_curves(output_txt: str) -> np.array:
@@ -23,7 +23,7 @@ def load_curves(output_txt: str) -> np.array:
     return curves_list
 
 
-def convert_image_to_pgm(im_pre: np.ndarray) -> Tuple[Dict[str, str], Path]:
+def convert_image_to_pgm(im_pre: np.ndarray) -> str:
     """
     Converts an image to PGM format and saves it.
 
@@ -31,13 +31,12 @@ def convert_image_to_pgm(im_pre: np.ndarray) -> Tuple[Dict[str, str], Path]:
         im_pre (np.ndarray): Preprocessed image array.
 
     Returns:
-        Tuple[Dict[str, str], Path]: Configuration dictionary and path to the saved PGM image.
+        str: Path to the saved image file.
     """
-    config = load_config(default=False)
-    image_path = Path(config.get("result_path")) / "test.pgm"
+    image_path = config.output_dir / "test.pgm"
     cv2.imwrite(str(image_path), im_pre)
 
-    return config, image_path
+    return image_path
 
 
 def delete_files(files: List[Path]) -> None:
@@ -74,13 +73,12 @@ def gradient_load(
 
 
 def execute_command(
-    config: Dict[str, str], image_path: Path, sigma: float, low: float, high: float
+    image_path: Path, sigma: float, low: float, high: float
 ) -> Tuple[Path, Path, Path]:
     """
     Executes the Devernay edge detector command.
 
     Args:
-        config (Dict[str, str]): Configuration dictionary.
         image_path (Path): Path to the image file.
         sigma (float): Gaussian filter sigma value.
         low (float): Low threshold for edge detection.
@@ -89,13 +87,11 @@ def execute_command(
     Returns:
         Tuple[Path, Path, Path]: Paths to the gradient X, gradient Y, and output text files.
     """
-    root_path = Path(config.get("devernay_path"))
-    results_path = Path(config.get("result_path"))
-    output_txt = results_path / "output.txt"
-    gx_path = results_path / "gx.txt"
-    gy_path = results_path / "gy.txt"
+    output_txt = config.output_dir / "output.txt"
+    gx_path = config.output_dir / "gx.txt"
+    gy_path = config.output_dir / "gy.txt"
     command = (
-        f"{str(root_path)}/devernay.out {image_path} -s {sigma} -l {low} -h {high} "
+        f"{str(config.devernay_path)}/devernay.out {image_path} -s {sigma} -l {low} -h {high} "
         f"-t {output_txt} -x {gx_path} -y {gy_path}"
     )
     os.system(command)
@@ -122,8 +118,8 @@ def canny_deverney_edge_detector(
             - Gx (np.ndarray): Gradient image in the x direction.
             - Gy (np.ndarray): Gradient image in the y direction.
     """
-    config, im_path = convert_image_to_pgm(im_pre)
-    gx_path, gy_path, output_txt = execute_command(config, im_path, sigma, low, high)
+    im_path = convert_image_to_pgm(im_pre)
+    gx_path, gy_path, output_txt = execute_command(im_path, sigma, low, high)
     Gx, Gy = gradient_load(im_pre, str(gx_path), str(gy_path))
     m_ch_e = load_curves(output_txt)
     delete_files([output_txt, im_path, gx_path, gy_path])
