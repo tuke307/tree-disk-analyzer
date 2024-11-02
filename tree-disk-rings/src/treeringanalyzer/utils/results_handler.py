@@ -4,10 +4,10 @@ import logging
 
 from ..geometry.curve import Curve
 from ..geometry.chain import Chain, TypeChains
-from ..processing.preprocessing import resize
+from ..processing.preprocessing import resize_image_using_pil_lib
 from ..utils.file_utils import write_json
 from ..geometry.geometry_utils import visualize_chains_over_image
-from ..config import Config
+from ..config import config
 
 logger = logging.getLogger(__name__)
 
@@ -21,22 +21,13 @@ def save_results(
         List[Chain],
         List[Chain],
         List[Chain],
-    ],
-    config: Config,
+    ]
 ) -> None:
     """Save detection results to disk."""
-    im_seg, im_pre, ch_e, ch_f, ch_s, ch_c, ch_p = res
+    img_in, img_pre, ch_e, ch_f, ch_s, ch_c, ch_p = res
 
     # Convert chains to labelme format
-    labelme_data = chain_to_labelme(
-        chain_list=ch_p,
-        image_height=config.height,
-        image_width=config.width,
-        cy=config.cy,
-        cx=config.cx,
-        img_orig=im_seg,
-        image_path=str(config.input_image_path),
-    )
+    labelme_data = chain_to_labelme(img_in, chain_list=ch_p)
     json_path = config.output_dir / "labelme.json"
     write_json(labelme_data, json_path)
     logger.info(f"Saved labelme JSON to {json_path}")
@@ -45,22 +36,22 @@ def save_results(
         return
 
     # Resize if necessary
-    m, n, _ = im_seg.shape
-    m_n, n_n = im_pre.shape
+    m, n, _ = img_in.shape
+    m_n, n_n = img_pre.shape
     if m != m_n:
-        im_seg, _, _ = resize(im_seg, m_n, n_n)
+        img_in = resize_image_using_pil_lib(img_in, m_n, n_n)
 
     # Save visualization images
     visualizations = {
-        "segmentation.png": (im_seg, {}),
-        "preprocessing.png": (im_pre, {}),
-        "edges.png": (im_pre, {"devernay": ch_e}),
-        "filter.png": (im_pre, {"filter": ch_f}),
-        "chains.png": (im_seg, {"chain_list": ch_s}),
-        "connect.png": (im_seg, {"chain_list": ch_c}),
-        "postprocessing.png": (im_seg, {"chain_list": ch_p}),
+        "input.png": (img_in, {}),
+        "preprocessing.png": (img_pre, {}),
+        "edges.png": (img_pre, {"devernay": ch_e}),
+        "filter.png": (img_pre, {"filter": ch_f}),
+        "chains.png": (img_in, {"chain_list": ch_s}),
+        "connect.png": (img_in, {"chain_list": ch_c}),
+        "postprocessing.png": (img_in, {"chain_list": ch_p}),
         "output.png": (
-            im_seg,
+            img_in,
             {
                 "chain_list": [
                     chain
@@ -78,17 +69,12 @@ def save_results(
         logger.debug(f"Saved visualization to {output_path}")
 
 
-def chain_to_labelme(
-    chain_list: List[Chain],
-    image_height: int,
-    image_width: int,
-    cy: int,
-    cx: int,
-    img_orig: np.ndarray,
-    image_path: str,
-) -> Dict[str, Any]:
-    """Convert chains to labelme format."""
-    init_height, init_width, _ = img_orig.shape
+def chain_to_labelme(img_in: np.ndarray, chain_list: List[Chain]) -> Dict[str, Any]:
+    """
+    Convert chains to labelme format.
+    The JSON is formatted to use the input image as the background and the chains as polygons.
+    """
+    init_height, init_width, _ = img_in.shape
 
     completed_chains = [
         chain
@@ -97,18 +83,20 @@ def chain_to_labelme(
         and chain.type not in [TypeChains.center, TypeChains.border]
     ]
 
-    width_cte = init_width / image_width if image_width != 0 else 1
-    height_cte = init_height / image_height if image_height != 0 else 1
+    width_cte = init_width / config.output_width if config.output_width != None else 1
+    height_cte = (
+        init_height / config.output_height if config.output_height != None else 1
+    )
 
     labelme_json = {
-        "imagePath": image_path,
+        "imagePath": str(config.input_image_path),
         "imageHeight": init_height,
         "imageWidth": init_width,
         "version": "5.5.0",
         "flags": {},
         "shapes": [],
         "imageData": None,
-        "center": [cy * height_cte, cx * width_cte],
+        "center": [config.cy * height_cte, config.cx * width_cte],
     }
 
     for idx, chain in enumerate(completed_chains):

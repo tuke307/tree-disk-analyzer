@@ -5,6 +5,7 @@ import numpy as np
 
 from ..visualization.color import Color
 from ..geometry.curve import Curve
+from ..config import config
 
 DELIMITE_CURVE_ROW = np.array([-1, -1])
 
@@ -216,19 +217,17 @@ def get_border_curve(img: np.ndarray, l_ch_f: List[Curve]) -> Curve:
     return border_curve
 
 
-def change_reference_axis(ch_e_matrix: np.array, cy: float, cx: float) -> np.array:
+def change_reference_axis(ch_e_matrix: np.array) -> np.array:
     """
     Changes the reference axis of the edge matrix to the center (cx, cy).
 
     Args:
         ch_e_matrix (np.array): Edge matrix.
-        cy (float): y-coordinate of the center.
-        cx (float): x-coordinate of the center.
 
     Returns:
         np.array: Transformed edge matrix.
     """
-    center = [cx, cy]
+    center = [config.cx, config.cy]
     curve_border_index = np.where(ch_e_matrix == DELIMITE_CURVE_ROW)[0]
     X = ch_e_matrix.copy()
 
@@ -315,9 +314,7 @@ def compute_angle_between_gradient_and_edges(
     return theta
 
 
-def filter_edges_by_threshold(
-    m_ch_e: np.ndarray, theta: np.ndarray, alpha: float
-) -> np.ndarray:
+def filter_edges_by_threshold(m_ch_e: np.ndarray, theta: np.ndarray) -> np.ndarray:
     """
     Filters edges by a threshold angle.
 
@@ -330,19 +327,16 @@ def filter_edges_by_threshold(
         np.ndarray: Filtered edge matrix.
     """
     X_edges_filtered = m_ch_e.copy()
-    X_edges_filtered[theta >= alpha] = -1
+    X_edges_filtered[theta >= config.alpha] = -1
 
     return X_edges_filtered
 
 
 def filter_edges(
-    m_ch_e: np.array,
-    cy: float,
-    cx: float,
-    Gx: np.ndarray,
-    Gy: np.ndarray,
-    alpha: float,
-    im_pre: np.ndarray,
+    devernay_edges: np.array,
+    gradient_x_img: np.ndarray,
+    gradient_y_img: np.ndarray,
+    img_pre: np.ndarray,
 ) -> List[Curve]:
     """
     Filters edges to keep only the ones forming rings (early wood edges).
@@ -352,22 +346,21 @@ def filter_edges(
     is computed and filtered depending on threshold (alpha). Implements Algorithm 4 in the supplementary material.
 
     Args:
-        m_ch_e (np.array): Devernay curves in matrix format.
-        cy (float): y-coordinate of the pith center.
-        cx (float): x-coordinate of the pith center.
-        Gx (np.ndarray): Gradient image in x direction.
-        Gy (np.ndarray): Gradient image in y direction.
-        alpha (float): Threshold angle for filtering.
-        im_pre (np.ndarray): Input image.
+        devernay_edges (np.array): Devernay curves in matrix format.
+        gradient_x_img (np.ndarray): Gradient image in x direction.
+        gradient_y_img (np.ndarray): Gradient image in y direction.
+        img_pre (np.ndarray): Input image.
 
     Returns:
         List[Curve]: Filtered Devernay curves.
     """
     # Change reference axis
-    Xb = change_reference_axis(m_ch_e, cy, cx)
+    Xb = change_reference_axis(devernay_edges)
 
     # Get normalized gradient at each edge
-    G = get_gradient_vector_for_each_edge_pixel(m_ch_e, Gx, Gy)
+    G = get_gradient_vector_for_each_edge_pixel(
+        devernay_edges, gradient_x_img, gradient_y_img
+    )
 
     # Normalize gradient and rays
     Xb_normalized = normalized_row_matrix(Xb.T)
@@ -377,13 +370,13 @@ def filter_edges(
     theta = compute_angle_between_gradient_and_edges(Xb_normalized, G_normalized)
 
     # Filter pixels by threshold
-    X_edges_filtered = filter_edges_by_threshold(m_ch_e, theta, alpha)
+    X_edges_filtered = filter_edges_by_threshold(devernay_edges, theta)
 
     # Convert masked pixels to Curve objects
     l_ch_f = convert_masked_pixels_to_curves(X_edges_filtered)
 
     # Add border curve
-    border_curve = get_border_curve(im_pre, l_ch_f)
+    border_curve = get_border_curve(img_pre, l_ch_f)
 
     # Append border curve to the list
     l_ch_f.append(border_curve)

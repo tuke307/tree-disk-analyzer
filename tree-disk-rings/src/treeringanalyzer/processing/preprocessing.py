@@ -2,7 +2,11 @@ import cv2
 from PIL import Image
 import numpy as np
 from typing import Tuple
+import logging
 
+from ..config import config, configure
+
+logger = logging.getLogger(__name__)
 
 WHITE = 255
 NONE = 0
@@ -26,81 +30,84 @@ def get_image_shape(img_in: np.ndarray) -> Tuple[int, int]:
     return height, width
 
 
-def resize(
-    img_in: np.ndarray,
-    height_output: int,
-    width_output: int,
-    cy: int = 1,
-    cx: int = 1,
-) -> Tuple[np.ndarray, int, int]:
+def resize(img_in: cv2.typing.MatLike) -> Tuple[np.array, int, int]:
     """
     Resize image and keep the center of the image in the same position. Implements Algorithm 2 in the supplementary material.
 
     Args:
-        img_in (np.ndarray): Gray image to resize.
-        height_output (int): Output image height. If None, the image is not resized.
-        width_output (int): Output image width. If None, the image is not resized.
-        cy (int): Y's center coordinate in pixel.
-        cx (int): X's center coordinate in pixel.
+        img_in (cv2.typing.MatLike): Image to resize.
 
     Returns:
-        Tuple[np.ndarray, int, int]: Resized image, resized y's center coordinate, resized x's center coordinate.
+        Tuple[np.array, int, int]: Resized image, resized y's center coordinate, resized x's center coordinate.
     """
-    img_r = resize_image_using_pil_lib(img_in, height_output, width_output)
-    height, width = get_image_shape(img_in)
-    cy_output, cx_output = convert_center_coordinate_to_output_coordinate(
-        cy, cx, height, width, height_output, width_output
-    )
+    logger.debug("Resizing image")
 
-    return img_r, cy_output, cx_output
+    current_height, current_width = get_image_shape(img_in)
+
+    logger.debug(f"Current image shape: {current_height}x{current_width}")
+
+    # Calculate missing dimension if needed
+    if config.output_height is not None and config.output_width is None:
+        aspect_ratio = current_width / current_height
+        width_output = int(config.output_height * aspect_ratio)
+        configure(output_width=width_output)
+    elif config.output_width is not None and config.output_height is None:
+        aspect_ratio = current_height / current_width
+        height_output = int(config.output_width * aspect_ratio)
+        configure(output_height=height_output)
+
+    logger.debug(f"Resizing image to {config.output_height}x{config.output_width}")
+
+    img_resized = resize_image_using_pil_lib(
+        img_in, config.output_width, config.output_height
+    )
+    convert_center_coordinate_to_output_coordinate(current_height, current_width)
+
+    return img_resized
 
 
 def resize_image_using_pil_lib(
-    img_in: np.ndarray, height_output: int, width_output: int
-) -> np.ndarray:
+    img_in: cv2.typing.MatLike, target_width, target_height
+) -> np.array:
     """
     Resize image using PIL library.
 
     Args:
-        img_in (np.ndarray): Input image.
-        height_output (int): Output image height.
-        width_output (int): Output image width.
+        img_in (cv2.typing.MatLike): Input image.
 
     Returns:
-        np.ndarray: Matrix with the resized image.
+        np.array: Matrix with the resized image.
     """
-    pil_img = Image.fromarray(img_in)
-    flag = Image.Resampling.LANCZOS
-    pil_img = pil_img.resize((height_output, width_output), flag)
-    im_r = np.ndarray(pil_img)
+    image_pil = Image.fromarray(img_in)
+    image_pil = image_pil.resize(
+        (target_width, target_height), Image.Resampling.LANCZOS
+    )
+    # Convert PIL image to numpy array
+    image_pil_resized = np.array(image_pil)
 
-    return im_r
+    return image_pil_resized
 
 
 def convert_center_coordinate_to_output_coordinate(
-    cy: int, cx: int, height: int, width: int, height_output: int, width_output: int
-) -> Tuple[int, int]:
+    input_height: int, input_width: int
+) -> None:
     """
     Convert center coordinate from input image to output image.
 
     Args:
-        cy (int): Y's center coordinate in pixel.
-        cx (int): X's center coordinate in pixel.
-        height (int): Input image height.
-        width (int): Input image width.
-        height_output (int): Output image height.
-        width_output (int): Output image width.
+        input_height (int): Input image height.
+        input_width (int): Input image width.
 
     Returns:
-        Tuple[int, int]: Resized y's center coordinate, resized x's center coordinate.
+        None
     """
-    hscale = height_output / height
-    wscale = width_output / width
+    hscale = config.output_height / input_height
+    wscale = config.output_width / input_width
 
-    cy_output = cy * hscale
-    cx_output = cx * wscale
+    cy_output = config.cy * hscale
+    cx_output = config.cx * wscale
 
-    return cy_output, cx_output
+    configure(cy=cy_output, cx=cx_output)
 
 
 def change_background_intensity_to_mean(
@@ -143,16 +150,16 @@ def equalize(im_g: np.ndarray) -> np.ndarray:
     Equalize image using CLAHE algorithm. Implements Algorithm 3 in the supplementary material.
 
     Args:
-        im_g (np.ndarray): Gray scale image.
+        im_gray (np.ndarray): Gray scale image.
 
     Returns:
         np.ndarray: Equalized image.
     """
-    im_pre, mask = change_background_intensity_to_mean(im_g)
-    im_pre = equalize_image_using_clahe(im_pre)
-    im_pre = change_background_to_value(im_pre, mask, WHITE)
+    img_pre, mask = change_background_intensity_to_mean(im_g)
+    img_pre = equalize_image_using_clahe(img_pre)
+    img_pre = change_background_to_value(img_pre, mask, WHITE)
 
-    return im_pre
+    return img_pre
 
 
 def change_background_to_value(
@@ -187,13 +194,7 @@ def rgb2gray(img_r: np.ndarray) -> np.ndarray:
     return cv2.cvtColor(img_r, cv2.COLOR_BGR2GRAY)
 
 
-def preprocessing(
-    img_in: np.ndarray,
-    height_output: int = None,
-    width_output: int = None,
-    cy: int = None,
-    cx: int = None,
-) -> Tuple[np.ndarray, int, int]:
+def preprocessing(img_in: cv2.typing.MatLike) -> Tuple[np.ndarray, int, int]:
     """
     Image preprocessing steps. Following actions are made:
     - Image resize
@@ -202,21 +203,17 @@ def preprocessing(
     Implements Algorithm 1 in the supplementary material.
 
     Args:
-        img_in (np.ndarray): Segmented image.
-        height_output (int): New image height.
-        width_output (int): New image width.
-        cy (int): Pith y's coordinate.
-        cx (int): Pith x's coordinate.
+        img_in (cv2.typing.MatLike): Segmented image.
 
     Returns:
         Tuple[np.ndarray, int, int]: Equalized image, pith y's coordinate after resize, pith x's coordinate after resize.
     """
-    if NONE in [height_output, width_output]:
-        im_r, cy_output, cx_output = (img_in, cy, cx)
+    if config.output_height is None and config.output_width is None:
+        img_resized = img_in
     else:
-        im_r, cy_output, cx_output = resize(img_in, height_output, width_output, cy, cx)
+        img_resized = resize(img_in)
 
-    im_g = rgb2gray(im_r)
-    im_pre = equalize(im_g)
+    im_gray = rgb2gray(img_resized)
+    img_pre = equalize(im_gray)
 
-    return im_pre, cy_output, cx_output
+    return img_pre

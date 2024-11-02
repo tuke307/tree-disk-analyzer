@@ -46,11 +46,11 @@ def write_json(data: Dict[str, Any], filepath: Path) -> None:
         data (Dict[str, Any]): Data to write
         filepath (Path): Output file path
     """
-    with filepath.open("w") as f:
+    with open(filepath, "w") as f:
         json.dump(data, f, indent=4)
 
 
-def load_image(filepath: Path) -> np.ndarray:
+def load_image(filepath: Path) -> cv2.typing.MatLike:
     """
     Load an image file.
 
@@ -58,7 +58,7 @@ def load_image(filepath: Path) -> np.ndarray:
         filepath (Path): Path to image file
 
     Returns:
-        np.ndarray: Image as RGB numpy array
+        cv2.typing.MatLike: Image as RGB numpy array
     """
     img = cv2.imread(str(filepath))
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)

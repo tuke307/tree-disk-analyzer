@@ -43,7 +43,7 @@ def run() -> int:
 
         # Save all results
         logger.info("Saving results...")
-        save_results(results, config)
+        save_results(results)
 
         # Save configuration copy
         config_path = config.output_dir / "config.json"

@@ -13,14 +13,14 @@ from ..visualization.drawing import Drawing
 from ..geometry.ray import Ray
 from ..geometry.curve import Curve
 from ..geometry.geometry_utils import euclidean_distance, get_node_from_list_by_angle
+from ..config import config
 
 
-def build_rays(nr: int, m: int, n: int, center: Tuple[float, float]) -> List[Ray]:
+def build_rays(m: int, n: int, center: Tuple[float, float]) -> List[Ray]:
     """
     Builds a list of rays emanating from the center at evenly spaced angles.
 
     Args:
-        nr (int): Total number of rays.
         m (int): Height of the image.
         n (int): Width of the image.
         center (Tuple[float, float]): Center coordinates (y, x).
@@ -28,7 +28,7 @@ def build_rays(nr: int, m: int, n: int, center: Tuple[float, float]) -> List[Ray
     Returns:
         List[Ray]: List of Ray objects.
     """
-    angles_range = np.arange(0, 360, 360 / nr)
+    angles_range = np.arange(0, 360, 360 / config.nr)
     radii_list = [Ray(direction, center, m, n) for direction in angles_range]
     return radii_list
 
@@ -104,11 +104,9 @@ def compute_intersection(
 
 
 def intersections_between_rays_and_devernay_curves(
-    center: Tuple[float, float],
     l_rays: List[Ray],
     l_curves: List[Curve],
-    min_chain_length: int,
-    nr: int,
+    center: Tuple[float, float],
     height: int,
     width: int,
 ) -> Tuple[List[Node], List[Chain]]:
@@ -120,8 +118,6 @@ def intersections_between_rays_and_devernay_curves(
         center (Tuple[float, float]): Center coordinates (y, x).
         l_rays (List[Ray]): List of rays.
         l_curves (List[Curve]): List of Devernay curves.
-        min_chain_length (int): Minimum length of a chain.
-        nr (int): Number of rays.
         height (int): Height of the image.
         width (int): Width of the image.
 
@@ -129,15 +125,18 @@ def intersections_between_rays_and_devernay_curves(
         Tuple[List[Node], List[Chain]]: List of nodes and list of chains.
     """
     l_chain, l_nodes = [], []
+
     for idx, curve in enumerate(l_curves):
         chain_id = len(l_chain)
         l_curve_nodes = compute_intersection(l_rays, curve, chain_id, center)
 
-        if len(l_curve_nodes) < min_chain_length:
+        if len(l_curve_nodes) < config.min_chain_length:
             continue
 
         l_nodes += l_curve_nodes
-        chain = Chain(chain_id, nr, center=center, img_height=height, img_width=width)
+        chain = Chain(
+            chain_id, config.nr, center=center, img_height=height, img_width=width
+        )
         chain.add_nodes_list(l_curve_nodes)
         l_chain.append(chain)
 
@@ -149,9 +148,6 @@ def intersections_between_rays_and_devernay_curves(
 
 
 def generate_virtual_center_chain(
-    cy: float,
-    cx: float,
-    nr: int,
     chains_list: List[Chain],
     nodes_list: List[Node],
     height: int,
@@ -161,9 +157,6 @@ def generate_virtual_center_chain(
     Generates a virtual center chain. This chain is used to connect the other chains.
 
     Args:
-        cy (float): y-coordinate of the center.
-        cx (float): x-coordinate of the center.
-        nr (int): Number of rays.
         chains_list (List[Chain]): List of chains.
         nodes_list (List[Node]): List of nodes.
         height (int): Height of the image.
@@ -175,20 +168,20 @@ def generate_virtual_center_chain(
     chain_id = len(chains_list)
     center_list = [
         Node(
-            x=cx,
-            y=cy,
+            x=config.cx,
+            y=config.cy,
             angle=angle,
             radial_distance=0,
             chain_id=chain_id,
         )
-        for angle in np.arange(0, 360, 360 / nr)
+        for angle in np.arange(0, 360, 360 / config.nr)
     ]
     nodes_list += center_list
 
     chain = Chain(
         chain_id,
-        nr,
-        center=chains_list[0].center if chains_list else (cy, cx),
+        config.nr,
+        center=chains_list[0].center if chains_list else (config.cy, config.cx),
         img_height=height,
         img_width=width,
         type=TypeChains.center,
@@ -236,48 +229,38 @@ def draw_ray_curve_and_intersections(
 
 def sampling_edges(
     l_ch_f: List[Curve],
-    cy: float,
-    cx: float,
-    im_pre: np.ndarray,
-    min_chain_length: int,
-    nr: int,
-    debug: bool = False,
-    debug_output_dir: str = None,
+    img_pre: np.ndarray,
 ) -> Tuple[List[Chain], List[Node]]:
     """
     Samples Devernay curves using ray directions. Implements Algorithm 6 in the supplementary material.
 
     Args:
         l_ch_f (List[Curve]): Devernay curves.
-        cy (float): y-coordinate of the pith center.
-        cx (float): x-coordinate of the pith center.
-        im_pre (np.ndarray): Input image.
-        min_chain_length (int): Minimum chain length.
-        nr (int): Total number of rays.
-        debug (bool): If True, saves an image with drawn rays, curves, and intersections.
-        debug_output_dir (str): Output directory to save the debug image
+        img_pre (np.ndarray): Input image.
 
     Returns:
         Tuple[List[Chain], List[Node]]:
             - l_ch_s: Sampled edges curves (list of Chain objects).
             - l_nodes_s: List of nodes.
     """
-    height, width = im_pre.shape[:2]
-    l_rays = build_rays(nr, height, width, [cy, cx])
+    height, width = img_pre.shape[:2]
+    center = (config.cy, config.cx)
+
+    l_rays = build_rays(height, width, center)
     l_nodes_s, l_ch_s = intersections_between_rays_and_devernay_curves(
-        [cy, cx], l_rays, l_ch_f, min_chain_length, nr, height, width
+        l_rays, l_ch_f, center, height, width
     )
-    generate_virtual_center_chain(cy, cx, nr, l_ch_s, l_nodes_s, height, width)
+    generate_virtual_center_chain(l_ch_s, l_nodes_s, height, width)
 
     # Debug purposes, not illustrated in the paper
-    if debug:
-        img_draw = np.zeros((im_pre.shape[0], im_pre.shape[1], 3), dtype=np.uint8)
+    if config.debug:
+        img_draw = np.zeros((img_pre.shape[0], img_pre.shape[1], 3), dtype=np.uint8)
         draw_ray_curve_and_intersections(
             l_nodes_s,
             l_rays,
             l_ch_f,
             img_draw,
-            f"{debug_output_dir}/dots_curve_and_rays.png",
+            f"{config.output_dir}/dots_curve_and_rays.png",
         )
 
     return l_ch_s, l_nodes_s

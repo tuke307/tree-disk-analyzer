@@ -23,18 +23,18 @@ def load_curves(output_txt: str) -> np.array:
     return curves_list
 
 
-def convert_image_to_pgm(im_pre: np.ndarray) -> str:
+def convert_image_to_pgm(img_pre: np.ndarray) -> str:
     """
     Converts an image to PGM format and saves it.
 
     Args:
-        im_pre (np.ndarray): Preprocessed image array.
+        img_pre (np.ndarray): Preprocessed image array.
 
     Returns:
         str: Path to the saved image file.
     """
     image_path = config.output_dir / "test.pgm"
-    cv2.imwrite(str(image_path), im_pre)
+    cv2.imwrite(str(image_path), img_pre)
 
     return image_path
 
@@ -99,14 +99,14 @@ def execute_command(
 
 
 def canny_deverney_edge_detector(
-    im_pre: np.ndarray, sigma: float, low: float, high: float
+    img_pre: np.ndarray, sigma: float, low: float, high: float
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Canny edge detector module using the Canny/Devernay algorithm.
     Downloaded from https://doi.org/10.5201/ipol.2017.216
 
     Args:
-        im_pre (np.ndarray): Preprocessed image.
+        img_pre (np.ndarray): Preprocessed image.
         sigma (float): Gaussian filter sigma value for edge detection.
         low (float): Low gradient threshold.
         high (float): High gradient threshold.
@@ -118,9 +118,9 @@ def canny_deverney_edge_detector(
             - Gx (np.ndarray): Gradient image in the x direction.
             - Gy (np.ndarray): Gradient image in the y direction.
     """
-    im_path = convert_image_to_pgm(im_pre)
+    im_path = convert_image_to_pgm(img_pre)
     gx_path, gy_path, output_txt = execute_command(im_path, sigma, low, high)
-    Gx, Gy = gradient_load(im_pre, str(gx_path), str(gy_path))
+    Gx, Gy = gradient_load(img_pre, str(gx_path), str(gy_path))
     m_ch_e = load_curves(output_txt)
     delete_files([output_txt, im_path, gx_path, gy_path])
 

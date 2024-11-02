@@ -55,14 +55,14 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--height",
         type=int,
-        default=Config.height,
+        default=Config.output_height,
         help="Resize height (0 to keep original)",
         metavar="INT",
     )
     parser.add_argument(
         "--width",
         type=int,
-        default=Config.width,
+        default=Config.output_width,
         help="Resize width (0 to keep original)",
         metavar="INT",
     )
@@ -83,7 +83,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--min_chain_length",
         type=int,
-        default=Config.mc,
+        default=Config.min_chain_length,
         help="Minimum chain length for filtering",
         metavar="INT",
     )
@@ -111,11 +111,11 @@ def main():
         sigma=args.sigma,
         th_low=args.th_low,
         th_high=args.th_high,
-        height=args.height,
-        width=args.width,
+        output_height=args.height,
+        output_width=args.width,
         alpha=args.alpha,
         nr=args.nr,
-        mc=args.min_chain_length,
+        min_chain_length=args.min_chain_length,
         debug=args.debug,
         save_imgs=args.save_imgs,
     )

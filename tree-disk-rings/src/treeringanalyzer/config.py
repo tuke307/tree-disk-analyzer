@@ -24,10 +24,10 @@ class Config:
     devernay_path: str = "externas/devernay_1.0"
     """Path to the Devernay executable, normally in the root directory."""
 
-    cx: int = 0
+    cx: int = None
     """Center x-coordinate in the image."""
 
-    cy: int = 0
+    cy: int = None
     """Center y-coordinate in the image."""
 
     sigma: float = 3.0
@@ -39,10 +39,10 @@ class Config:
     th_high: float = 20.0
     """High threshold on gradient magnitude for Canny edge detector. Controls edge continuity."""
 
-    height: int = 0
+    output_height: int = None
     """Target height for image resizing. If 0, maintains original height."""
 
-    width: int = 0
+    output_width: int = None
     """Target width for image resizing. If 0, maintains original width."""
 
     alpha: float = 30.0
@@ -51,7 +51,7 @@ class Config:
     nr: int = 360
     """Number of rays for sampling. Higher values give more precise detection."""
 
-    mc: int = 2
+    min_chain_length: int = 2
     """Minimum chain length. Chains shorter than this are filtered out."""
 
     debug: bool = False

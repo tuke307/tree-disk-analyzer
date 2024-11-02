@@ -14,6 +14,7 @@ from ..analysis.interpolation_nodes import domain_interpolation
 from ..analysis.chain_analysis_tools import (
     exist_chain_overlapping,
 )
+from ..config import config
 
 
 class ChainSystemManager:
@@ -22,8 +23,6 @@ class ChainSystemManager:
         l_ch: List[Chain],
         l_nodes: List[Node],
         M: np.ndarray,
-        cy: int,
-        cx: int,
         nr: int = 360,
         th_radial_tolerance: float = 0.1,
         th_distribution_size: int = 2,
@@ -70,7 +69,7 @@ class ChainSystemManager:
         self.debug = debug
         self.neighbourhood_size = neighbourhood_size
         self.M = M
-        self.center = [cy, cx]
+        self.center = [config.cy, config.cx]
         self.img = img
         self.height = img.shape[0]
         self.width = img.shape[1]

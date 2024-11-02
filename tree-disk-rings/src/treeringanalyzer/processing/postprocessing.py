@@ -29,6 +29,7 @@ from ..geometry.geometry_utils import (
     angular_distance_between_chains,
     get_nodes_from_chain_list,
 )
+from ..config import config
 
 
 def build_boundary_poly(outward_ring: Polygon, inward_ring: Polygon):
@@ -1174,7 +1175,7 @@ def connect_radially_closest_chain(
     return True, support_chain, endpoint
 
 
-def postprocessing(l_ch_c, l_nodes_c, debug, save_path, debug_img_pre):
+def postprocessing(l_ch_c, l_nodes_c, img_pre):
     """
     Posprocessing chain list. Conditions are relaxed in order to re-fine chain connections. Implements Algorithm 15
     in the supplementary material.
@@ -1182,9 +1183,7 @@ def postprocessing(l_ch_c, l_nodes_c, debug, save_path, debug_img_pre):
     Args:
         l_ch_c: chain list
         l_nodes_c: node list
-        debug: debug flag. Parameter after this one are for debugging.
-        save_path: debug locations
-        debug_img_pre: input image
+        img_pre: input image
 
     Returns:
         connected chains list
@@ -1197,12 +1196,12 @@ def postprocessing(l_ch_c, l_nodes_c, debug, save_path, debug_img_pre):
     iteracion = [0]
 
     while True:
-        ctx = ChainContext(l_ch_p, idx_start, save_path=save_path, img=debug_img_pre)
+        ctx = ChainContext(l_ch_p, idx_start, save_path=config.output_dir, img=img_pre)
 
         while len(ctx.completed_chains) > 0:
             #  l_within_chains, inward_ring and outward_ring are attributes of ctx which are updated in next line
             ctx.update()
-            if debug:
+            if config.debug:
                 ctx.drawing(iteracion[0])
                 iteracion[0] += 1
 
@@ -1214,9 +1213,9 @@ def postprocessing(l_ch_c, l_nodes_c, debug, save_path, debug_img_pre):
                 l_ch_p,
                 l_nodes_c,
                 neighbourhood_size=ctx.neighbourhood_size,
-                debug=debug,
-                img=debug_img_pre,
-                save_path=save_path,
+                debug=config.debug,
+                img=img_pre,
+                save_path=config.output_dir,
                 iteration=iteracion,
             )
             # If ch_i was completed, restart iteration

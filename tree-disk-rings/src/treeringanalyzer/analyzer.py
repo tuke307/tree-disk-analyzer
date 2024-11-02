@@ -1,5 +1,5 @@
-import time
 import numpy as np
+import cv2
 from typing import List, Tuple, Dict, Any
 from .geometry.curve import Curve
 from .geometry.chain import Chain
@@ -12,7 +12,7 @@ from .processing.postprocessing import postprocessing
 from .config import config
 
 
-def tree_ring_detection(img_in: np.ndarray) -> Tuple[
+def tree_ring_detection(img_in: cv2.typing.MatLike) -> Tuple[
     np.ndarray,
     np.ndarray,
     np.ndarray,
@@ -25,31 +25,29 @@ def tree_ring_detection(img_in: np.ndarray) -> Tuple[
     Delineate tree rings over pine cross-section images. Implements Algorithm 1 from the paper.
 
     Args:
-        img_in (np.ndarray): Segmented input image. Background must be white (255,255,255).
+        img_in (cv2.typing.MatLike): Segmented input image. Background must be white (255,255,255).
 
     Returns:
         Tuple containing:
             - img_in (np.ndarray): Original input image.
-            - im_pre (np.ndarray): Preprocessed image.
+            - img_pre (np.ndarray): Preprocessed image.
             - m_ch_e (np.ndarray): Devernay curves in matrix format.
             - l_ch_f (List[Curve]): Filtered Devernay curves.
             - l_ch_s (List[Chain]): Sampled Devernay curves as Chain objects.
             - l_ch_c (List[Chain]): Chain lists after connect stage.
             - l_ch_p (List[Chain]): Chain lists after postprocessing stage.
     """
-    im_pre, cy, cx = preprocessing(
-        img_in, config.height, config.width, config.cy, config.cx
-    )
-    m_ch_e, gx, gy = canny_deverney_edge_detector(
-        im_pre, config.sigma, config.th_low, config.th_high
-    )
-    l_ch_f = filter_edges(m_ch_e, cy, cx, gx, gy, config.alpha, im_pre)
-    l_ch_s, l_nodes_s = sampling_edges(
-        l_ch_f, cy, cx, im_pre, config.mc, config.nr, config.debug, config.output_dir
-    )
-    l_ch_c, l_nodes_c = connect_chains(
-        l_ch_s, cy, cx, config.nr, config.debug, im_pre, config.output_dir
-    )
-    l_ch_p = postprocessing(l_ch_c, l_nodes_c, config.debug, config.output_dir, im_pre)
+    img_pre = preprocessing(img_in)
 
-    return img_in, im_pre, m_ch_e, l_ch_f, l_ch_s, l_ch_c, l_ch_p
+    devernay_result_c = canny_deverney_edge_detector(
+        img_pre, sigma=config.sigma, low=config.th_low, high=config.th_high
+    )
+
+    devernay_edges, gradient_x_img, gradient_y_img = devernay_result_c
+
+    l_ch_f = filter_edges(devernay_edges, gradient_x_img, gradient_y_img, img_pre)
+    l_ch_s, l_nodes_s = sampling_edges(l_ch_f, img_pre)
+    l_ch_c, l_nodes_c = connect_chains(l_ch_s, img_pre)
+    l_ch_p = postprocessing(l_ch_c, l_nodes_c, img_pre)
+
+    return img_in, img_pre, devernay_edges, l_ch_f, l_ch_s, l_ch_c, l_ch_p

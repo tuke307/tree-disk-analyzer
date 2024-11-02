@@ -22,6 +22,7 @@ from ..analysis.interpolation_nodes import (
     domain_interpolation,
 )
 from ..analysis.chain_analysis_tools import similarity_conditions
+from ..config import config
 
 
 def extract_border_chain_from_list(
@@ -68,12 +69,7 @@ def copy_chains_and_nodes(ch_s: List[Chain]) -> Tuple[List[Chain], List[Node]]:
 
 def connect_chains(
     l_ch_s: List[Chain],
-    cy: float,
-    cx: float,
-    nr: int,
-    debug: bool,
-    debut_im_pre: bool,
-    output_dir: str,
+    img_pre: Optional[np.ndarray] = None,
 ) -> Tuple[List[Chain], List[Node]]:
     """
     Logic to connect chains. Same logic to connect chains is applied several times, smoothing restriction.
@@ -81,11 +77,9 @@ def connect_chains(
 
     Args:
         l_ch_s (List[Chain]): Chain list.
-        cy (float): Pith y's coordinate.
-        cx (float): Pith x's coordinate.
         nr (int): Some integer parameter.
         debug (bool): Debug flag.
-        debut_im_pre (bool): Some boolean flag.
+        img_pre (bool): Some boolean flag.
         output_dir (str): Output directory.
 
     Returns:
@@ -96,23 +90,21 @@ def connect_chains(
     # Paper Table 1 parameters initialization
     parameters = ConnectParameters(l_ch_s, l_nodes_s)
 
-    m = compute_intersection_matrix(l_ch_s, l_nodes_s, nr=nr)
+    m = compute_intersection_matrix(l_ch_s, l_nodes_s)
 
     # Iteration over the parameters, 9 iterations in total
     for i in range(parameters.iterations):
         # Get parameters for iteration i
         iteration_params = parameters.get_iteration_parameters(i)
 
-        # debug_im_pre is a copy of the input image. It is used to visualize the results of the current iteration for debugging purposes.
+        # debug_img_pre is a copy of the input image. It is used to visualize the results of the current iteration for debugging purposes.
         # Algorithm 2 in the paper
         l_ch_c, l_nodes_c, m = connect_chains_main_logic(
             m=m,
-            cy=cy,
-            cx=cx,
-            nr=nr,
-            debug_imgs=debug,
-            im_pre=debut_im_pre,
-            save=f"{output_dir}/output_{i}_",
+            nr=config.nr,
+            debug_imgs=config.debug,
+            img_pre=img_pre,
+            save=f"{config.output_dir}/output_{i}_",
             **iteration_params,
         )
 
@@ -186,8 +178,6 @@ def debugging_chains(
 
 def connect_chains_main_logic(
     m: np.ndarray,
-    cy: float,
-    cx: float,
     nr: int,
     l_ch_s: List[Chain],
     l_nodes_s: List[Node],
@@ -197,7 +187,7 @@ def connect_chains_main_logic(
     neighbourhood_size: int = 22,
     derivative_from_center: bool = False,
     debug_imgs: bool = False,
-    im_pre: Optional[np.ndarray] = None,
+    img_pre: Optional[np.ndarray] = None,
     save: Optional[str] = None,
 ) -> Tuple[List[Chain], List[Node], np.ndarray]:
     """
@@ -205,8 +195,6 @@ def connect_chains_main_logic(
 
     Args:
         m (np.ndarray): Matrix of intersections between chains.
-        cy (float): Y coordinate of pith (disk center).
-        cx (float): X coordinate of pith (disk center).
         nr (int): Number of rays.
         l_ch_s (List[Chain]): List of chains.
         l_nodes_s (List[Node]): List of nodes belonging to chains.
@@ -216,7 +204,7 @@ def connect_chains_main_logic(
         neighbourhood_size (int, optional): Size of neighbourhood in which we search for similar chains. Defaults to 22.
         derivative_from_center (bool, optional): If true, derivative is calculated from cy, otherwise from support chain. Defaults to False.
         debug_imgs (bool, optional): Debug parameter. Defaults to False.
-        im_pre (Optional[np.ndarray], optional): Image for debug. Defaults to None.
+        img_pre (Optional[np.ndarray], optional): Image for debug. Defaults to None.
         save (Optional[str], optional): Image save location. Debug only. Defaults to None.
 
     Returns:
@@ -227,8 +215,6 @@ def connect_chains_main_logic(
         l_ch_s,
         l_nodes_s,
         m,
-        cy,
-        cx,
         nr=nr,
         th_radial_tolerance=th_radial_tolerance,
         th_distribution_size=th_distribution_size,
@@ -237,7 +223,7 @@ def connect_chains_main_logic(
         derivative_from_center=derivative_from_center,
         debug=debug_imgs,
         save=save,
-        img=im_pre,
+        img=img_pre,
     )
 
     # State.continue_in_loop() check if current state is equal to the previous one. If it is, the algorithm stops.
@@ -1210,7 +1196,7 @@ def intersection_between_chains(chain1: Chain, chain2: Chain) -> bool:
 
 
 def compute_intersection_matrix(
-    chains_list: List[Chain], nodes_list: List[Node], nr: int
+    chains_list: List[Chain], nodes_list: List[Node]
 ) -> np.ndarray:
     """
     Compute intersection matrix. If chain_i intersection chain_j then img_height[i,j] == img_height[j,i] == 1 else 0
@@ -1225,7 +1211,7 @@ def compute_intersection_matrix(
     """
     m = np.eye(len(chains_list))
 
-    for angle in np.arange(0, 360, 360 / nr):
+    for angle in np.arange(0, 360, 360 / config.nr):
         chains_id_over_direction = np.unique(
             [node.chain_id for node in nodes_list if node.angle == angle]
         )
