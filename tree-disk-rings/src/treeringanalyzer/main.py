@@ -5,12 +5,12 @@ import time
 from .utils.file_utils import load_image, write_json
 from .analyzer import tree_ring_detection
 from .config import config
-from .utils.results_handler import save_results, chain_to_labelme
+from .utils.results_handler import save_results
 
 logger = logging.getLogger(__name__)
 
 
-def run_tree_ring_detection() -> int:
+def run() -> int:
     """
     Main function to run tree ring detection.
 
