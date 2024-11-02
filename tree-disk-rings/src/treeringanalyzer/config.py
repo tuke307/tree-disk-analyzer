@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from pathlib import Path
-import numpy as np
 import json
 import logging
 
@@ -127,7 +126,7 @@ class Config:
         Update configuration with new values.
         Re-validates paths when updating path-related parameters.
         """
-        path_params = {"input_image_path", "output_dir", "root_dir"}
+        path_params = {"input_image_path", "root_dir"}
         needs_validation = any(param in path_params for param in kwargs)
 
         for key, value in kwargs.items():
