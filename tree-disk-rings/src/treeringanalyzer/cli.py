@@ -1,6 +1,6 @@
 import argparse
-from .main import run_tree_ring_detection
-from .config import configure, Config
+from .config import Config
+from . import run, configure
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -104,6 +104,7 @@ def main():
     # Configure settings from CLI arguments
     configure(
         input_image_path=args.input,
+        root_dir=args.root_dir,
         output_dir=args.output_dir,
         cx=args.cx,
         cy=args.cy,
@@ -117,10 +118,9 @@ def main():
         mc=args.min_chain_length,
         debug=args.debug,
         save_imgs=args.save_imgs,
-        root_dir=args.root_dir,
     )
 
-    run_tree_ring_detection()
+    run()
 
 
 if __name__ == "__main__":
