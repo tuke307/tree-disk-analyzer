@@ -15,7 +15,7 @@ def read_readme():
 
 setup(
     name="tree-ring-analyzer",
-    version="0.2.1",
+    version="0.2.2",
     description="A package for tree ring detection in images",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
@@ -31,4 +31,8 @@ setup(
         ],
     },
     python_requires=">=3.7",
+    include_package_data=True,
+    package_data={
+        "": ["externas/devernay_1.0/devernay.out"],
+    },
 )
