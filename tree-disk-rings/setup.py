@@ -15,7 +15,7 @@ def read_readme():
 
 setup(
     name="tree-ring-analyzer",
-    version="0.2.0",
+    version="0.2.1",
     description="A package for tree ring detection in images",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
