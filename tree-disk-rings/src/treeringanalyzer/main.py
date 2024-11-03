@@ -1,16 +1,28 @@
 import logging
-from pathlib import Path
 import time
+from typing import Tuple, List
+import numpy as np
+
 
 from .utils.file_utils import load_image, write_json
 from .analyzer import tree_ring_detection
 from .config import config
 from .utils.results_handler import save_results
+from .geometry.curve import Curve
+from .geometry.chain import Chain
 
 logger = logging.getLogger(__name__)
 
 
-def run() -> int:
+def run() -> Tuple[
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    List[Curve],
+    List[Chain],
+    List[Chain],
+    List[Chain],
+]:
     """
     Main function to run tree ring detection.
 
@@ -18,7 +30,14 @@ def run() -> int:
         None
 
     Returns:
-        int: Exit code.
+        Tuple containing:
+            - img_in (np.ndarray): Original input image.
+            - img_pre (np.ndarray): Preprocessed image.
+            - devernay_curves (np.ndarray): Devernay curves in matrix format.
+            - devernay_curves_f (List[Curve]): Filtered Devernay curves.
+            - devernay_curves_s (List[Chain]): Sampled Devernay curves as Chain objects.
+            - devernay_curves_c (List[Chain]): Chain lists after connect stage.
+            - devernay_curves_p (List[Chain]): Chain lists after postprocessing stage.
     """
     # Set up logging based on debug setting
     logging.basicConfig(
@@ -26,10 +45,9 @@ def run() -> int:
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    config.log_configurations()
+    config.log_all_configs()
 
     try:
-        # Load input image
         logger.info(f"Loading input image: {config.input_image_path}")
         img_in = load_image(config.input_image_path)
 
@@ -37,22 +55,45 @@ def run() -> int:
 
         start_time = time.time()
 
-        results = tree_ring_detection(img_in)
+        (
+            img_in,
+            img_pre,
+            devernay_edges,
+            devernay_curves_f,
+            devernay_curves_s,
+            devernay_curves_c,
+            devernay_curves_p,
+        ) = tree_ring_detection(img_in)
 
         exec_time = time.time() - start_time
 
-        # Save all results
-        logger.info("Saving results...")
-        save_results(results)
+        if config.save_results:
+            logger.info("Saving results...")
+            save_results(
+                img_in,
+                img_pre,
+                devernay_edges,
+                devernay_curves_f,
+                devernay_curves_s,
+                devernay_curves_c,
+                devernay_curves_p,
+            )
 
-        # Save configuration copy
-        config_path = config.output_dir / "config.json"
-        write_json(config.to_dict(), config_path)
-        logger.info(f"Saved configuration to {config_path}")
+            config_path = config.output_dir / "config.json"
+            write_json(config.to_dict(), config_path)
+            logger.info(f"Saved configuration to {config_path}")
 
         logger.info(f"Processing completed in {exec_time:.2f} seconds")
-        return 0
+        return (
+            img_in,
+            img_pre,
+            devernay_edges,
+            devernay_curves_f,
+            devernay_curves_s,
+            devernay_curves_c,
+            devernay_curves_p,
+        )
 
     except Exception as e:
         logger.error(f"Error during processing: {str(e)}", exc_info=True)
-        return 1
+        return None

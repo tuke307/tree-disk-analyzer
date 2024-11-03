@@ -4,7 +4,7 @@ import numpy as np
 from typing import Tuple
 import logging
 
-from ..config import config, configure
+from ..config import config
 
 logger = logging.getLogger(__name__)
 
@@ -50,11 +50,11 @@ def resize(img_in: cv2.typing.MatLike) -> Tuple[np.array, int, int]:
     if config.output_height is not None and config.output_width is None:
         aspect_ratio = current_width / current_height
         width_output = int(config.output_height * aspect_ratio)
-        configure(output_width=width_output)
+        config.update(output_width=width_output)
     elif config.output_width is not None and config.output_height is None:
         aspect_ratio = current_height / current_width
         height_output = int(config.output_width * aspect_ratio)
-        configure(output_height=height_output)
+        config.update(output_height=height_output)
 
     logger.debug(f"Resizing image to {config.output_height}x{config.output_width}")
 
@@ -107,7 +107,7 @@ def convert_center_coordinate_to_output_coordinate(
     cy_output = config.cy * hscale
     cx_output = config.cx * wscale
 
-    configure(cy=cy_output, cx=cx_output)
+    config.update(cy=cy_output, cx=cx_output)
 
 
 def change_background_intensity_to_mean(

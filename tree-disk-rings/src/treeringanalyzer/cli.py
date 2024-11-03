@@ -91,7 +91,9 @@ def parse_arguments() -> argparse.Namespace:
         "--debug", action="store_true", help="Enable debug mode with additional logging"
     )
     parser.add_argument(
-        "--save_imgs", action="store_true", help="Save intermediate processing images"
+        "--save_results",
+        action="store_true",
+        help="Save intermediate processing images",
     )
 
     return parser.parse_args()
@@ -117,7 +119,7 @@ def main():
         nr=args.nr,
         min_chain_length=args.min_chain_length,
         debug=args.debug,
-        save_imgs=args.save_imgs,
+        save_results=args.save_results,
     )
 
     run()

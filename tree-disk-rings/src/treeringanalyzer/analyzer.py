@@ -31,11 +31,11 @@ def tree_ring_detection(img_in: cv2.typing.MatLike) -> Tuple[
         Tuple containing:
             - img_in (np.ndarray): Original input image.
             - img_pre (np.ndarray): Preprocessed image.
-            - m_ch_e (np.ndarray): Devernay curves in matrix format.
-            - l_ch_f (List[Curve]): Filtered Devernay curves.
-            - l_ch_s (List[Chain]): Sampled Devernay curves as Chain objects.
-            - l_ch_c (List[Chain]): Chain lists after connect stage.
-            - l_ch_p (List[Chain]): Chain lists after postprocessing stage.
+            - devernay_curves (np.ndarray): Devernay curves in matrix format.
+            - devernay_curves_f (List[Curve]): Filtered Devernay curves.
+            - devernay_curves_s (List[Chain]): Sampled Devernay curves as Chain objects.
+            - devernay_curves_c (List[Chain]): Chain lists after connect stage.
+            - devernay_curves_p (List[Chain]): Chain lists after postprocessing stage.
     """
     img_pre = preprocessing(img_in)
 
@@ -45,9 +45,19 @@ def tree_ring_detection(img_in: cv2.typing.MatLike) -> Tuple[
 
     devernay_edges, gradient_x_img, gradient_y_img = devernay_result_c
 
-    l_ch_f = filter_edges(devernay_edges, gradient_x_img, gradient_y_img, img_pre)
-    l_ch_s, l_nodes_s = sampling_edges(l_ch_f, img_pre)
-    l_ch_c, l_nodes_c = connect_chains(l_ch_s, img_pre)
-    l_ch_p = postprocessing(l_ch_c, l_nodes_c, img_pre)
+    devernay_curves_f = filter_edges(
+        devernay_edges, gradient_x_img, gradient_y_img, img_pre
+    )
+    devernay_curves_s, l_nodes_s = sampling_edges(devernay_curves_f, img_pre)
+    devernay_curves_c, l_nodes_c = connect_chains(devernay_curves_s, img_pre)
+    devernay_curves_p = postprocessing(devernay_curves_c, l_nodes_c, img_pre)
 
-    return img_in, img_pre, devernay_edges, l_ch_f, l_ch_s, l_ch_c, l_ch_p
+    return (
+        img_in,
+        img_pre,
+        devernay_edges,
+        devernay_curves_f,
+        devernay_curves_s,
+        devernay_curves_c,
+        devernay_curves_p,
+    )

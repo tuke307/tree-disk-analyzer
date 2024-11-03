@@ -13,27 +13,20 @@ logger = logging.getLogger(__name__)
 
 
 def save_results(
-    res: Tuple[
-        np.ndarray,
-        np.ndarray,
-        np.ndarray,
-        List[Curve],
-        List[Chain],
-        List[Chain],
-        List[Chain],
-    ]
+    img_in: np.ndarray,
+    img_pre: np.ndarray,
+    devernay_edges: np.ndarray,
+    devernay_curves_f: List[Curve],
+    devernay_curves_s: List[Chain],
+    devernay_curves_c: List[Chain],
+    devernay_curves_p: List[Chain],
 ) -> None:
     """Save detection results to disk."""
-    img_in, img_pre, ch_e, ch_f, ch_s, ch_c, ch_p = res
-
     # Convert chains to labelme format
-    labelme_data = chain_to_labelme(img_in, chain_list=ch_p)
+    labelme_data = chain_to_labelme(img_in, chain_list=devernay_curves_p)
     json_path = config.output_dir / "labelme.json"
     write_json(labelme_data, json_path)
     logger.info(f"Saved labelme JSON to {json_path}")
-
-    if not config.save_imgs:
-        return
 
     # Resize if necessary
     m, n, _ = img_in.shape
@@ -45,17 +38,17 @@ def save_results(
     visualizations = {
         "input.png": (img_in, {}),
         "preprocessing.png": (img_pre, {}),
-        "edges.png": (img_pre, {"devernay": ch_e}),
-        "filter.png": (img_pre, {"filter": ch_f}),
-        "chains.png": (img_in, {"chain_list": ch_s}),
-        "connect.png": (img_in, {"chain_list": ch_c}),
-        "postprocessing.png": (img_in, {"chain_list": ch_p}),
+        "edges.png": (img_pre, {"devernay": devernay_edges}),
+        "filter.png": (img_pre, {"filter": devernay_curves_f}),
+        "chains.png": (img_in, {"chain_list": devernay_curves_s}),
+        "connect.png": (img_in, {"chain_list": devernay_curves_c}),
+        "postprocessing.png": (img_in, {"chain_list": devernay_curves_p}),
         "output.png": (
             img_in,
             {
                 "chain_list": [
                     chain
-                    for chain in ch_p
+                    for chain in devernay_curves_p
                     if chain.is_closed()
                     and chain.type not in [TypeChains.center, TypeChains.border]
                 ]

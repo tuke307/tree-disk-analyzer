@@ -17,7 +17,7 @@
                 "538",
                 "--cy",
                 "408",
-                "--save_imgs",
+                "--save_results",
                 //"--debug"
             ],
             "console": "integratedTerminal"
@@ -35,7 +35,7 @@
                 "501",
                 "--cy",
                 "354",
-                "--save_imgs",
+                "--save_results",
                 //"--debug"
             ],
             "console": "integratedTerminal"
@@ -53,7 +53,7 @@
                 "418",
                 "--cy",
                 "613",
-                "--save_imgs",
+                "--save_results",
                 //"--debug"
             ],
             "console": "integratedTerminal"
@@ -71,10 +71,10 @@
                 "1204",
                 "--cy",
                 "1264",
-                "--save_imgs",
+                "--save_results",
                 //"--debug"
             ],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
         }
     ]
 }
