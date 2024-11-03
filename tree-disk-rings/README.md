@@ -1,60 +1,115 @@
 # Tree Ring Analyzer
 
-forked from [hmarichal93/cstrd_ipol](https://github.com/hmarichal93/cstrd_ipol)
+[![PyPI - Version](https://img.shields.io/pypi/v/tree-ring-analyzer)](https://pypi.org/project/tree-ring-analyzer/)
+
+A Python package for analyzing tree rings in cross-sectional images. Originally forked from [hmarichal93/cstrd_ipol](https://github.com/hmarichal93/cstrd_ipol).
 
 ## Installation
-```bash
-python -m venv venv
-source venv/bin/activate # On Windows use: venv\Scripts\activate
-pip install -r requirements.txt
-pip install -e .
-cd ./externas/devernay_1.0 && make clean && make
-```
-
-## Usage Examples
-
-### Basic Usage
 
 ```bash
-tree-ring-analyzer --input IMAGE_PATH --cx CX --cy CY
+pip install tree-ring-analyzer
 ```
 
-Example:
+## Usage
+
+### Python API
+
+```python
+import treeringanalyzer
+
+# Configure the analyzer
+treeringanalyzer.configure(
+    input_image_path="input/tree-disk4.png",
+    cx=1204,
+    cy=1264,
+    save_imgs=True,
+)
+
+# Run the analysis
+(
+    img_in,          # Original input image
+    img_pre,         # Preprocessed image
+    devernay_edges,  # Detected edges
+    devernay_curves_f,  # Filtered curves
+    devernay_curves_s,  # Smoothed curves
+    devernay_curves_c,  # Connected curves
+    devernay_curves_p,  # Final processed curves
+) = treeringanalyzer.run()
+```
+
+### Command Line Interface (CLI)
+
+Basic usage:
 ```bash
 tree-ring-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264
 ```
 
-### Saving Intermediate Results
-If you want to save intermediate results, you can use the --save_imgs flag:
+Save intermediate results:
 ```bash
 tree-ring-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264 --save_imgs
 ```
 
-### Using Advanced Parameters
+Advanced usage with custom parameters:
 ```bash
-tree-ring-analyzer --input input/F02c.png --cx 1204 --cy 1264 --output_dir custom_output/ --sigma 4.0 --th_low 10 --th_high 25 --save_imgs --debug
+tree-ring-analyzer \
+    --input input/F02c.png \
+    --cx 1204 \
+    --cy 1264 \
+    --output_dir custom_output/ \
+    --sigma 4.0 \
+    --th_low 10 \
+    --th_high 25 \
+    --save_imgs \
+    --debug
 ```
 
-## Command-Line Arguments
+## CLI Arguments
 
-* `--input` (str, required): Path to input image.
-* `--cx` (int, required): Pith x-coordinate.
-* `--cy` (int, required): Pith y-coordinate.
-* `--output_dir` (str, optional): Output directory path.
-* `--root` (str, optional): Root directory of the repository.
-* `--sigma` (float, optional): Gaussian kernel parameter for edge detection. Default is 3.0.
-* `--th_low` (float, optional): Low threshold for gradient magnitude. Default is 5.0.
-* `--th_high` (float, optional): High threshold for gradient magnitude. Default is 20.0.
-* `--height` (int, optional): Height after resizing (0 to keep original). Default is 0.
-* `--width` (int, optional): Width after resizing (0 to keep original). Default is 0.
-* `--alpha` (float, optional): Edge filtering parameter (collinearity threshold). Default is 30.0.
-* `--nr` (int, optional): Number of rays. Default is 360.
-* `--min_chain_length` (int, optional): Minimum chain length. Default is 2.
-* `--debug` (flag, optional): Enable debug mode.
-* `--save_imgs` (flag, optional): Save intermediate images.
+| Argument | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `--input` | str | Yes | - | Path to input image |
+| `--cx` | int | Yes | - | Pith x-coordinate |
+| `--cy` | int | Yes | - | Pith y-coordinate |
+| `--output_dir` | str | No | `./output` | Output directory path |
+| `--root` | str | No | Current dir | Root directory of the repository |
+| `--sigma` | float | No | 3.0 | Gaussian kernel parameter for edge detection |
+| `--th_low` | float | No | 5.0 | Low threshold for gradient magnitude |
+| `--th_high` | float | No | 20.0 | High threshold for gradient magnitude |
+| `--height` | int | No | 0 | Height after resizing (0 to keep original) |
+| `--width` | int | No | 0 | Width after resizing (0 to keep original) |
+| `--alpha` | float | No | 30.0 | Edge filtering parameter (collinearity threshold) |
+| `--nr` | int | No | 360 | Number of rays |
+| `--min_chain_length` | int | No | 2 | Minimum chain length |
+| `--debug` | flag | No | False | Enable debug mode |
+| `--save_results` | flag | No | False | Save intermediate images, labelme and config file |
 
-## Publishing Package
+## Development
+
+### Setting up Development Environment
+
+1. Clone the repository:
 ```bash
-python setup.py sdist bdist_wheel
-twine upload dist/*
+git clone https://github.com/tuke307/tree-ring-analyzer.git
+cd tree-ring-analyzer
+```
+
+2. Create and activate virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install development dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Install the package in editable mode:
+```bash
+pip install -e .
+```
+
+5. Compile the external C code:
+```bash
+cd ./externas/devernay_1.0 && make clean && make
 ```
