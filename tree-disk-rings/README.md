@@ -22,7 +22,7 @@ treeringanalyzer.configure(
     input_image_path="input/tree-disk4.png",
     cx=1204,
     cy=1264,
-    save_imgs=True,
+    save_results=True,
 )
 
 # Run the analysis
@@ -46,7 +46,7 @@ tree-ring-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264
 
 Save intermediate results:
 ```bash
-tree-ring-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264 --save_imgs
+tree-ring-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264 --save_results
 ```
 
 Advanced usage with custom parameters:
@@ -59,7 +59,7 @@ tree-ring-analyzer \
     --sigma 4.0 \
     --th_low 10 \
     --th_high 25 \
-    --save_imgs \
+    --save_results \
     --debug
 ```
 
