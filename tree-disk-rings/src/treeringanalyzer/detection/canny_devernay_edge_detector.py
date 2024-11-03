@@ -7,18 +7,23 @@ import numpy as np
 import pandas as pd
 import pkg_resources
 
-# Get the path relative to the package directory
-# relative_path = pkg_resources.resource_filename(
-#    "treeringanalyzer", "externas/devernay_1.0/devernay.out"
-# )
-
-# Adjust the path to point to the correct location
-base_dir = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
-out_file = os.path.join(base_dir, "externas/devernay_1.0/devernay.out")
-
 from ..config import config
+
+
+def get_devernay_path():
+    """Get the absolute path to the devernay binary."""
+    binary_path = pkg_resources.resource_filename(
+        "treeringanalyzer", os.path.join("externals", "devernay_1.0", "devernay.out")
+    )
+
+    # Ensure the file exists and is executable
+    if not os.path.isfile(binary_path):
+        raise FileNotFoundError(f"Binary not found at {binary_path}")
+
+    # Make sure it's executable
+    os.chmod(binary_path, 0o755)
+
+    return binary_path
 
 
 def load_curves(output_txt: str) -> np.array:
@@ -102,9 +107,9 @@ def execute_command(
     output_txt = config.output_dir / "output.txt"
     gx_path = config.output_dir / "gx.txt"
     gy_path = config.output_dir / "gy.txt"
-    print(out_file)
+    devernay_path = get_devernay_path()
     command = (
-        f"{str(out_file)} {image_path} -s {sigma} -l {low} -h {high} "
+        f"{devernay_path} {image_path} -s {sigma} -l {low} -h {high} "
         f"-t {output_txt} -x {gx_path} -y {gy_path}"
     )
     os.system(command)

@@ -1,4 +1,9 @@
+# Documentation files
 include README.md
+include LICENSE
 include requirements.txt
-recursive-include externas/devernay1.0/devernay.out
-recursive-include src/treeringanalyzer *
+
+# Package specific files
+recursive-include src/treeringanalyzer/externals/devernay_1.0 *.out
+
+recursive-include src/treeringanalyzer *.py

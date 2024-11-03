@@ -21,9 +21,6 @@ class Config:
     root_dir: str = "./"
     """Root directory of the project."""
 
-    devernay_path: str = "externas/devernay_1.0"
-    """Path to the Devernay executable, normally in the root directory."""
-
     cx: int = None
     """Center x-coordinate in the image."""
 
@@ -103,19 +100,6 @@ class Config:
 
             self.input_image_path = input_path.resolve()
 
-        # Validate Devernay path
-        if self.devernay_path:
-            devernay_path = Path(self.devernay_path)
-            if not devernay_path.is_absolute():
-                devernay_path = root_path / devernay_path
-
-            if not devernay_path.exists():
-                raise ValueError(f"Devernay directory does not exist: {devernay_path}")
-            if not devernay_path.is_dir():
-                raise ValueError(f"Devernay path is not a directory: {devernay_path}")
-
-            self.devernay_path = devernay_path
-
     @classmethod
     def from_dict(cls, config_dict: dict) -> "Config":
         """Create a Config instance from a dictionary."""
@@ -175,8 +159,7 @@ def configure(**kwargs):
         >>> configure(
         ...     input_image_path="sample.jpg",
         ...     cx=100,
-        ...     cy=100,
-        ...     sigma=2.5
+        ...     cy=100
         ... )
     """
     config.update(**kwargs)

@@ -21,7 +21,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/tuke307/tree-disk-analyzer",
     author="Tony Meissner",
-    author_email="tonymeissner70@@gmail.com",
+    author_email="tonymeissner70@gmail.com",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=read_requirements(),
@@ -31,8 +31,5 @@ setup(
         ],
     },
     python_requires=">=3.7",
-    include_package_data=True,
-    package_data={
-        "": ["externas/devernay_1.0/devernay.out"],
-    },
+    include_package_data=True,  # This tells setuptools to read MANIFEST.in
 )
