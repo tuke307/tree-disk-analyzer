@@ -4,6 +4,6 @@ include LICENSE
 include requirements.txt
 
 # Package specific files
-recursive-include src/treeringanalyzer/externals/devernay_1.0 *.out
+recursive-include src/treediskanalyzer/externals/devernay_1.0 *.out
 
-recursive-include src/treeringanalyzer *.py
+recursive-include src/treediskanalyzer *.py

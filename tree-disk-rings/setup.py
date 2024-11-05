@@ -14,7 +14,7 @@ def read_readme():
 
 
 setup(
-    name="tree-ring-analyzer",
+    name="tree-disk-analyzer",
     version="0.3.0",
     description="A package for tree ring detection in images",
     long_description=read_readme(),
@@ -27,7 +27,7 @@ setup(
     install_requires=read_requirements(),
     entry_points={
         "console_scripts": [
-            "tree-ring-analyzer=treeringanalyzer.cli:main",
+            "tree-disk-analyzer=treediskanalyzer.cli:main",
         ],
     },
     python_requires=">=3.7",

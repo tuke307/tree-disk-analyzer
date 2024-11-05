@@ -1,13 +1,13 @@
-# Tree Ring Analyzer
+# Tree Disk Analyzer
 
-[![PyPI - Version](https://img.shields.io/pypi/v/tree-ring-analyzer)](https://pypi.org/project/tree-ring-analyzer/)
+[![PyPI - Version](https://img.shields.io/pypi/v/tree-disk-analyzer)](https://pypi.org/project/tree-disk-analyzer/)
 
 A Python package for analyzing tree rings in cross-sectional images. Originally forked from [hmarichal93/cstrd_ipol](https://github.com/hmarichal93/cstrd_ipol).
 
 ## Installation
 
 ```bash
-pip install tree-ring-analyzer
+pip install tree-disk-analyzer
 ```
 
 ## Usage
@@ -15,10 +15,10 @@ pip install tree-ring-analyzer
 ### Python API
 
 ```python
-import treeringanalyzer
+import treediskanalyzer
 
 # Configure the analyzer
-treeringanalyzer.configure(
+treediskanalyzer.configure(
     input_image_path="input/tree-disk4.png",
     cx=1204,
     cy=1264,
@@ -34,24 +34,24 @@ treeringanalyzer.configure(
     devernay_curves_s,  # Smoothed curves
     devernay_curves_c,  # Connected curves
     devernay_curves_p,  # Final processed curves
-) = treeringanalyzer.run()
+) = treediskanalyzer.run()
 ```
 
 ### Command Line Interface (CLI)
 
 Basic usage:
 ```bash
-tree-ring-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264
+tree-disk-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264
 ```
 
 Save intermediate results:
 ```bash
-tree-ring-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264 --save_results
+tree-disk-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264 --save_results
 ```
 
 Advanced usage with custom parameters:
 ```bash
-tree-ring-analyzer \
+tree-disk-analyzer \
     --input input/F02c.png \
     --cx 1204 \
     --cy 1264 \
@@ -89,8 +89,8 @@ tree-ring-analyzer \
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/tuke307/tree-ring-analyzer.git
-cd tree-ring-analyzer
+git clone https://github.com/tuke307/tree-disk-analyzer.git
+cd tree-disk-analyzer
 ```
 
 2. Create and activate virtual environment:
