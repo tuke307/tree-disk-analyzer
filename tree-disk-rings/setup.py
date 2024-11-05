@@ -15,7 +15,7 @@ def read_readme():
 
 setup(
     name="tree-disk-analyzer",
-    version="0.3.0",
+    version="0.4.0",
     description="A package for tree ring detection in images",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
