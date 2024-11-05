@@ -14,7 +14,7 @@
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
             "args": [
-                "--input",
+                "--input_image",
                 "./input/tree-disk1.jpg",
                 "--output",
                 "./output",
@@ -33,7 +33,7 @@
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
             "args": [
-                "--input",
+                "--input_image",
                 "./input/tree-disk2.jpg",
                 "--output",
                 "./output",
@@ -52,7 +52,7 @@
                 "PYTHONPATH": "${workspaceFolder}/src"
             },
             "args": [
-                "--input",
+                "--input_image",
                 "./input/tree-disk3.jpg",
                 "--output",
                 "./output",
