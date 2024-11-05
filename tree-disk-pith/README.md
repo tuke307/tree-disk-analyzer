@@ -19,7 +19,7 @@ import treediskpithdetector
 
 # Configure the analyzer
 treediskpithdetector.configure(
-    filename="input/tree-disk4.png",
+    input_image="input/tree-disk4.png",
     save_results=True,
 )
 
@@ -35,18 +35,18 @@ treediskpithdetector.configure(
 
 Basic usage:
 ```bash
-tree-disk-pith-detector --filename ./input/tree-disk3.png --new_shape 640 --debug
+tree-disk-pith-detector --input_image ./input/tree-disk3.png --new_shape 640 --debug
 ```
 
 Save intermediate results:
 ```bash
-tree-disk-pith-detector --filename ./input/tree-disk3.png --new_shape 640 --debug --method apd_pcl --save_results
+tree-disk-pith-detector --input_image ./input/tree-disk3.png --new_shape 640 --debug --method apd_pcl --save_results
 ```
 
 Advanced usage with custom parameters:
 ```bash
 tree-disk-pith-detector \
-    --filename input/tree-disk3.png \
+    --input_image input/tree-disk3.png \
     --cx 1204 \
     --cy 1264 \
     --output_dir custom_output/ \
@@ -61,7 +61,7 @@ tree-disk-pith-detector \
 
 | Argument | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `--filename` | str | Yes | - | Input image file path |
+| `--input_image` | str | Yes | - | Input image file path |
 | `--output_dir` | str | Yes | - | Output directory path |
 | `--method` | str | No | apd | Detection method to use. Choices are apd, apd_pcl, or apd_dl |
 | `--weights_path` | str | No | - | Path to the weights file (required if using apd_dl method) |

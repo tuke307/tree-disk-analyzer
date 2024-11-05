@@ -35,8 +35,8 @@ def run() -> Tuple[
     try:
         config.log_all_configs()
 
-        logger.info(f"Loading input image: {config.filename}")
-        img_in = load_image(config.filename)
+        logger.info(f"Loading input image: {config.input_image}")
+        img_in = load_image(config.input_image)
 
         logger.info("Running tree disk pith detection...")
         img_processed, pith = tree_disk_pith_detector(img_in)

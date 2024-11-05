@@ -19,7 +19,7 @@ class Config:
     All changes to settings are automatically logged.
 
     Attributes:
-        filename (str): Input image file path.
+        input_image (str): Input image file path.
         output_dir (str): Output directory path.
         method (Method): Detection method to use.
         percent_lo (float): Percent_lo parameter for detection.
@@ -32,7 +32,7 @@ class Config:
     """
 
     # -------------- Input/Output Settings ----------------
-    filename: str = ""
+    input_image: str = ""
     output_dir: str = "./output/"
     method: DetectionMethod = DetectionMethod.APD
     weights_path: Optional[str] = None
@@ -66,13 +66,13 @@ class Config:
     def _validate_and_set_paths(self):
         """Validate and set all path-related fields."""
         # Validate input image
-        if self.filename:
-            input_path = Path(self.filename)
+        if self.input_image:
+            input_path = Path(self.input_image)
             if not input_path.exists():
                 raise ValueError(f"Input image file does not exist: {input_path}")
             if not input_path.is_file():
                 raise ValueError(f"Input image path is not a file: {input_path}")
-            self.filename = str(input_path.resolve())
+            self.input_image = str(input_path.resolve())
 
         # Set up output directory
         output_path = Path(self.output_dir)
@@ -115,7 +115,7 @@ class Config:
         Raises:
             ValueError: If parameter doesn't exist or paths are invalid.
         """
-        path_params = {"filename", "output_dir", "weights_path"}
+        path_params = {"input_image", "output_dir", "weights_path"}
         needs_validation = any(param in path_params for param in kwargs)
 
         for key, new_value in kwargs.items():
@@ -185,7 +185,7 @@ def configure(**kwargs):
 
     Example:
         >>> configure(
-        ...     filename="sample.jpg",
+        ...     input_image="sample.jpg",
         ...     method="apd_dl",
         ...     weights_path="weights.pth",
         ...     st_w=7

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Pith detector")
     parser.add_argument(
-        "--filename", type=str, required=True, help="Input image file path"
+        "--input_image", type=str, required=True, help="Input image file path"
     )
 
     # Method parameters
@@ -60,7 +60,7 @@ def main():
     args = parse_arguments()
 
     configure(
-        filename=args.filename,
+        input_image=args.input_image,
         output_dir=args.output_dir,
         method=args.method,
         percent_lo=args.percent_lo,
