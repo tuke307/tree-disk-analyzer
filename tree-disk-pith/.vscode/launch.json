@@ -8,7 +8,11 @@
             "name": "tree-disk1",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "module": "treediskpithdetector.cli",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
             "args": [
                 "--filename",
                 "./input/tree-disk1.jpg",
@@ -28,7 +32,11 @@
             "name": "tree-disk2",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "module": "treediskpithdetector.cli",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
             "args": [
                 "--filename",
                 "./input/tree-disk2.jpg",
@@ -48,7 +56,11 @@
             "name": "tree-disk3",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "module": "treediskpithdetector.cli",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
             "args": [
                 "--filename",
                 "./input/tree-disk3.jpg",
