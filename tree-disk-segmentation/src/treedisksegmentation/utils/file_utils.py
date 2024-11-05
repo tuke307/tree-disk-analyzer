@@ -1,10 +1,8 @@
-import os
 import json
 from pathlib import Path
 import cv2
 import shutil
 from pathlib import Path
-from typing import List, Any, Tuple, Dict
 import numpy as np
 
 
@@ -71,7 +69,7 @@ def write_json(dict_to_save: dict, filepath: str) -> None:
         json.dump(dict_to_save, f)
 
 
-def clear_dir(dir: str) -> None:
+def clear_directory(dir: str) -> None:
     """
     Clear directory utility.
 
@@ -88,3 +86,23 @@ def clear_dir(dir: str) -> None:
             item.unlink()
         elif item.is_dir():
             shutil.rmtree(item)
+
+
+def ensure_directory(dir_path: Path, clear: bool = False) -> Path:
+    """
+    Ensure a directory exists, optionally clearing it first.
+
+    Args:
+        dir_path (Path): Directory path
+        clear (bool): Whether to clear existing contents
+
+    Returns:
+        Path: Resolved directory path
+    """
+    dir_path = dir_path.resolve()
+
+    if dir_path.exists() and clear:
+        clear_directory(dir_path)
+
+    dir_path.mkdir(parents=True, exist_ok=True)
+    return dir_path
