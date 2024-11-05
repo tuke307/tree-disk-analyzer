@@ -260,8 +260,8 @@ class LineDrawing:
                 drawn_img, (int(x1), int(y1)), (int(x2), int(y2)), Color.blue, thickness
             )
 
-        resized_img = resize_image_using_pil_lib(drawn_img, 640, 640)
-        cv2.imwrite(output_path, resized_img)
+        # resized_img = resize_image_using_pil_lib(drawn_img, 640, 640)
+        cv2.imwrite(output_path, drawn_img)
 
     @staticmethod
     def draw_line(
@@ -364,5 +364,5 @@ class LineDrawing:
 
         drawn_img = (drawn_img / max_val) * 255
         drawn_img = np.clip(drawn_img, 0, 255).astype(np.uint8)
-        resized_img = resize_image_using_pil_lib(drawn_img, 640, 640)
-        cv2.imwrite(output_path, resized_img)
+        # resized_img = resize_image_using_pil_lib(drawn_img, 640, 640)
+        cv2.imwrite(output_path, drawn_img)

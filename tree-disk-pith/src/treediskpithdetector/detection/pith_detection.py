@@ -11,6 +11,7 @@ from ..optimization.optimizer import Optimization
 from ..optimization.optimization_utils import filter_lo_around_c
 from ..geometry.line_transformations import pclines_local_orientation_filtering
 from ..optimization.least_squares_solver import LeastSquaresSolution
+from ..utils.file_utils import save_image
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +90,9 @@ def lo_sampling(
             img_s = cv2.rectangle(
                 img_s, (top[0], top[1]), (bottom[0], bottom[1]), (255, 0, 0), 1
             )
-        cv2.imwrite(str(Path(output_folder) / "img_end_s.png"), img_s)
+
+        path = str(Path(output_folder) / "img_end_s.png")
+        save_image(img_s, path)
     return L
 
 
@@ -321,7 +324,7 @@ def apd_dl(
 
     logger.info(f"weights_path {weights_path}")
     model = YOLO(weights_path, task="detect")
-    _ = model(img_in, project=output_dir, save=True, save_txt=True, imgsz=640)
+    _ = model(img_in, project=output_dir, save=True, save_txt=True)
     label_path = Path(output_dir) / "predict/labels/image0.txt"
     cx, cy, _, _ = read_label(str(label_path), img_in)
     pith = np.array([cx, cy])

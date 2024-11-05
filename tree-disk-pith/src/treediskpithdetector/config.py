@@ -42,7 +42,7 @@ class Config:
     st_w: int = 5
     lo_w: int = 3
     st_sigma: float = 1.0
-    new_shape: int = 1024
+    new_shape: int = 0
 
     # -------------- Operation Modes ----------------
     debug: bool = False

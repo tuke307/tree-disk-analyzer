@@ -118,7 +118,7 @@ class Optimization:
             )
             cv2.imwrite(
                 f"{self.output_dir}_op.png",
-                resize_image_using_pil_lib(debug_img, 640, 640),
+                debug_img,
             )
 
         return x, y, value

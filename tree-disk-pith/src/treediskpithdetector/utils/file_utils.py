@@ -18,18 +18,24 @@ def load_image(image_path: str) -> np.ndarray:
 
     Returns:
         The image as a NumPy array in RGB format.
-
-    Raises:
-        FileNotFoundError: If the image file does not exist or cannot be read.
     """
     img = cv2.imread(image_path)
+    return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    if img is None:
-        raise FileNotFoundError(f"Image not found or cannot be read: {image_path}")
 
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+def save_image(image: np.ndarray, image_path: str) -> None:
+    """
+    Saves an image to the given file path.
 
-    return img
+    Args:
+        image: The image to save.
+        image_path: Path to save the image file.
+
+    Returns:
+        None
+    """
+    img_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    cv2.imwrite(image_path, img_bgr)
 
 
 def load_json(filepath: Union[str, Path]) -> Dict:
@@ -56,7 +62,7 @@ def load_json(filepath: Union[str, Path]) -> Dict:
     return data
 
 
-def write_json(dict_to_save: Dict, filepath: Union[str, Path]) -> None:
+def write_json(content: any, filepath: Union[str, Path]) -> None:
     """
     Writes a dictionary to a JSON file.
 
@@ -70,7 +76,7 @@ def write_json(dict_to_save: Dict, filepath: Union[str, Path]) -> None:
     filepath = Path(filepath)
 
     with open(filepath, "w") as f:
-        json.dump(dict_to_save, f, indent=4)
+        json.dump(content, f, indent=4)
 
 
 def clear_directory(directory: Path) -> None:

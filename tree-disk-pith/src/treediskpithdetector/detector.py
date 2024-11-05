@@ -10,6 +10,7 @@ from .visualization.color import Color
 from .processing.image_processing import resize_image_using_pil_lib
 from .detection.pith_detection import apd, apd_pcl, apd_dl
 from .detection.detection_method import DetectionMethod
+from .utils.file_utils import write_json, save_image
 from .config import config
 
 logger = logging.getLogger(__name__)
@@ -34,9 +35,9 @@ def tree_disk_pith_detector(img_in: np.ndarray) -> Tuple[np.ndarray, np.ndarray]
             img_processed, height_output=config.new_shape, width_output=config.new_shape
         )
 
-    if config.debug:
-        resized_debug_image = resize_image_using_pil_lib(img_processed, 640, 640)
-        cv2.imwrite(str(Path(config.output_dir) / "resized.png"), resized_debug_image)
+    if config.save_results:
+        path = str(Path(config.output_dir) / "resized.png")
+        save_image(img_processed, path)
 
     # Select and run detection method
     detection_methods = {
@@ -69,25 +70,24 @@ def tree_disk_pith_detector(img_in: np.ndarray) -> Tuple[np.ndarray, np.ndarray]
         ),
     }
 
-    start_time = time.time()
     pith = detection_methods[config.method]()
-    execution_time = time.time() - start_time
 
     # Handle debug visualization
-    if config.debug:
-        img_debug = img_processed.copy()
-        height, width = img_debug.shape[:2]
+    if config.save_results:
+        img_with_pith = img_processed.copy()
+        height, width = img_with_pith.shape[:2]
         dot_size = max(height // 200, 1)
         x, y = pith
         cv2.circle(
-            img_debug,
+            img_with_pith,
             (int(round(x)), int(round(y))),
             dot_size,
             Color.blue,
             -1,
         )
-        img_debug_resized = resize_image_using_pil_lib(img_debug, 640, 640)
-        cv2.imwrite(str(Path(config.output_dir) / "pith.png"), img_debug_resized)
+
+        path = str(Path(config.output_dir) / "pith.png")
+        save_image(img_with_pith, path)
 
     # Scale coordinates back to original image size if needed
     if config.new_shape > 0:
@@ -96,19 +96,13 @@ def tree_disk_pith_detector(img_in: np.ndarray) -> Tuple[np.ndarray, np.ndarray]
         scale_y = original_height / new_height
         pith = np.array(pith) * np.array([scale_x, scale_y])
 
-    # Save results if enabled
+    # Save pith
     if config.save_results:
-        save_detection_results(pith, execution_time)
+        path = str(Path(config.output_dir) / "pith.json")
+        data = {
+            "coarse_x": int(pith[0]),
+            "coarse_y": int(pith[1]),
+        }
+        write_json(data, path)
 
     return img_processed, pith
-
-
-def save_detection_results(pith: np.ndarray, execution_time: float):
-    """Save detection results to CSV."""
-    data = {
-        "coarse_x": [pith[0]],
-        "coarse_y": [pith[1]],
-        "exec_time(s)": [execution_time],
-    }
-    df = pd.DataFrame(data)
-    df.to_csv(str(Path(config.output_dir) / "pith.csv"), index=False)

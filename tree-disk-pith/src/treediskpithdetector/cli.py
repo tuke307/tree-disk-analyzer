@@ -1,6 +1,7 @@
 import argparse
 import logging
 
+from .config import Config
 from . import configure, run
 
 logger = logging.getLogger(__name__)
@@ -11,34 +12,40 @@ def parse_arguments():
     parser.add_argument(
         "--filename", type=str, required=True, help="Input image file path"
     )
-    parser.add_argument(
-        "--output_dir", type=str, required=True, help="Output directory"
-    )
 
     # Method parameters
+    parser.add_argument(
+        "--output_dir", type=str, default=Config.output_dir, help="Output directory"
+    )
     parser.add_argument(
         "--method",
         type=str,
         choices=["apd", "apd_pcl", "apd_dl"],
-        default="apd",
+        default=Config.method,
         help="Method to use: 'apd', 'apd_pcl', or 'apd_dl'",
     )
     parser.add_argument(
         "--weights_path",
         type=str,
-        default=None,
+        default=Config.weights_path,
         help="Path to the weights file (required for method 'apd_dl')",
     )
     parser.add_argument(
-        "--percent_lo", type=float, default=0.7, help="percent_lo parameter"
+        "--percent_lo",
+        type=float,
+        default=Config.percent_lo,
+        help="percent_lo parameter",
     )
-    parser.add_argument("--st_w", type=int, default=3, help="st_w parameter")
-    parser.add_argument("--lo_w", type=int, default=3, help="lo_w parameter")
+    parser.add_argument("--st_w", type=int, default=Config.st_w, help="st_w parameter")
+    parser.add_argument("--lo_w", type=int, default=Config.lo_w, help="lo_w parameter")
     parser.add_argument(
-        "--st_sigma", type=float, default=1.2, help="st_sigma parameter"
+        "--st_sigma", type=float, default=Config.st_sigma, help="st_sigma parameter"
     )
     parser.add_argument(
-        "--new_shape", type=int, default=0, help="New shape for resizing image"
+        "--new_shape",
+        type=int,
+        default=Config.new_shape,
+        help="New shape for resizing image",
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     parser.add_argument(

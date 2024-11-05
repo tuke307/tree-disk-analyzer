@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 from pathlib import Path
 from skimage.util.shape import view_as_windows
+from ..utils.file_utils import save_image
 
 
 def structural_tensor(
@@ -163,4 +164,5 @@ def _draw_debug_visualization(
         cv2.line(img_s, (p1[0], p1[1]), (p2[0], p2[1]), (0, 0, 255), 1)
         cv2.rectangle(img_s, (p1[0], p1[1]), (p2[0], p2[1]), (255, 0, 0), 1)
 
-    cv2.imwrite(str(output_folder / "img_end_s.png"), img_s)
+    path = str(Path(output_folder) / "img_end_s.png")
+    save_image(img_s, path)
