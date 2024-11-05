@@ -3,8 +3,8 @@ import cv2
 from scipy.optimize import minimize
 from typing import Optional, Tuple, Any
 
-from src.processing.image_processing import resize_image_using_pil_lib
-from src.visualization.color import Color
+from ..processing.image_processing import resize_image_using_pil_lib
+from ..visualization.color import Color
 
 
 class Optimization:

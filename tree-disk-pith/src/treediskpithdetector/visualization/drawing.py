@@ -2,8 +2,8 @@ import numpy as np
 import cv2
 from typing import Tuple, Optional, List
 
-from src.visualization.color import Color
-from src.processing.image_processing import (
+from ..visualization.color import Color
+from ..processing.image_processing import (
     resize_image_using_pil_lib,
     compute_intersection_with_block_boundaries,
 )

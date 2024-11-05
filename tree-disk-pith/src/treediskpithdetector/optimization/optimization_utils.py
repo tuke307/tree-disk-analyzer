@@ -2,8 +2,8 @@ import numpy as np
 import cv2
 from typing import Optional, Tuple, Any
 
-from src.visualization.color import Color
-from src.visualization.drawing import Shapes
+from ..visualization.color import Color
+from ..visualization.drawing import Shapes
 
 
 def filter_lo_around_c(

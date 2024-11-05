@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from typing import Tuple, Optional, List
 
-from src.visualization.drawing import Shapes, LineDrawing
+from ..visualization.drawing import Shapes, LineDrawing
 
 
 def pclines_straight_all(
@@ -463,7 +463,7 @@ def pclines_local_orientation_filtering(
     img_in: np.ndarray,
     m_lsd: np.ndarray,
     coherence: Optional[np.ndarray] = None,
-    lo_dir: Optional[Path] = None,
+    output_folder: Optional[str] = None,
     outlier_th: float = 0.03,
     debug: bool = True,
 ) -> Tuple[np.ndarray, Optional[np.ndarray], bool]:
@@ -474,7 +474,7 @@ def pclines_local_orientation_filtering(
         img_in: Input image array.
         m_lsd: Array of line segments.
         coherence: Optional array of coherence values.
-        lo_dir: Directory to save debug outputs.
+        output_folder: Directory to save debug outputs.
         outlier_th: Residual threshold for inliers.
         debug: Whether to save debug outputs.
 
@@ -487,7 +487,11 @@ def pclines_local_orientation_filtering(
         img_in,
         m_lsd,
         coherence,
-        str(lo_dir / "lsd_converging_lines") if lo_dir is not None else None,
+        (
+            str(Path(output_folder) / "lsd_converging_lines")
+            if output_folder is not None
+            else None
+        ),
         outlier_th=outlier_th,
         debug=debug,
     )
@@ -497,7 +501,11 @@ def pclines_local_orientation_filtering(
         img_in,
         l_rotated_lsd_lines,
         coherence,
-        str(lo_dir / "lsd_rotated_converging_lines") if lo_dir is not None else None,
+        (
+            str(Path(output_folder) / "lsd_rotated_converging_lines")
+            if output_folder is not None
+            else None
+        ),
         outlier_th=outlier_th,
         debug=debug,
     )
@@ -516,7 +524,11 @@ def pclines_local_orientation_filtering(
         img_in,
         converging_lines,
         converging_coherence,
-        str(lo_dir / "both_subset_convering_lines") if lo_dir is not None else None,
+        (
+            str(Path(output_folder) / "both_subset_convering_lines")
+            if output_folder is not None
+            else None
+        ),
         outlier_th=outlier_th,
         debug=debug,
     )

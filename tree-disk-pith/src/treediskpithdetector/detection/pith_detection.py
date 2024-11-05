@@ -6,11 +6,11 @@ from pathlib import Path
 from typing import Optional, Tuple, Union
 import logging
 
-from src.geometry.structural_tensor import structural_tensor, sampling_structural_tensor
-from src.optimization.optimizer import Optimization
-from src.optimization.optimization_utils import filter_lo_around_c
-from src.geometry.line_transformations import pclines_local_orientation_filtering
-from src.optimization.least_squares_solver import LeastSquaresSolution
+from ..geometry.structural_tensor import structural_tensor, sampling_structural_tensor
+from ..optimization.optimizer import Optimization
+from ..optimization.optimization_utils import filter_lo_around_c
+from ..geometry.line_transformations import pclines_local_orientation_filtering
+from ..optimization.least_squares_solver import LeastSquaresSolution
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def lo_sampling(
     percent_lo: float,
     debug: bool = False,
     img: Optional[np.ndarray] = None,
-    output_folder: Optional[Path] = None,
+    output_folder: Optional[str] = None,
 ) -> np.ndarray:
     """
     Sample local orientations from the structural tensor.
@@ -53,7 +53,7 @@ def lo_sampling(
         percent_lo (float): Percentage for thresholding high coherence orientations (0-1).
         debug (bool, optional): If True, debug images are saved. Defaults to False.
         img (np.ndarray, optional): Original image for visualization. Required if debug is True.
-        output_folder (Path, optional): Folder to save debug images. Required if debug is True.
+        output_folder (str, optional): Folder to save debug images. Required if debug is True.
 
     Returns:
         np.ndarray: Array of line segments representing local orientations.
@@ -89,7 +89,7 @@ def lo_sampling(
             img_s = cv2.rectangle(
                 img_s, (top[0], top[1]), (bottom[0], bottom[1]), (255, 0, 0), 1
             )
-        cv2.imwrite(str(output_folder / "img_end_s.png"), img_s)
+        cv2.imwrite(str(Path(output_folder) / "img_end_s.png"), img_s)
     return L
 
 
@@ -98,7 +98,7 @@ def pclines_postprocessing(
     Lof: np.ndarray,
     ransac_outlier_th: float = 0.03,
     debug: bool = False,
-    output_folder: Optional[Path] = None,
+    output_folder: Optional[str] = None,
 ) -> np.ndarray:
     """
     Perform PClines postprocessing on local orientations.
@@ -108,13 +108,17 @@ def pclines_postprocessing(
         Lof (np.ndarray): Local orientations array.
         ransac_outlier_th (float, optional): Outlier threshold for RANSAC. Defaults to 0.03.
         debug (bool, optional): If True, debug information is saved. Defaults to False.
-        output_folder (Path, optional): Folder to save debug outputs.
+        output_folder (str, optional): Folder to save debug outputs.
 
     Returns:
         np.ndarray: Processed local orientations.
     """
     m_lsd, _, _ = pclines_local_orientation_filtering(
-        img_in, Lof, outlier_th=ransac_outlier_th, debug=debug, lo_dir=output_folder
+        img_in,
+        Lof,
+        outlier_th=ransac_outlier_th,
+        debug=debug,
+        output_folder=output_folder,
     )
     return m_lsd
 
@@ -125,7 +129,7 @@ def optimization(
     ci: Optional[Union[Tuple[float, float], np.ndarray]] = None,
 ) -> np.ndarray:
     """
-    Perform optimization to find the peak (center point).
+    Perform optimization to find the pith (center point).
 
     Args:
         img_in (np.ndarray): Input image.
@@ -140,27 +144,27 @@ def optimization(
         if ci is None
         else ci
     )
-    peak = Optimization(line_segments=line_segments).run(xo, yo)
-    peak = (peak[0], peak[1])
+    pith = Optimization(line_segments=line_segments).run(xo, yo)
+    pith = (pith[0], pith[1])
 
-    return np.array(peak)
+    return np.array(pith)
 
 
-def peak_is_not_in_rectangular_region(
+def pith_is_not_in_rectangular_region(
     ci_plus_1: Union[Tuple[float, float], np.ndarray],
     top_left: Union[Tuple[float, float], np.ndarray],
     bottom_right: Union[Tuple[float, float], np.ndarray],
 ) -> bool:
     """
-    Check if the peak is outside a rectangular region defined by top-left and bottom-right corners.
+    Check if the pith is outside a rectangular region defined by top-left and bottom-right corners.
 
     Args:
-        ci_plus_1 (Tuple[float, float] or np.ndarray): The peak coordinates.
+        ci_plus_1 (Tuple[float, float] or np.ndarray): The pith coordinates.
         top_left (Tuple[float, float] or np.ndarray): Top-left corner of the rectangle.
         bottom_right (Tuple[float, float] or np.ndarray): Bottom-right corner of the rectangle.
 
     Returns:
-        bool: True if peak is outside the rectangle, False otherwise.
+        bool: True if pith is outside the rectangle, False otherwise.
     """
     x, y = ci_plus_1
     return (
@@ -223,7 +227,7 @@ def apd(
                 ci = ci_plus_1
                 break
 
-            if peak_is_not_in_rectangular_region(ci_plus_1, top_left, bottom_right):
+            if pith_is_not_in_rectangular_region(ci_plus_1, top_left, bottom_right):
                 break
 
         ci = ci_plus_1
@@ -261,7 +265,7 @@ def apd_pcl(
     Returns:
         np.ndarray: Detected center point coordinates.
     """
-    peak = apd(
+    pith = apd(
         img_in,
         st_sigma,
         st_window,
@@ -274,7 +278,7 @@ def apd_pcl(
         debug=debug,
         output_dir=output_dir,
     )
-    return peak
+    return pith
 
 
 def read_label(label_filename: str, img: np.ndarray) -> Tuple[int, int, int, int]:
@@ -299,15 +303,15 @@ def read_label(label_filename: str, img: np.ndarray) -> Tuple[int, int, int, int
 
 
 def apd_dl(
-    img_in: np.ndarray, output_dir: Path, weights_path: Union[str, Path]
+    img_in: np.ndarray, output_dir: str, weights_path: Union[str, str]
 ) -> np.ndarray:
     """
     Adaptive Pith Detection using Deep Learning model.
 
     Args:
         img_in (np.ndarray): Input image.
-        output_dir (Path): Directory to save outputs.
-        weights_path (str or Path): Path to the trained model weights.
+        output_dir (str): Directory to save outputs.
+        weights_path (str or str): Path to the trained model weights.
 
     Returns:
         np.ndarray: Detected center point coordinates.
@@ -318,7 +322,8 @@ def apd_dl(
     logger.info(f"weights_path {weights_path}")
     model = YOLO(weights_path, task="detect")
     _ = model(img_in, project=output_dir, save=True, save_txt=True, imgsz=640)
-    label_path = output_dir / "predict/labels/image0.txt"
+    label_path = Path(output_dir) / "predict/labels/image0.txt"
     cx, cy, _, _ = read_label(str(label_path), img_in)
-    peak = np.array([cx, cy])
-    return peak
+    pith = np.array([cx, cy])
+
+    return pith

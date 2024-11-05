@@ -45,7 +45,7 @@ class Line:
             certainty: Confidence in line detection (0-1)
             coefficients: Line equation coefficients (a, b, c)
         """
-        from src.geometry.geometry_utils import euclidean_distance
+        from .geometry.geometry_utils import euclidean_distance
 
         # Convert numpy arrays to Points if necessary
         self.p1 = Point.from_array(p1) if isinstance(p1, np.ndarray) else p1
