@@ -35,12 +35,12 @@ treediskpithdetector.configure(
 
 Basic usage:
 ```bash
-tree-disk-pith-detector --filename input/tree-disk3.png --new_shape 640 --debug
+tree-disk-pith-detector --filename ./input/tree-disk3.png --new_shape 640 --debug
 ```
 
 Save intermediate results:
 ```bash
-tree-disk-pith-detector --filename input/tree-disk3.png --new_shape 640 --debug --method apd_pcl --save_results
+tree-disk-pith-detector --filename ./input/tree-disk3.png --new_shape 640 --debug --method apd_pcl --save_results
 ```
 
 Advanced usage with custom parameters:
