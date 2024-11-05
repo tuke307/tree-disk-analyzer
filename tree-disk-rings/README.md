@@ -19,7 +19,7 @@ import treediskanalyzer
 
 # Configure the analyzer
 treediskanalyzer.configure(
-    input_image_path="input/tree-disk4.png",
+    input_image="input/tree-disk4.png",
     cx=1204,
     cy=1264,
     save_results=True,
@@ -41,18 +41,18 @@ treediskanalyzer.configure(
 
 Basic usage:
 ```bash
-tree-disk-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264
+tree-disk-analyzer --input_image input/tree-disk4.png --cx 1204 --cy 1264
 ```
 
 Save intermediate results:
 ```bash
-tree-disk-analyzer --input input/tree-disk4.png --cx 1204 --cy 1264 --save_results
+tree-disk-analyzer --input_image input/tree-disk4.png --cx 1204 --cy 1264 --save_results
 ```
 
 Advanced usage with custom parameters:
 ```bash
 tree-disk-analyzer \
-    --input input/F02c.png \
+    --input_image input/F02c.png \
     --cx 1204 \
     --cy 1264 \
     --output_dir custom_output/ \
@@ -67,7 +67,7 @@ tree-disk-analyzer \
 
 | Argument | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `--input` | str | Yes | - | Path to input image |
+| `--input_image` | str | Yes | - | Path to input image |
 | `--cx` | int | Yes | - | Pith x-coordinate |
 | `--cy` | int | Yes | - | Pith y-coordinate |
 | `--output_dir` | str | No | `./output` | Output directory path |

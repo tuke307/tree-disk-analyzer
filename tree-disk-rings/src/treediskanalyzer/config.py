@@ -20,7 +20,7 @@ class Config:
 
     # -------------- Input/Output Settings ----------------
 
-    input_image_path: str = ""
+    input_image: str = ""
     """Path to the input image file."""
 
     output_dir: str = "./output/"
@@ -108,8 +108,8 @@ class Config:
             raise ValueError(f"Error with output directory: {output_path}, {str(e)}")
 
         # Validate input image if provided
-        if self.input_image_path:
-            input_path = Path(self.input_image_path)
+        if self.input_image:
+            input_path = Path(self.input_image)
             if not input_path.is_absolute():
                 input_path = root_path / input_path
 
@@ -118,7 +118,7 @@ class Config:
             if not input_path.is_file():
                 raise ValueError(f"Input image path is not a file: {input_path}")
 
-            self.input_image_path = input_path.resolve()
+            self.input_image = input_path.resolve()
 
     def _log_change(self, param: str, old_value: Any, new_value: Any):
         """Log a parameter change with timestamp."""
@@ -141,7 +141,7 @@ class Config:
         Raises:
             ValueError: If parameter doesn't exist or paths are invalid.
         """
-        path_params = {"input_image_path", "root_dir", "output_dir"}
+        path_params = {"input_image", "root_dir", "output_dir"}
         needs_validation = any(param in path_params for param in kwargs)
 
         for key, new_value in kwargs.items():
@@ -205,7 +205,7 @@ def configure(**kwargs):
 
     Example:
         >>> configure(
-        ...     input_image_path="sample.jpg",
+        ...     input_image="sample.jpg",
         ...     cx=100,
         ...     cy=100
         ... )

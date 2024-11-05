@@ -12,7 +12,7 @@ def parse_arguments() -> argparse.Namespace:
     # Required arguments
     required = parser.add_argument_group("required arguments")
     required.add_argument(
-        "--input", required=True, help="Path to input image", metavar="PATH"
+        "--input_image", required=True, help="Path to input image", metavar="PATH"
     )
     required.add_argument(
         "--cx", type=int, required=True, help="Pith x-coordinate", metavar="X"
@@ -105,7 +105,7 @@ def main():
 
     # Configure settings from CLI arguments
     configure(
-        input_image_path=args.input,
+        input_image=args.input_image,
         root_dir=args.root_dir,
         output_dir=args.output_dir,
         cx=args.cx,

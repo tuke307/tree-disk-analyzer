@@ -48,8 +48,8 @@ def run() -> Tuple[
     try:
         config.log_all_configs()
 
-        logger.info(f"Loading input image: {config.input_image_path}")
-        img_in = load_image(config.input_image_path)
+        logger.info(f"Loading input image: {config.input_image}")
+        img_in = load_image(config.input_image)
 
         logger.info("Running tree ring detection...")
 

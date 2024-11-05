@@ -82,7 +82,7 @@ def chain_to_labelme(img_in: np.ndarray, chain_list: List[Chain]) -> Dict[str, A
     )
 
     labelme_json = {
-        "imagePath": str(config.input_image_path),
+        "imagePath": str(config.input_image),
         "imageHeight": init_height,
         "imageWidth": init_width,
         "version": "5.5.0",

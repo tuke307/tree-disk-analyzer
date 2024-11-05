@@ -11,7 +11,7 @@
             "module": "treeringanalyzer.cli",
             "cwd": "${workspaceFolder}",
             "args": [
-                "--input",
+                "--input_image",
                 "./input/tree-disk1.jpg",
                 "--cx",
                 "538",
@@ -29,7 +29,7 @@
             "module": "treeringanalyzer.cli",
             "cwd": "${workspaceFolder}",
             "args": [
-                "--input",
+                "--input_image",
                 "./input/tree-disk2.jpg",
                 "--cx",
                 "501",
@@ -47,7 +47,7 @@
             "module": "treeringanalyzer.cli",
             "cwd": "${workspaceFolder}",
             "args": [
-                "--input",
+                "--input_image",
                 "./input/tree-disk3.jpg",
                 "--cx",
                 "418",
@@ -65,7 +65,7 @@
             "module": "treeringanalyzer.cli",
             "cwd": "${workspaceFolder}",
             "args": [
-                "--input",
+                "--input_image",
                 "./input/tree-disk4.png",
                 "--cx",
                 "1204",
