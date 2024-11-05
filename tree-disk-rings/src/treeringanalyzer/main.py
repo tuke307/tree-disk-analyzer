@@ -45,9 +45,9 @@ def run() -> Tuple[
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    config.log_all_configs()
-
     try:
+        config.log_all_configs()
+
         logger.info(f"Loading input image: {config.input_image_path}")
         img_in = load_image(config.input_image_path)
 
