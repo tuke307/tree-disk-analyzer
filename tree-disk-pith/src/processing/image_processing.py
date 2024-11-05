@@ -9,7 +9,7 @@ from src.optimization.least_squares_solver import LeastSquaresSolution
 
 
 def compute_intersection_with_block_boundaries(
-    p1: np.ndarray, p2: np.ndarray, img: np.ndarray
+    p1: Tuple[float, float], p2: Tuple[float, float], img: np.ndarray
 ) -> Tuple[
     Optional[float],
     Optional[float],
@@ -44,6 +44,7 @@ def compute_intersection_with_block_boundaries(
         x = int(p2[0])
         x1, y1 = x, 0
         x2, y2 = x, height - 1
+
         return x1, y1, x2, y2, None, None, None, None
 
     if np.isclose(a, 0) and not np.isclose(b, 0):
@@ -51,6 +52,7 @@ def compute_intersection_with_block_boundaries(
         y = int(p2[1])
         x1, y1 = 0, y
         x2, y2 = width - 1, y
+
         return x1, y1, x2, y2, None, None, None, None
 
     x1, y1 = 0.0, None
@@ -67,13 +69,13 @@ def compute_intersection_with_block_boundaries(
 
 
 def resize_image_using_pil_lib(
-    im_in: np.ndarray, height_output: int, width_output: int, keep_ratio: bool = True
+    img_in: np.ndarray, height_output: int, width_output: int, keep_ratio: bool = True
 ) -> np.ndarray:
     """
     Resizes the image using PIL library.
 
     Args:
-        im_in: Input image as a NumPy array.
+        img_in: Input image as a NumPy array.
         height_output: Desired height of the output image.
         width_output: Desired width of the output image.
         keep_ratio: Whether to maintain the aspect ratio.
@@ -81,7 +83,7 @@ def resize_image_using_pil_lib(
     Returns:
         The resized image as a NumPy array.
     """
-    pil_img = Image.fromarray(im_in)
+    pil_img = Image.fromarray(img_in)
     resample_flag = Image.Resampling.LANCZOS
 
     if keep_ratio:
@@ -96,22 +98,23 @@ def resize_image_using_pil_lib(
 
 
 def change_background_to_value(
-    im_in: np.ndarray, mask: np.ndarray, value: int = 255
+    img_in: np.ndarray, mask: np.ndarray, value: int = 255
 ) -> np.ndarray:
     """
     Changes the background intensity to a specified value.
 
     Args:
-        im_in: Input image.
+        img_in: Input image.
         mask: Mask where non-zero values indicate background.
         value: The intensity value to set for the background.
 
     Returns:
         The image with background intensity changed.
     """
-    im_out = im_in.copy()
-    im_out[mask > 0] = value
-    return im_out
+    img_out = img_in.copy()
+    img_out[mask > 0] = value
+
+    return img_out
 
 
 def rgb2gray(img_r: np.ndarray) -> np.ndarray:
@@ -128,20 +131,20 @@ def rgb2gray(img_r: np.ndarray) -> np.ndarray:
 
 
 def change_background_intensity_to_mean(
-    im_in: np.ndarray,
+    img_in: np.ndarray,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Changes the background intensity to the mean intensity of the non-background.
 
     Args:
-        im_in: Input grayscale image with background intensity as 255.
+        img_in: Input grayscale image with background intensity as 255.
 
     Returns:
         A tuple containing the image with background intensity changed and the background mask.
     """
-    im_eq = im_in.copy()
-    mask = np.where(im_in == 255, 1, 0)
-    mean_intensity = np.mean(im_in[mask == 0])
+    im_eq = img_in.copy()
+    mask = np.where(img_in == 255, 1, 0)
+    mean_intensity = np.mean(img_in[mask == 0])
     im_eq = change_background_to_value(im_eq, mask, int(mean_intensity))
     return im_eq, mask
 
@@ -170,7 +173,7 @@ def equalize(im_g: np.ndarray) -> np.ndarray:
     Returns:
         Equalized image.
     """
-    im_pre, mask = change_background_intensity_to_mean(im_g)
-    im_pre = equalize_image_using_clahe(im_pre)
-    im_pre = change_background_to_value(im_pre, mask, Color.gray_white)
-    return im_pre
+    img_pre, mask = change_background_intensity_to_mean(im_g)
+    img_pre = equalize_image_using_clahe(img_pre)
+    img_pre = change_background_to_value(img_pre, mask, Color.gray_white)
+    return img_pre

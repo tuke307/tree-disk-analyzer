@@ -48,7 +48,7 @@ class LeastSquaresSolution:
 
     @staticmethod
     def compute_line_coefficients(
-        p1: np.ndarray, p2: np.ndarray
+        p1: Tuple[float, float], p2: Tuple[float, float]
     ) -> Tuple[float, float, float]:
         """
         Compute coefficients (a, b, c) for the line equation ax + by + c = 0.
@@ -73,6 +73,7 @@ class LeastSquaresSolution:
         a = y1 - y2
         b = x2 - x1
         c = x1 * y2 - x2 * y1
+
         return a, b, c
 
     def _build_equation_system(self) -> Tuple[np.ndarray, np.ndarray]:
