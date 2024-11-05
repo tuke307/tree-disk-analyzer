@@ -1,7 +1,5 @@
 import pytest
 from pathlib import Path
-
-
 import treediskpithdetector as tdc
 
 # set root folder
