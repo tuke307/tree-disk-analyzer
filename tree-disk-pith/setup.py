@@ -15,7 +15,7 @@ def read_readme():
 
 setup(
     name="tree-disk-pith-detector",
-    version="0.1.0",
+    version="0.1.1",
     description="A package for tree disk pith detection in images",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
