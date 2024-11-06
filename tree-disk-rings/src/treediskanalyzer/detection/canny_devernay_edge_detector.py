@@ -13,7 +13,7 @@ from ..config import config
 def get_devernay_path():
     """Get the absolute path to the devernay binary."""
     binary_path = pkg_resources.resource_filename(
-        "treeringanalyzer", os.path.join("externals", "devernay_1.0", "devernay.out")
+        "treediskanalyzer", os.path.join("externals", "devernay_1.0", "devernay.out")
     )
 
     # Ensure the file exists and is executable
