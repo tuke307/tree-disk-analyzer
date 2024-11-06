@@ -1,6 +1,8 @@
 import os
 import logging
 from pathlib import Path
+from typing import Tuple
+import numpy as np
 
 from .config import config
 from .models.utils import load_model
@@ -14,12 +16,12 @@ from .segmentation.segmentation import (
 logger = logging.getLogger(__name__)
 
 
-def run() -> None:
+def run() -> Tuple[np.ndarray, np.ndarray]:
     """
     Pipeline to remove the salient object while maintaining the original resolution.
 
     Returns:
-        None
+
     """
     logging.basicConfig(
         level=logging.DEBUG if config.debug else logging.INFO,
