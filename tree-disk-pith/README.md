@@ -64,7 +64,7 @@ tree-disk-pith-detector \
 | `--input_image` | str | Yes | - | Input image file path |
 | `--output_dir` | str | Yes | - | Output directory path |
 | `--method` | str | No | apd | Detection method to use. Choices are apd, apd_pcl, or apd_dl |
-| `--weights_path` | str | No | - | Path to the weights file (required if using apd_dl method) |
+| `--model_path` | str | No | - | Path to the weights file (required if using apd_dl method) |
 | `--percent_lo` | float | No | 0.7 | percent_lo parameter for the algorithm |
 | `--st_w` | int | No | 3 | st_w parameter for the algorithm |
 | `--lo_w` | int | No | 3 | lo_w parameter for the algorithm |

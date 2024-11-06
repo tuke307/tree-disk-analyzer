@@ -28,14 +28,14 @@ class Config:
         st_sigma (float): ST_Sigma parameter for Gaussian filtering.
         new_shape (int): New shape for resizing the image.
         debug (bool): Enable debug mode for additional logging.
-        weights_path (Optional[str]): Path to weights file (required for 'apd_dl' method).
+        model_path (Optional[str]): Path to model file (required for 'apd_dl' method).
     """
 
     # -------------- Input/Output Settings ----------------
     input_image: str = ""
     output_dir: str = "./output/"
     method: DetectionMethod = DetectionMethod.APD
-    weights_path: Optional[str] = None
+    model_path: Optional[str] = None
 
     # -------------- Processing Parameters ----------------
     percent_lo: float = 0.1
@@ -60,8 +60,8 @@ class Config:
                 self._change_history[field_name] = []
 
         # Validate method-specific requirements
-        if self.method == DetectionMethod.APD_DL and not self.weights_path:
-            raise ValueError("weights_path is required when using APD_DL method")
+        if self.method == DetectionMethod.APD_DL and not self.model_path:
+            raise ValueError("model_path is required when using APD_DL method")
 
     def _validate_and_set_paths(self):
         """Validate and set all path-related fields."""
@@ -85,14 +85,14 @@ class Config:
         except Exception as e:
             raise ValueError(f"Error with output directory: {output_path}, {str(e)}")
 
-        # Validate weights path if provided
-        if self.weights_path:
-            weights_path = Path(self.weights_path)
-            if not weights_path.exists():
-                raise ValueError(f"Weights file does not exist: {weights_path}")
-            if not weights_path.is_file():
-                raise ValueError(f"Weights path is not a file: {weights_path}")
-            self.weights_path = str(weights_path.resolve())
+        # Validate model path if provided
+        if self.model_path:
+            model_path = Path(self.model_path)
+            if not model_path.exists():
+                raise ValueError(f"Model file does not exist: {model_path}")
+            if not model_path.is_file():
+                raise ValueError(f"Model path is not a file: {model_path}")
+            self.model_path = str(model_path.resolve())
 
     def _log_change(self, param: str, old_value: Any, new_value: Any):
         """Log a parameter change with timestamp."""
@@ -115,7 +115,7 @@ class Config:
         Raises:
             ValueError: If parameter doesn't exist or paths are invalid.
         """
-        path_params = {"input_image", "output_dir", "weights_path"}
+        path_params = {"input_image", "output_dir", "model_path"}
         needs_validation = any(param in path_params for param in kwargs)
 
         for key, new_value in kwargs.items():
@@ -187,7 +187,7 @@ def configure(**kwargs):
         >>> configure(
         ...     input_image="sample.jpg",
         ...     method="apd_dl",
-        ...     weights_path="weights.pth",
+        ...     model_path="model.pth",
         ...     st_w=7
         ... )
     """

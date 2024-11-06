@@ -7,13 +7,13 @@ root_folder = Path(__file__).parent.parent.absolute()
 
 
 def test_treediskpithdetector_apd():
-    filename = root_folder / "input" / "tree-disk1.jpg"
+    input_image = root_folder / "input" / "tree-disk1.jpg"
     output_dir = root_folder / "output" / "apd"
 
     # Configure the detector
     tdc.configure(
         method="apd",
-        filename=filename,
+        input_image=input_image,
         output_dir=output_dir,
         debug=True,
         save_results=True,
@@ -27,13 +27,13 @@ def test_treediskpithdetector_apd():
 
 
 def test_treediskpithdetector_apd_pcl():
-    filename = root_folder / "input" / "tree-disk1.jpg"
+    input_image = root_folder / "input" / "tree-disk1.jpg"
     output_dir = root_folder / "output" / "apd_pcl"
 
     # Configure the detector
     tdc.configure(
         method="apd_pcl",
-        filename=filename,
+        input_image=input_image,
         output_dir=output_dir,
         debug=True,
         save_results=True,
@@ -47,16 +47,16 @@ def test_treediskpithdetector_apd_pcl():
 
 
 def test_treediskpithdetector_apd_dl():
-    filename = root_folder / "input" / "tree-disk1.jpg"
+    input_image = root_folder / "input" / "tree-disk1.jpg"
     output_dir = root_folder / "output" / "apd_dl"
-    weights_path = root_folder / "models" / "all_best_yolov8.pt"
+    model_path = root_folder / "models" / "all_best_yolov8.pt"
 
     # Configure the detector
     tdc.configure(
         method="apd_dl",
-        filename=filename,
+        input_image=input_image,
         output_dir=output_dir,
-        weights_path=weights_path,
+        model_path=model_path,
         debug=True,
         save_results=True,
     )

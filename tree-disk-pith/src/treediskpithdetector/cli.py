@@ -25,9 +25,9 @@ def parse_arguments():
         help="Method to use: 'apd', 'apd_pcl', or 'apd_dl'",
     )
     parser.add_argument(
-        "--weights_path",
+        "--model_path",
         type=str,
-        default=Config.weights_path,
+        default=Config.model_path,
         help="Path to the weights file (required for method 'apd_dl')",
     )
     parser.add_argument(
@@ -69,7 +69,7 @@ def main():
         st_sigma=args.st_sigma,
         new_shape=args.new_shape,
         debug=args.debug,
-        weights_path=args.weights_path,
+        model_path=args.model_path,
     )
 
     run()

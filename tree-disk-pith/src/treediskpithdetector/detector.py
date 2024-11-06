@@ -66,7 +66,7 @@ def tree_disk_pith_detector(img_in: np.ndarray) -> Tuple[np.ndarray, np.ndarray]
             output_dir=config.output_dir,
         ),
         DetectionMethod.APD_DL: lambda: apd_dl(
-            img_processed, config.output_dir, config.weights_path
+            img_processed, config.output_dir, config.model_path
         ),
     }
 

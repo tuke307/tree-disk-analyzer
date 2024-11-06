@@ -306,7 +306,7 @@ def read_label(label_filename: str, img: np.ndarray) -> Tuple[int, int, int, int
 
 
 def apd_dl(
-    img_in: np.ndarray, output_dir: str, weights_path: Union[str, str]
+    img_in: np.ndarray, output_dir: str, model_path: Union[str, str]
 ) -> np.ndarray:
     """
     Adaptive Pith Detection using Deep Learning model.
@@ -314,16 +314,16 @@ def apd_dl(
     Args:
         img_in (np.ndarray): Input image.
         output_dir (str): Directory to save outputs.
-        weights_path (str or str): Path to the trained model weights.
+        model_path (str or str): Path to the trained model weights.
 
     Returns:
         np.ndarray: Detected center point coordinates.
     """
-    if weights_path is None:
-        raise ValueError("weights_path is None")
+    if model_path is None:
+        raise ValueError("model_path is None")
 
-    logger.info(f"weights_path {weights_path}")
-    model = YOLO(weights_path, task="detect")
+    logger.info(f"model_path {model_path}")
+    model = YOLO(model_path, task="detect")
     _ = model(img_in, project=output_dir, save=True, save_txt=True)
     label_path = Path(output_dir) / "predict/labels/image0.txt"
     cx, cy, _, _ = read_label(str(label_path), img_in)

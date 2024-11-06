@@ -22,7 +22,7 @@
                 "640",
                 "--method",
                 "apd_dl",
-                "--weights_path",
+                "--model_path",
                 "./models/all_best_yolov8.pt",
                 "--debug"
             ],
@@ -46,7 +46,7 @@
                 "640",
                 "--method",
                 "apd_dl",
-                "--weights_path",
+                "--model_path",
                 "./models/all_best_yolov8.pt",
                 "--debug"
             ],
@@ -70,7 +70,7 @@
                 "640",
                 "--method",
                 "apd_dl",
-                "--weights_path",
+                "--model_path",
                 "./models/all_best_yolov8.pt",
                 "--debug"
             ],
