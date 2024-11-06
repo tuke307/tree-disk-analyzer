@@ -79,8 +79,9 @@ def apply_mask(
 
     Returns:
         Tuple[np.ndarray, np.ndarray]:
-            - The result image with the mask applied.
-            - The mask resized to the original image dimensions.
+            A tuple containing:
+            - The result image with the mask applied (np.ndarray).
+            - The mask resized to the original image dimensions (np.ndarray).
     """
     # Resize the mask to the original image size
     mask_resized = cv2.resize(mask, original_size)
