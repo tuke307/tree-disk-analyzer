@@ -7,16 +7,15 @@ root_folder = Path(__file__).parent.parent.absolute()
 
 
 def test_treediskanalyzer():
-    input_image = root_folder / "input" / "tree-disk1.jpg"
-    output_dir = root_folder / "output" / "apd"
+    input_image = root_folder / "input" / "tree-disk4.png"
+    output_dir = root_folder / "output"
 
     # Configure the detector
     tda.configure(
         input_image=input_image,
         output_dir=output_dir,
-        cx=538,
-        cy=408,
-        debug=True,
+        cx=1204,
+        cy=1264,
         save_results=True,
     )
 
