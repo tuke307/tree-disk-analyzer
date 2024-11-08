@@ -4,5 +4,5 @@ gunicorn==23.0.0
 slowapi==0.1.9
 python-multipart
 tree-disk-segmentation==0.1.1
-tree-disk-pith-detector==0.1.1
-tree-disk-analyzer==0.4.1
+tree-disk-pith==0.1.2
+tree-disk-rings==0.4.2

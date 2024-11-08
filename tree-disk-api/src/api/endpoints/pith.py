@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import JSONResponse
 from typing import List
-import treediskpithdetector
+import treediskpith
 from PIL import Image
 import io
 from io import BytesIO
@@ -17,12 +17,11 @@ router = APIRouter()
         429: {"description": "Too Many Requests"},
     },
 )
-async def segment_image(
+async def detect_pith(
     image: UploadFile = File(...),
 ) -> None:
     """
-    Sample endpoint.<br>
-    Example usage: http://127.0.0.1:8000/sample
+    Detect the pith in the image.<br>
     """
     # Read and process image
     contents = await image.read()
@@ -32,7 +31,7 @@ async def segment_image(
     path = f"{INPUT_DIR}/input_pith.png"
     img.save(path)
 
-    treediskpithdetector.configure(
+    treediskpith.configure(
         input_image=path,
         model_path=YOLO_MODEL_PATH,
         output_dir=OUTPUT_DIR,
@@ -40,7 +39,7 @@ async def segment_image(
         save_results=True,
         debug=True,
     )
-    img_in, img_processed, pith = treediskpithdetector.run()
+    img_in, img_processed, pith = treediskpith.run()
 
     data = {
         "x": int(pith[0]),

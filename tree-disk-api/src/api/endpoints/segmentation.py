@@ -20,8 +20,7 @@ async def segment_image(
     image: UploadFile = File(...),
 ) -> Response:
     """
-    Sample endpoint.<br>
-    Example usage: http://127.0.0.1:8000/sample
+    Segment the image and return the segmented image.<br>
     """
     # Read and process image
     contents = await image.read()

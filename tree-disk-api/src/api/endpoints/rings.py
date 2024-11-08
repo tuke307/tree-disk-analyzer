@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, UploadFile, File, HTTPException
 from typing import List
-import treediskanalyzer
+import treediskrings
 from PIL import Image
 import io
 import numpy as np
@@ -17,14 +17,13 @@ router = APIRouter()
         429: {"description": "Too Many Requests"},
     },
 )
-async def analyze_image(
+async def detect_rings(
     cx: int,
     cy: int,
     image: UploadFile = File(...),
 ) -> None:
     """
-    Sample endpoint.<br>
-    Example usage: http://127.0.0.1:8000/sample
+    Detect the rings in the image.<br>
     """
     # Read and process image
     contents = await image.read()
@@ -34,14 +33,14 @@ async def analyze_image(
     path = f"{INPUT_DIR}/input_rings.png"
     img.save(path)
 
-    treediskanalyzer.configure(
+    treediskrings.configure(
         input_image=path,
         output_dir=OUTPUT_DIR,
         cx=cx,
         cy=cy,
         save_results=True,
     )
-    results = treediskanalyzer.run()
+    results = treediskrings.run()
 
     # read the output image OUTPUT_DIR/output.png
     output_path = OUTPUT_DIR / "output.png"
