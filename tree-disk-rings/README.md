@@ -95,21 +95,11 @@ cd tree-disk-rings
 
 2. Create and activate virtual environment:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+poetry install
+poetry shell
 ```
 
-3. Install development dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-4. Install the package in editable mode:
-```bash
-pip install -e .
-```
-
-5. Compile the external C code:
+3. Compile the external C code:
 ```bash
 cd ./externas/devernay_1.0 && make clean && make
 ```

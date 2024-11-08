@@ -5,25 +5,24 @@ from typing import Dict, List, Tuple
 import cv2
 import numpy as np
 import pandas as pd
-import pkg_resources
+from importlib import resources
 
 from ..config import config
 
 
 def get_devernay_path():
     """Get the absolute path to the devernay binary."""
-    binary_path = pkg_resources.resource_filename(
-        "treediskrings", os.path.join("externals", "devernay_1.0", "devernay.out")
-    )
+    package = 'treediskrings.externals.devernay_1.0'
 
-    # Ensure the file exists and is executable
-    if not os.path.isfile(binary_path):
-        raise FileNotFoundError(f"Binary not found at {binary_path}")
+    with resources.path(package, 'devernay.out') as devernay_path:
+        # Ensure the file exists and is executable
+        if not os.path.isfile(devernay_path):
+            raise FileNotFoundError(f"Binary not found at {devernay_path}")
 
-    # Make sure it's executable
-    os.chmod(binary_path, 0o755)
+        # Make sure it's executable
+        os.chmod(devernay_path, 0o755)
 
-    return binary_path
+    return devernay_path
 
 
 def load_curves(output_txt: str) -> np.array:
