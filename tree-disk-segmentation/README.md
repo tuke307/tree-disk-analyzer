@@ -69,8 +69,8 @@ cd tree-disk-segmentation
 
 2. Create and activate virtual environment:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+poetry install
+poetry shell
 ```
 
 3. Install development dependencies:
