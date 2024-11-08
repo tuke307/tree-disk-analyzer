@@ -14,12 +14,12 @@ def read_readme():
 
 
 setup(
-    name="tree-disk-analyzer",
+    name="tree-disk-rings",
     version="0.4.1",
     description="A package for tree ring detection in images",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/tuke307/tree-disk-analyzer",
+    url="https://github.com/tuke307/tree-disk-rings",
     author="Tony Meissner",
     author_email="tonymeissner70@gmail.com",
     packages=find_packages(where="src"),
@@ -27,7 +27,7 @@ setup(
     install_requires=read_requirements(),
     entry_points={
         "console_scripts": [
-            "tree-disk-analyzer=treediskanalyzer.cli:main",
+            "tree-disk-rings=treediskrings.cli:main",
         ],
     },
     python_requires=">=3.7",
