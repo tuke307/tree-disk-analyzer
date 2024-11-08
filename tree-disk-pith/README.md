@@ -1,13 +1,13 @@
 # Tree Disk Pith Detection
 
-[![PyPI - Version](https://img.shields.io/pypi/v/tree-disk-pith-detector)](https://pypi.org/project/tree-disk-pith-detector/)
+[![PyPI - Version](https://img.shields.io/pypi/v/tree-disk-pith)](https://pypi.org/project/tree-disk-pith/)
 
 A Python package for analyzing tree rings in cross-sectional images. Originally forked from [hmarichal93/apd](https://github.com/hmarichal93/apd).
 
 ## Installation
 
 ```bash
-pip install tree-disk-pith-detector
+pip install tree-disk-pith
 ```
 
 ## Usage
@@ -15,10 +15,10 @@ pip install tree-disk-pith-detector
 ### Python API
 
 ```python
-import treediskpithdetector
+import treediskpith
 
 # Configure the analyzer
-treediskpithdetector.configure(
+treediskpith.configure(
     input_image="input/tree-disk4.png",
     save_results=True,
 )
@@ -28,24 +28,24 @@ treediskpithdetector.configure(
     img_in,          # Original input image
     img_pre,         # Preprocessed image
     pith,  # Center of the tree disk
-) = treediskpithdetector.run()
+) = treediskpith.run()
 ```
 
 ### Command Line Interface (CLI)
 
 Basic usage:
 ```bash
-tree-disk-pith-detector --input_image ./input/tree-disk3.png --new_shape 640 --debug
+tree-disk-pith --input_image ./input/tree-disk3.png --new_shape 640 --debug
 ```
 
 Save intermediate results:
 ```bash
-tree-disk-pith-detector --input_image ./input/tree-disk3.png --new_shape 640 --debug --method apd_pcl --save_results
+tree-disk-pith --input_image ./input/tree-disk3.png --new_shape 640 --debug --method apd_pcl --save_results
 ```
 
 Advanced usage with custom parameters:
 ```bash
-tree-disk-pith-detector \
+tree-disk-pith \
     --input_image input/tree-disk3.png \
     --cx 1204 \
     --cy 1264 \
@@ -79,8 +79,8 @@ tree-disk-pith-detector \
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/tuke307/tree-disk-pith-detector.git
-cd tree-disk-pith-detector
+git clone https://github.com/tuke307/tree-disk-pith.git
+cd tree-disk-pith
 ```
 
 2. Create and activate virtual environment:

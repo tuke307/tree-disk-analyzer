@@ -14,12 +14,12 @@ def read_readme():
 
 
 setup(
-    name="tree-disk-pith-detector",
-    version="0.1.1",
+    name="tree-disk-pith",
+    version="0.1.2",
     description="A package for tree disk pith detection in images",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/tuke307/tree-disk-pith-detector",
+    url="https://github.com/tuke307/tree-disk-pith",
     author="Tony Meissner",
     author_email="tonymeissner70@gmail.com",
     packages=find_packages(where="src"),
@@ -27,7 +27,7 @@ setup(
     install_requires=read_requirements(),
     entry_points={
         "console_scripts": [
-            "tree-disk-pith-detector=treediskpithdetector.cli:main",
+            "tree-disk-pith=treediskpith.cli:main",
         ],
     },
     python_requires=">=3.7",
