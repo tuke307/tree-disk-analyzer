@@ -85,26 +85,16 @@ cd tree-disk-pith
 
 2. Create and activate virtual environment:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+poetry install
+poetry shell
 ```
 
-3. Install development dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-4. Install the package in editable mode:
-```bash
-pip install -e .
-```
-
-5. fetch dataset
+3. fetch dataset
 ```bash
 python fetch_dataset.py
 ```
 
-6. Download pretrained model
+4. Download pretrained model
 ```bash
 python fetch_pretrained_model.py
 ```
