@@ -1,12 +1,12 @@
 import pytest
 from pathlib import Path
-import treediskanalyzer as tda
+import treediskrings as tda
 
 # set root folder
 root_folder = Path(__file__).parent.parent.absolute()
 
 
-def test_treediskanalyzer():
+def test_treediskrings():
     input_image = root_folder / "input" / "tree-disk4.png"
     output_dir = root_folder / "output"
 
