@@ -72,13 +72,3 @@ cd tree-disk-segmentation
 poetry install
 poetry shell
 ```
-
-3. Install development dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-4. Install the package in editable mode:
-```bash
-pip install -e .
-```
