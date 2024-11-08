@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "tree-disk-segmentation"
+version = "0.1.2"
+description = "A package for tree disk segmentation in images"
+authors = ["Tony <tonymeissner70@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/tuke307/tree-disk-segmentation"
+repository = "https://github.com/tuke307/tree-disk-segmentation"
+keywords = ["tree", "segmentation", "image processing"]
+packages = [{ include = "treedisksegmentation", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+numpy = "^2.1.3"
+opencv-python = "^4.10.0.84"
+torch = "^2.5.1"
+torchvision = "^0.20.1"
+
+[tool.poetry.scripts]
+tree-disk-segmentation = "treedisksegmentation.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
