@@ -1,0 +1,87 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tree-disk-segmentation/pyproject.toml'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  pypi-publish:
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python - -y
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Update Poetry configuration
+        run: poetry config virtualenvs.create false
+        working-directory: ./tree-disk-segmentation
+
+      - name: Get current version
+        id: get_current_version
+        run: |
+          CURR_VERSION=$(grep '^version' tree-disk-segmentation/pyproject.toml | head -1 | sed 's/version = \"\(.*\)\"/\1/')
+          echo "CURR_VERSION=${CURR_VERSION}"
+          echo "CURR_VERSION=${CURR_VERSION}" >> $GITHUB_ENV
+
+      - name: Get previous version
+        id: get_prev_version
+        run: |
+          git fetch --tags
+          PREV_VERSION=$(git tag --sort=-v:refname | grep 'segmentation-v' | head -n 1 | sed 's/segmentation-v//')
+          echo "PREV_VERSION=${PREV_VERSION}"
+          echo "PREV_VERSION=${PREV_VERSION}" >> $GITHUB_ENV
+
+      - name: Check if version has increased
+        id: check_version
+        run: |
+          if [ "$CURR_VERSION" != "$PREV_VERSION" ]; then
+            echo "::set-output name=version_changed::true"
+          else
+            echo "::set-output name=version_changed::false"
+          fi
+
+      - name: Create Git tag and GitHub release
+        if: steps.check_version.outputs.version_changed == 'true'
+        uses: actions/create-release@v1
+        with:
+          tag_name: segmentation-v${{ env.CURR_VERSION }}
+          release_name: 'tree-disk-segmentation v${{ env.CURR_VERSION }}'
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        if: steps.check_version.outputs.version_changed == 'true'
+        run: poetry install --no-interaction --no-ansi
+        working-directory: ./tree-disk-segmentation
+
+      - name: Build package
+        if: steps.check_version.outputs.version_changed == 'true'
+        run: poetry build
+        working-directory: ./tree-disk-segmentation
+
+      - name: Publish package distributions to PyPI
+        if: steps.check_version.outputs.version_changed == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: './tree-disk-segmentation'
