@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tree-disk-pith"
-version = "0.1.3"
+version = "0.1.4"
 description = "A package for tree disk pith detection in images"
 authors = ["Tony <tonymeissner70@gmail.com>"]
 license = "MIT"
