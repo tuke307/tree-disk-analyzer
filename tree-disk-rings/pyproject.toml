@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tree-disk-rings"
-version = "0.4.5"
+version = "0.4.6"
 description = "A package for tree disk rings detection in images"
 authors = ["Tony <tonymeissner70@gmail.com>"]
 license = "MIT"
