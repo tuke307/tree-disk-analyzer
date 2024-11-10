@@ -12,7 +12,7 @@ from ..config import config
 
 def get_devernay_path():
     """Get the absolute path to the devernay binary."""
-    package = 'treediskrings.externals.devernay_1.0'
+    package = 'treediskrings.externals'
 
     with resources.path(package, 'devernay.out') as devernay_path:
         # Ensure the file exists and is executable
