@@ -1,10 +1,10 @@
-name: Publish to PyPI
+name: Publish tree-disk-pith to PyPI
 
 on:
   workflow_dispatch:
     inputs:
       version_override:
-        description: 'Override version (leave empty to use pyproject.toml version)'
+        description: 'Override version for tree-disk-pith (leave empty to use pyproject.toml version)'
         required: false
         type: string
   push:
@@ -17,8 +17,8 @@ permissions:
   id-token: write
 
 jobs:
-  pypi-publish:
-    name: Upload release to PyPI
+  pith-pypi-publish:
+    name: Build and Publish tree-disk-pith
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -29,37 +29,39 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.10 for pith
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Install Poetry
+      - name: Install Poetry for pith
         run: |
           curl -sSL https://install.python-poetry.org | python - -y
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Update Poetry configuration
+      - name: Update Poetry configuration for pith
         run: poetry config virtualenvs.create false
         working-directory: ./tree-disk-pith
 
-      - name: Get current version
-        id: get_current_version
+      - name: Get current pith version
+        id: get_pith_version
         run: |
-          CURR_VERSION=$(grep '^version' tree-disk-pith/pyproject.toml | head -1 | sed 's/version = \"\(.*\)\"/\1/')
-          echo "CURR_VERSION=${CURR_VERSION}"
-          echo "CURR_VERSION=${CURR_VERSION}" >> $GITHUB_ENV
+          if [ -n "${{ inputs.version_override }}" ]; then
+            echo "CURR_VERSION=${{ inputs.version_override }}" >> $GITHUB_ENV
+          else
+            CURR_VERSION=$(grep '^version' tree-disk-pith/pyproject.toml | head -1 | sed 's/version = \"\(.*\)\"/\1/')
+            echo "CURR_VERSION=${CURR_VERSION}" >> $GITHUB_ENV
+          fi
 
-      - name: Get previous version
-        id: get_prev_version
+      - name: Get previous pith version
+        id: get_prev_pith_version
         run: |
           git fetch --tags
           PREV_VERSION=$(git tag --sort=-v:refname | grep 'pith-v' | head -n 1 | sed 's/pith-v//')
-          echo "PREV_VERSION=${PREV_VERSION}"
           echo "PREV_VERSION=${PREV_VERSION}" >> $GITHUB_ENV
 
-      - name: Check if version has increased
-        id: check_version
+      - name: Check if pith version has increased
+        id: check_pith_version
         run: |
           if [ "$CURR_VERSION" != "$PREV_VERSION" ]; then
             echo "version_changed=true" >> $GITHUB_OUTPUT
@@ -67,8 +69,8 @@ jobs:
             echo "version_changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Git tag and GitHub release
-        if: steps.check_version.outputs.version_changed == 'true'
+      - name: Create Git tag and GitHub release for pith
+        if: steps.check_pith_version.outputs.version_changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/create-release@v1
@@ -78,18 +80,18 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Install dependencies
-        if: steps.check_version.outputs.version_changed == 'true'
+      - name: Install pith dependencies
+        if: steps.check_pith_version.outputs.version_changed == 'true'
         run: poetry install --no-interaction --no-ansi
         working-directory: ./tree-disk-pith
 
-      - name: Build package
-        if: steps.check_version.outputs.version_changed == 'true'
+      - name: Build pith package
+        if: steps.check_pith_version.outputs.version_changed == 'true'
         run: poetry build
         working-directory: ./tree-disk-pith
 
-      - name: Publish package distributions to PyPI
-        if: steps.check_version.outputs.version_changed == 'true'
+      - name: Publish pith package to PyPI
+        if: steps.check_pith_version.outputs.version_changed == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: tree-disk-pith/dist
