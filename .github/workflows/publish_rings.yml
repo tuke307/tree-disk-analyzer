@@ -1,6 +1,12 @@
 name: Publish to PyPI
 
 on:
+  workflow_dispatch:
+    inputs:
+      version_override:
+        description: 'Override version (leave empty to use pyproject.toml version)'
+        required: false
+        type: string
   push:
     branches: [main]
     paths:
