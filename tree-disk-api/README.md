@@ -2,14 +2,14 @@
 
 ## Installation
 ```bash
-python -m venv venv
-source venv/bin/activate # On Windows use: venv\Scripts\activate
-pip install -r requirements.txt
+poetry env use python
+poetry install
+poetry shell
 ```
 
 ## Usage Examples
 
 ### Basic Usage
 ```bash
-
+uvicorn src.main:app --reload
 ```
