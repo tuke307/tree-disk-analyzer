@@ -204,6 +204,14 @@
                 //"--debug"
             ],
             "console": "integratedTerminal",
+        },
+        {
+            "name": "API: main.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/tree-disk-api/main.py",
+            "args": [],
+            "console": "integratedTerminal"
         }
     ]
 }
