@@ -5,8 +5,8 @@ description = "A package for tree disk rings detection in images"
 authors = ["Tony <tonymeissner70@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/tuke307/tree-disk-rings"
-repository = "https://github.com/tuke307/tree-disk-rings"
+homepage = "https://github.com/tuke307/tree-disk-analyzer"
+repository = "https://github.com/tuke307/tree-disk-analyzer"
 keywords = ["tree", "rings", "image processing"]
 packages = [{ include = "treediskrings", from = "src" }]
 
@@ -30,10 +30,12 @@ shapely = "^2.0.6"
 imageio = "^2.36.0"
 torch = "^2.5.1"
 torchvision = "^0.20.1"
-pytest = "^8.3.3"
 
 [tool.poetry.scripts]
 tree-disk-rings = "treediskrings.cli:main"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
 
 [build-system]
 requires = ["poetry-core"]

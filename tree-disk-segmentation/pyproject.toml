@@ -5,8 +5,8 @@ description = "A package for tree disk segmentation in images"
 authors = ["Tony <tonymeissner70@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/tuke307/tree-disk-segmentation"
-repository = "https://github.com/tuke307/tree-disk-segmentation"
+homepage = "https://github.com/tuke307/tree-disk-analyzer"
+repository = "https://github.com/tuke307/tree-disk-analyzer"
 keywords = ["tree", "segmentation", "image processing"]
 packages = [{ include = "treedisksegmentation", from = "src" }]
 
@@ -19,6 +19,9 @@ torchvision = "^0.20.1"
 
 [tool.poetry.scripts]
 tree-disk-segmentation = "treedisksegmentation.cli:main"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
 
 [build-system]
 requires = ["poetry-core"]

@@ -5,8 +5,8 @@ description = "A package for tree disk pith detection in images"
 authors = ["Tony <tonymeissner70@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/tuke307/tree-disk-pith"
-repository = "https://github.com/tuke307/tree-disk-pith"
+homepage = "https://github.com/tuke307/tree-disk-analyzer"
+repository = "https://github.com/tuke307/tree-disk-analyzer"
 keywords = ["tree", "pith", "image processing"]
 packages = [{ include = "treediskpith", from = "src" }]
 
@@ -23,6 +23,9 @@ ultralytics = "^8.3.28"
 
 [tool.poetry.scripts]
 tree-disk-pith = "treediskpith.cli:main"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
 
 [build-system]
 requires = ["poetry-core"]

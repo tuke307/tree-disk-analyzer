@@ -61,14 +61,14 @@ tree-disk-segmentation --input_image ./input/baumscheibe.jpg --output_dir ./outp
 
 ### Setting up Development Environment
 
-1. Clone the repository:
+1. Create and activate virtual environment:
 ```bash
-git clone https://github.com/tuke307/tree-disk-segmentation.git
-cd tree-disk-segmentation
-```
-
-2. Create and activate virtual environment:
-```bash
+poetry env use python
 poetry install
 poetry shell
+```
+
+2. Running tests:
+```bash
+poetry run pytest
 ```
