@@ -77,16 +77,16 @@ tree-disk-pith \
 
 ### Setting up Development Environment
 
-1. Clone the repository:
+1. Create and activate virtual environment:
 ```bash
-git clone https://github.com/tuke307/tree-disk-pith.git
-cd tree-disk-pith
-```
-
-2. Create and activate virtual environment:
-```bash
+poetry env use python
 poetry install
 poetry shell
+```
+
+2. Running tests:
+```bash
+poetry run pytest
 ```
 
 3. fetch dataset
