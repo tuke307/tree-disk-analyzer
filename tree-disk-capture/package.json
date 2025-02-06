@@ -1,0 +1,39 @@
+{
+  "name": "app",
+  "main": "expo-router/entry",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "expo start",
+    "reset-project": "node ./scripts/reset-project.js",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "test": "jest --watchAll",
+    "lint": "expo lint"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.1",
+    "@react-navigation/native": "^7.0.14",
+    "@react-navigation/native-stack": "^7.2.0",
+    "@types/react": "~18.3.12",
+    "date-fns": "^4.1.0",
+    "expo": "^52.0.16",
+    "expo-camera": "~16.0.14",
+    "expo-image": "~2.0.3",
+    "expo-router": "^4.0.17",
+    "lucide-react-native": "^0.474.0",
+    "nativewind": "^4.1.23",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.6",
+    "react-native-web": "~0.19.6",
+    "typescript": "~5.3.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  }
+}

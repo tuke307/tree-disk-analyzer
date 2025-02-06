@@ -1,25 +1,33 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "tree-disk-analyzer",
+    "slug": "tree-disk-analyzer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "tree-disk-analyzer",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "userInterfaceStyle": "portrait",
+      "requireFullScreen": true,
+      "bundleIdentifier": "com.tony-luke.tree-disk-analyzer"
     },
     "android": {
+      "userInterfaceStyle": "portrait",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.tony-luke.tree-disk-analyzer"
     },
     "web": {
       "bundler": "metro",
@@ -30,6 +38,7 @@
       "expo-router"
     ],
     "experiments": {
+      "tsconfigPaths": true,
       "typedRoutes": true
     }
   }
