@@ -1,9 +1,10 @@
+import { ThemedView } from "@/components/ThemedView";
 import "../global.css";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { memo, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, StatusBar } from "react-native";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -39,10 +40,28 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <View style={StyleSheet.absoluteFill}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <ThemedView style={StyleSheet.absoluteFill}>
+      <StatusBar/>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          presentation: 'fullScreenModal'
+        }}
+      >
+        <Stack.Screen 
+          name="index" 
+          options={{ 
+            title: 'Tree Rings',
+          }} 
+        />
+        <Stack.Screen 
+          name="capture" 
+          options={{ 
+            title: 'New Capture',
+            presentation: 'fullScreenModal',
+          }} 
+        />
       </Stack>
-    </View>
+    </ThemedView>
   );
 }
