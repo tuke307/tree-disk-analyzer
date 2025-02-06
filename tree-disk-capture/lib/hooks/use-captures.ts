@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CaptureData } from '@/constants/types';
+import { CaptureData } from '@/lib/constants/types';
 
 export function useCaptures() {
   const [captures, setCaptures] = useState<CaptureData[]>([]);

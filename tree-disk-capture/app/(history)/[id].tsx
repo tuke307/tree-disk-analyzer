@@ -1,8 +1,8 @@
-import { View, Text, Image } from 'react-native';
+import { View, Image } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { useCaptures } from '@/hooks/use-captures';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
+import { useCaptures } from '@/lib/hooks/use-captures';
+import { Label } from '@/components/ui/label';
+import { Text } from '@/components/ui/text';
 
 export default function CaptureDetails() {
   const { id } = useLocalSearchParams();
@@ -11,28 +11,28 @@ export default function CaptureDetails() {
 
   if (!capture) {
     return (
-      <ThemedView className="flex-1 items-center justify-center p-4">
-        <ThemedText className="text-xl">Capture not found</ThemedText>
-      </ThemedView>
+      <View className="flex-1 items-center justify-center p-4">
+        <Label className="text-xl">Capture not found</Label>
+      </View>
     );
   }
 
   return (
-    <ThemedView className="flex-1 p-4">
+    <View className="flex-1 p-4">
       <Image
         source={{ uri: capture.uri }}
         className="w-full h-64 rounded-lg mb-4"
         resizeMode="cover"
       />
-      <ThemedText className="text-lg mb-2">
+      <Text className="text-lg mb-2">
         Predicted Age: {capture.analysis.predictedAge}
-      </ThemedText>
-      <ThemedText className="text-lg mb-2">
+      </Text>
+      <Label className="text-lg mb-2">
         Location: {capture.analysis.predictedLocation}
-      </ThemedText>
-      <ThemedText className="text-lg">
+      </Label>
+      <Label className="text-lg">
         Captured: {new Date(capture.timestamp).toLocaleDateString()}
-      </ThemedText>
-    </ThemedView>
+      </Label>
+    </View>
   );
 }

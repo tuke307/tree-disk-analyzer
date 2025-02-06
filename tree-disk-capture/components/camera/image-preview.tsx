@@ -1,8 +1,9 @@
-import { View, Text, Pressable } from 'react-native';
+import { StyleSheet, SafeAreaView, View } from 'react-native';
 import { Image } from 'expo-image';
-import { Feather } from '@expo/vector-icons';
-import { ThemedView } from '../ThemedView';
-import { ThemedText } from '../ThemedText';
+import { Button } from '../ui/button';
+import { RotateCcwIcon } from '@/lib/icons/RotateCcwIcon';
+import { SaveIcon } from '@/lib/icons/SaveIcon';
+import { Text } from '../ui/text';
 
 interface ImagePreviewProps {
   uri: string;
@@ -11,79 +12,61 @@ interface ImagePreviewProps {
   isLoading?: boolean;
 }
 
-export function ImagePreview({ 
-  uri, 
-  onRetake, 
-  onSave, 
-  isLoading = false 
+export function ImagePreview({
+  uri,
+  onRetake,
+  onSave,
+  isLoading = false
 }: ImagePreviewProps) {
   return (
-    <ThemedView className="flex-1">
-      {/* Image Preview */}
-      <Image
-        source={{ uri }}
-        className="flex-1"
-        contentFit="contain"
-      />
+    <SafeAreaView className="flex-1">
+      <View className="flex-1">
+        <Image
+          source={{ uri }}
+          style={styles.preview}
+          contentFit="contain"
+        />
 
-      {/* Controls Overlay */}
-      <ThemedView className="absolute bottom-0 left-0 right-0 p-6">
-        <ThemedView className="flex-row justify-between items-center">
-          {/* Retake Button */}
-          <Pressable
+        <View className='flex-row justify-between p-8'>
+          <Button
             onPress={onRetake}
-            className="flex-row items-center px-4 py-2 rounded-full"
-          >
-            {({ pressed }) => (
-              <>
-                <Feather 
-                  name="rotate-ccw" 
-                  size={20} 
-                  color="white"
-                  style={{ opacity: pressed ? 0.7 : 1, marginRight: 8 }}
-                />
-                <ThemedText className="font-medium">
-                  Retake
-                </ThemedText>
-              </>
-            )}
-          </Pressable>
+            className='flex-row gap-2 items-center'>
+            <RotateCcwIcon />
+            <Text>
+              Retake
+            </Text>
+          </Button>
 
-          {/* Save Button */}
-          <Pressable
+          <Button
             onPress={onSave}
             disabled={isLoading}
-            className="flex-row items-center px-6 py-3 rounded-full disabled:opacity-50"
+            className='flex-row gap-2 items-center'
           >
-            {({ pressed }) => (
+            {isLoading ? (
               <>
-                {isLoading ? (
-                  <ThemedView className="flex-row items-center">
-                    <ThemedText className="font-medium">
-                      Analyzing...
-                    </ThemedText>
-                  </ThemedView>
-                ) : (
-                  <ThemedView 
-                    className="flex-row items-center"
-                    style={{ opacity: pressed ? 0.7 : 1 }}
-                  >
-                    <Feather 
-                      name="check" 
-                      size={20} 
-                      color="white" 
-                      style={{ marginRight: 8 }}
-                    />
-                    <ThemedText className="font-medium">
-                      Save
-                    </ThemedText>
-                  </ThemedView>
-                )}
+                <Text>
+                  Analyzing...
+                </Text>
+              </>
+            ) : (
+              <>
+                <SaveIcon
+                />
+                <Text>
+                  Save
+                </Text>
               </>
             )}
-          </Pressable>
-        </ThemedView>
-      </ThemedView>
-    </ThemedView>
+          </Button>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  preview: {
+    flex: 1,
+    margin: 32,
+  },
+});

@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ThemedView } from '../ThemedView';
-import { ThemedText } from '../ThemedText';
+
+import { Label } from '@/components/ui/label';
+import { Button } from '../ui/button';
 
 interface PermissionRequestProps {
   onRequestPermission: () => void;
@@ -10,18 +11,19 @@ interface PermissionRequestProps {
 export function PermissionRequest({ onRequestPermission }: PermissionRequestProps) {
   return (
     <SafeAreaView style={styles.container}>
-      <ThemedView style={styles.content}>
-        <ThemedText style={styles.title}>Camera Access Required</ThemedText>
-        <ThemedText style={styles.description}>
+      <View style={styles.content}>
+        <Label style={styles.title}>Camera Access Required</Label>
+        <Label style={styles.description}>
           To analyze trees, we need permission to use your camera.
-        </ThemedText>
-        <Pressable 
+        </Label>
+
+        <Button 
           style={styles.button}
           onPress={onRequestPermission}
         >
-          <ThemedText style={styles.buttonText}>Grant Access</ThemedText>
-        </Pressable>
-      </ThemedView>
+          <Label style={styles.buttonText}>Grant Access</Label>
+        </Button>
+      </View>
     </SafeAreaView>
   );
 }

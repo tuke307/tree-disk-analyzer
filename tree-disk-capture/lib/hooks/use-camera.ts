@@ -1,6 +1,6 @@
 import { useCameraPermissions } from 'expo-camera';
 import { useCaptures } from './use-captures';
-import { analyzeImage } from '@/constants/api';
+import { analyzeImage } from '@/lib/constants/api';
 
 export function useCamera() {
   const [permission, requestPermission] = useCameraPermissions();

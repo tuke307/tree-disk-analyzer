@@ -1,7 +1,9 @@
-import { Pressable } from 'react-native';
-import { FontAwesome6 } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
-import { ThemedView } from '../ThemedView';
+import { StyleSheet, View } from 'react-native';
+import { FlashlightIcon } from '@/lib/icons/FlashlightIcon';
+import { FlashlightOffIcon } from '@/lib/icons/FlashlightOffIcon';
+import { XIcon } from '@/lib/icons/XIcon';
+import { CameraIcon } from '@/lib/icons/CameraIcon';
+import { Button } from '../ui/button';
 
 interface CameraControlsProps {
   onCapture: () => void;
@@ -10,58 +12,47 @@ interface CameraControlsProps {
   flashEnabled: boolean;
 }
 
-export function CameraControls({ 
-  onCapture, 
+export function CameraControls({
+  onCapture,
   onClose,
   onFlashToggle,
   flashEnabled
 }: CameraControlsProps) {
+
   return (
     <>
       {/* Top Controls */}
-      <ThemedView className="absolute top-12 left-0 right-0 flex-row justify-between px-6">
-        <Pressable
+      <View className="absolute top-12 left-0 right-0 flex-row justify-between p-4">
+        <Button
           onPress={onClose}
-          className="w-12 h-12 items-center justify-center"
+          variant="ghost"
         >
-          {({ pressed }) => (
-            <Ionicons
-              name="close"
-              size={32}
-              style={{ opacity: pressed ? 0.7 : 1 }}
-            />
-          )}
-        </Pressable>
+          <XIcon />
+        </Button>
 
-        <Pressable
+        <Button
           onPress={onFlashToggle}
-          className="w-12 h-12 items-center justify-center"
+          variant="ghost"
         >
-          {({ pressed }) => (
-            <Ionicons
-              name={flashEnabled ? "flash" : "flash-off"}
-              size={32}
-              style={{ opacity: pressed ? 0.7 : 1 }}
-            />
-          )}
-        </Pressable>
-      </ThemedView>
+          <>
+            {flashEnabled ? (
+              <FlashlightIcon />
+            ) : (
+              <FlashlightOffIcon />
+            )}
+          </>
+        </Button>
+      </View>
 
       {/* Bottom Capture Button */}
-      <ThemedView className="absolute bottom-12 left-0 right-0 items-center">
-        <Pressable
+      <View className="absolute bottom-12 left-0 right-0 flex-row justify-center p-4">
+        <Button
           onPress={onCapture}
-          className="w-20 h-20 rounded-full border-4 items-center justify-center"
+          variant="ghost"
         >
-          {({ pressed }) => (
-            <FontAwesome6
-              name="camera"
-              size={32}
-              style={{ opacity: pressed ? 0.7 : 1 }}
-            />
-          )}
-        </Pressable>
-      </ThemedView>
+          <CameraIcon size={32}/>
+        </Button>
+      </View>
     </>
   );
 }

@@ -1,10 +1,8 @@
 import { CameraView } from "expo-camera";
 import { useRef, useState } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { CameraControls } from './camera-controls';
 import { ImagePreview } from './image-preview';
-import { ThemedText } from "../ThemedText";
-import { ThemedView } from "../ThemedView";
 
 interface Props {
   onCapture: (uri: string) => Promise<void>;
@@ -41,64 +39,40 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView style={{ flex: 1 }}>
-        {uri ? (
-          <ImagePreview
-            uri={uri}
-            onRetake={() => setUri(null)}
-            onSave={async () => {
-              setIsAnalyzing(true);
-              await handleSave();
-              setIsAnalyzing(false);
-            }}
-            isLoading={isAnalyzing}
+    <View className="flex-1">
+      {uri ? (
+        <ImagePreview
+          uri={uri}
+          onRetake={() => setUri(null)}
+          onSave={async () => {
+            setIsAnalyzing(true);
+            await handleSave();
+            setIsAnalyzing(false);
+          }}
+          isLoading={isAnalyzing}
+        />
+      ) : (
+        <CameraView
+          style={styles.camera}
+          ref={cameraRef}
+          mode="picture"
+          facing="back"
+          flash={flashEnabled ? "on" : "off"}
+        >
+          <CameraControls
+            onCapture={handleTakePhoto}
+            onClose={onClose}
+            onFlashToggle={() => setFlashEnabled(!flashEnabled)}
+            flashEnabled={flashEnabled}
           />
-        ) : (
-          <ThemedView className="flex-1">
-            <CameraView
-              ref={cameraRef}
-              mode="picture"
-              facing="back"
-              flash={flashEnabled ? "on" : "off"}
-            >
-              <CameraControls
-                onCapture={handleTakePhoto}
-                onClose={onClose}
-                onFlashToggle={() => setFlashEnabled(!flashEnabled)}
-                flashEnabled={flashEnabled}
-              />
-            </CameraView>
-          </ThemedView>
-        )}
-      </ThemedView>
-    </ThemedView>
+        </CameraView>
+      )}
+    </View>
   );
 }
 
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center'
-  },
   camera: {
     flex: 1,
-  },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: "row",
-    backgroundColor: "transparent",
-    margin: 64,
-  },
-  button: {
-    flex: 1,
-    alignSelf: "flex-end",
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "white",
   },
 });
