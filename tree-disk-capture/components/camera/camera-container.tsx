@@ -9,13 +9,14 @@ import { ThemedView } from "../ThemedView";
 interface Props {
   onCapture: (uri: string) => Promise<void>;
   onCaptureSaved: () => void;
+  onClose: () => void;
 }
 
-export function CameraContainer({ onCapture, onCaptureSaved }: Props) {
-  // @ts-ignore: just being lazy with types here
+export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
   const cameraRef = useRef<CameraView>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uri, setUri] = useState<string | null>(null);
+  const [flashEnabled, setFlashEnabled] = useState(false);
 
   const handleTakePhoto = async () => {
     try {
@@ -42,7 +43,6 @@ export function CameraContainer({ onCapture, onCaptureSaved }: Props) {
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={{ flex: 1 }}>
-      <ThemedText type="subtitle">Camera</ThemedText>
         {uri ? (
           <ImagePreview
             uri={uri}
@@ -57,14 +57,16 @@ export function CameraContainer({ onCapture, onCaptureSaved }: Props) {
         ) : (
           <ThemedView className="flex-1">
             <CameraView
-              className="flex-1 w-full h-full"
               ref={cameraRef}
               mode="picture"
               facing="back"
+              flash={flashEnabled ? "on" : "off"}
             >
               <CameraControls
                 onCapture={handleTakePhoto}
-                showFlip={false}
+                onClose={onClose}
+                onFlashToggle={() => setFlashEnabled(!flashEnabled)}
+                flashEnabled={flashEnabled}
               />
             </CameraView>
           </ThemedView>

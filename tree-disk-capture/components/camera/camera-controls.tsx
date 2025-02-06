@@ -1,59 +1,67 @@
-import { View, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { ThemedView } from '../ThemedView';
 
 interface CameraControlsProps {
   onCapture: () => void;
-  onFlipCamera?: () => void;
-  showFlip?: boolean;
+  onClose: () => void;
+  onFlashToggle: () => void;
+  flashEnabled: boolean;
 }
 
 export function CameraControls({ 
   onCapture, 
-  onFlipCamera, 
-  showFlip = true 
+  onClose,
+  onFlashToggle,
+  flashEnabled
 }: CameraControlsProps) {
   return (
-    <ThemedView className="absolute bottom-10 left-0 right-0">
-      <ThemedView className="flex-row items-center justify-between px-8">
-        {/* Spacer or additional control on the left */}
-        <ThemedView className="w-12 h-12" />
+    <>
+      {/* Top Controls */}
+      <ThemedView className="absolute top-12 left-0 right-0 flex-row justify-between px-6">
+        <Pressable
+          onPress={onClose}
+          className="w-12 h-12 items-center justify-center"
+        >
+          {({ pressed }) => (
+            <Ionicons
+              name="close"
+              size={32}
+              style={{ opacity: pressed ? 0.7 : 1 }}
+            />
+          )}
+        </Pressable>
 
-        {/* Capture Button */}
+        <Pressable
+          onPress={onFlashToggle}
+          className="w-12 h-12 items-center justify-center"
+        >
+          {({ pressed }) => (
+            <Ionicons
+              name={flashEnabled ? "flash" : "flash-off"}
+              size={32}
+              style={{ opacity: pressed ? 0.7 : 1 }}
+            />
+          )}
+        </Pressable>
+      </ThemedView>
+
+      {/* Bottom Capture Button */}
+      <ThemedView className="absolute bottom-12 left-0 right-0 items-center">
         <Pressable
           onPress={onCapture}
           className="w-20 h-20 rounded-full border-4 items-center justify-center"
         >
           {({ pressed }) => (
-            <ThemedView 
-              className={`w-16 h-16 rounded-full ${
-                pressed ? 'opacity-70' : 'opacity-100'
-              }`}
+            <FontAwesome6
+              name="camera"
+              size={32}
+              style={{ opacity: pressed ? 0.7 : 1 }}
             />
           )}
         </Pressable>
-
-        {/* Flip Camera Button */}
-        {showFlip && (
-          <Pressable 
-            onPress={onFlipCamera}
-            className="w-12 h-12 items-center justify-center"
-          >
-            {({ pressed }) => (
-              <FontAwesome6 
-                name="camera-rotate" 
-                size={28} 
-                color="white" 
-                style={{ opacity: pressed ? 0.7 : 1 }}
-              />
-            )}
-          </Pressable>
-        )}
-        
-        {/* If no flip button, add spacer */}
-        {!showFlip && <ThemedView className="w-12 h-12" />}
       </ThemedView>
-    </ThemedView>
+    </>
   );
 }

@@ -5,12 +5,14 @@ import { NewCaptureButton } from '@/components/buttons/new-capture-button';
 import { useCaptures } from '@/hooks/use-captures';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Home() {
   const { captures } = useCaptures();
+  const insets = useSafeAreaInsets();
 
   return (
-    <ThemedView className="flex-1 bg-gray-900">
+    <ThemedView className="flex-1" style={{ paddingTop: insets.top }}>
       <NewCaptureButton onPress={() => router.push('/capture')} />
       <ThemedView className="flex-1">
         <ScrollView className="flex-1">

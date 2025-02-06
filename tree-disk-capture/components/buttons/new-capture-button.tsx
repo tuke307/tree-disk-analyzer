@@ -1,4 +1,4 @@
-import { Pressable, Text, View, Dimensions } from 'react-native';
+import { Pressable, Dimensions } from 'react-native';
 import { ThemedView } from '../ThemedView';
 import { ThemedText } from '../ThemedText';
 
@@ -25,10 +25,10 @@ export function NewCaptureButton({ onPress }: Props) {
             borderColor: '#374151', // Equivalent to gray-700
           }}
         >
-          <ThemedText className="font-semibold text-4xl">
+          <ThemedText type='title'>
             New Capture
           </ThemedText>
-          <ThemedText className="mt-4">
+          <ThemedText>
             Tap to analyze a tree disk
           </ThemedText>
         </ThemedView>

@@ -5,6 +5,7 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { memo, useEffect } from "react";
 import { View, StyleSheet, StatusBar } from "react-native";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -40,28 +41,30 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <ThemedView style={StyleSheet.absoluteFill}>
-      <StatusBar/>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          presentation: 'fullScreenModal'
-        }}
-      >
-        <Stack.Screen 
-          name="index" 
-          options={{ 
-            title: 'Tree Rings',
-          }} 
-        />
-        <Stack.Screen 
-          name="capture" 
-          options={{ 
-            title: 'New Capture',
-            presentation: 'fullScreenModal',
-          }} 
-        />
-      </Stack>
-    </ThemedView>
+    <SafeAreaProvider>
+      <ThemedView style={StyleSheet.absoluteFill}>
+        <StatusBar/>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            presentation: 'fullScreenModal'
+          }}
+        >
+          <Stack.Screen 
+            name="index" 
+            options={{ 
+              title: 'Tree Rings',
+            }} 
+          />
+          <Stack.Screen 
+            name="capture" 
+            options={{ 
+              title: 'New Capture',
+              presentation: 'fullScreenModal',
+            }} 
+          />
+        </Stack>
+      </ThemedView>
+    </SafeAreaProvider>
   );
 }
