@@ -1,6 +1,6 @@
 import "../global.css";
 import { SplashScreen, Stack } from "expo-router";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, StyleSheet, StatusBar, Platform } from "react-native";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NAV_THEME } from "@/lib/constants/theme";
