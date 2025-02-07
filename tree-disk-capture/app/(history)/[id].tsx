@@ -17,16 +17,16 @@ export default function CaptureDetails() {
   }
 
   return (
-    <View className="flex-1 p-4">
+    <View className="flex-1 p-4 gap-2">
       <Image
         source={{ uri: capture.uri }}
         className="w-full h-64 rounded-lg mb-4"
         resizeMode="cover"
       />
-      <Text className="text-lg mb-2">
+      <Text className="text-lg">
         Predicted Age: {capture.analysis.predictedAge}
       </Text>
-      <Text className="text-lg mb-2">
+      <Text className="text-lg">
         Location: {capture.analysis.predictedLocation}
       </Text>
       <Text className="text-lg">
