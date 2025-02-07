@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { FlashlightIcon } from '@/lib/icons/FlashlightIcon';
 import { FlashlightOffIcon } from '@/lib/icons/FlashlightOffIcon';
 import { XIcon } from '@/lib/icons/XIcon';

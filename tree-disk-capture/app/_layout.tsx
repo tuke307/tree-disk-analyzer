@@ -88,5 +88,3 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
-
-const useIsomorphicLayoutEffect = Platform.OS === 'web' && typeof window === 'undefined' ? useEffect : useLayoutEffect;

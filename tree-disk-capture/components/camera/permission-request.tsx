@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Label } from '@/components/ui/label';
@@ -10,55 +10,17 @@ interface PermissionRequestProps {
 
 export function PermissionRequest({ onRequestPermission }: PermissionRequestProps) {
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Label style={styles.title}>Camera Access Required</Label>
-        <Label style={styles.description}>
+    <SafeAreaView className="flex-1">
+      <View className="flex-1 justify-center items-center px-5">
+        <Label className="text-2xl font-bold mb-4">Camera Access Required</Label>
+        <Label className="text-base text-center mb-8 ">
           To analyze trees, we need permission to use your camera.
         </Label>
 
-        <Button 
-          style={styles.button}
-          onPress={onRequestPermission}
-        >
-          <Label style={styles.buttonText}>Grant Access</Label>
+        <Button onPress={onRequestPermission} className="px-8 py-4 rounded-lg">
+          <Label className="text-base font-semibold">Grant Access</Label>
         </Button>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  description: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 32,
-    color: '#666',
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
