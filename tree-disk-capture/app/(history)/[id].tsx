@@ -1,7 +1,6 @@
 import { View, Image } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useCaptures } from '@/lib/hooks/use-captures';
-import { Label } from '@/components/ui/label';
 import { Text } from '@/components/ui/text';
 
 export default function CaptureDetails() {
@@ -12,7 +11,7 @@ export default function CaptureDetails() {
   if (!capture) {
     return (
       <View className="flex-1 items-center justify-center p-4">
-        <Label className="text-xl">Capture not found</Label>
+        <Text className="text-xl">Capture not found</Text>
       </View>
     );
   }
@@ -27,12 +26,12 @@ export default function CaptureDetails() {
       <Text className="text-lg mb-2">
         Predicted Age: {capture.analysis.predictedAge}
       </Text>
-      <Label className="text-lg mb-2">
+      <Text className="text-lg mb-2">
         Location: {capture.analysis.predictedLocation}
-      </Label>
-      <Label className="text-lg">
+      </Text>
+      <Text className="text-lg">
         Captured: {new Date(capture.timestamp).toLocaleDateString()}
-      </Label>
+      </Text>
     </View>
   );
 }
