@@ -20,7 +20,7 @@ export function CameraControls({
 }: CameraControlsProps) {
 
   return (
-    <>
+    <View className="flex-1">
       {/* Top Controls */}
       <View className="absolute top-12 left-0 right-0 flex-row justify-between p-4">
         <Button
@@ -34,13 +34,13 @@ export function CameraControls({
           onPress={onFlashToggle}
           variant="ghost"
         >
-          <>
-            {flashEnabled ? (
-              <FlashlightIcon />
-            ) : (
-              <FlashlightOffIcon />
-            )}
-          </>
+
+          {flashEnabled ? (
+            <FlashlightIcon />
+          ) : (
+            <FlashlightOffIcon />
+          )}
+
         </Button>
       </View>
 
@@ -50,9 +50,9 @@ export function CameraControls({
           onPress={onCapture}
           variant="ghost"
         >
-          <CameraIcon size={32}/>
+          <CameraIcon size={32} />
         </Button>
       </View>
-    </>
+    </View>
   );
 }

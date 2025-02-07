@@ -5,7 +5,7 @@ import { View } from 'react-native';
 
 export default function NotFoundScreen() {
   return (
-    <>
+    <View className="flex-1">
       <Stack.Screen options={{ title: 'Oops!' }} />
       <View className="flex-1 items-center justify-center p-5">
         <H1>This screen doesn't exist.</H1>
@@ -13,6 +13,6 @@ export default function NotFoundScreen() {
           <Label>Go to home screen!</Label>
         </Link>
       </View>
-    </>
+    </View>
   );
 }
