@@ -1,4 +1,4 @@
-import "../global.css";
+import "@/global.css";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, StyleSheet, StatusBar, Platform } from "react-native";

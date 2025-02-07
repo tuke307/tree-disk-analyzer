@@ -1,8 +1,7 @@
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { Label } from '@/components/ui/label';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 
 interface PermissionRequestProps {
   onRequestPermission: () => void;

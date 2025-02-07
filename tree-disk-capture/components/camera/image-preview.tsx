@@ -1,9 +1,9 @@
 import { StyleSheet, SafeAreaView, View } from 'react-native';
 import { Image } from 'expo-image';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { RotateCcwIcon } from '@/lib/icons/RotateCcwIcon';
 import { SaveIcon } from '@/lib/icons/SaveIcon';
-import { Text } from '../ui/text';
+import { Text } from '@/components/ui/text';
 
 interface ImagePreviewProps {
   uri: string;
@@ -43,19 +43,18 @@ export function ImagePreview({
             className='flex-row gap-2 items-center'
           >
             {isLoading ? (
-              <>
-                <Text>
-                  Analyzing...
-                </Text>
-              </>
+
+              <Text>
+                Analyzing...
+              </Text>
+
             ) : (
-              <>
-                <SaveIcon
-                />
+              <View className='flex-row gap-2 items-center'>
+                <SaveIcon />
                 <Text>
                   Save
                 </Text>
-              </>
+              </View>
             )}
           </Button>
         </View>

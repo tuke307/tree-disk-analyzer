@@ -1,8 +1,8 @@
 import { CameraView } from "expo-camera";
 import { useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { CameraControls } from './camera-controls';
-import { ImagePreview } from './image-preview';
+import { CameraControls } from '@/components/camera/camera-controls';
+import { ImagePreview } from '@/components/camera/image-preview';
 
 interface Props {
   onCapture: (uri: string) => Promise<void>;

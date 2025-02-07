@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { HistoryItem } from './history-item';
+import { HistoryItem } from '@/components/history/history-item';
 import { CaptureData } from '@/lib/constants/types';
 
 interface Props {

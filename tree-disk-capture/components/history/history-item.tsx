@@ -2,9 +2,8 @@ import { View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { CaptureData } from '@/lib/constants/types';
-import { Label } from '@/components/ui/label';
-import { Button } from '../ui/button';
-import { Text } from '../ui/text';
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
 
 interface Props {
   capture: CaptureData;

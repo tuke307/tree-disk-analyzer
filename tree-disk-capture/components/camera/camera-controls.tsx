@@ -3,7 +3,7 @@ import { FlashlightIcon } from '@/lib/icons/FlashlightIcon';
 import { FlashlightOffIcon } from '@/lib/icons/FlashlightOffIcon';
 import { XIcon } from '@/lib/icons/XIcon';
 import { CameraIcon } from '@/lib/icons/CameraIcon';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 
 interface CameraControlsProps {
   onCapture: () => void;
