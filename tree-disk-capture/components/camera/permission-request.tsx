@@ -2,6 +2,7 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
 
 interface PermissionRequestProps {
   onRequestPermission: () => void;
@@ -17,7 +18,7 @@ export function PermissionRequest({ onRequestPermission }: PermissionRequestProp
         </Label>
 
         <Button onPress={onRequestPermission} className="px-8 py-4 rounded-lg">
-          <Label className="text-base font-semibold">Grant Access</Label>
+          <Text>Grant Access</Text>
         </Button>
       </View>
     </SafeAreaView>
