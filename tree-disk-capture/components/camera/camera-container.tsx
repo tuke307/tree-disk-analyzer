@@ -1,8 +1,10 @@
 import { CameraView } from "expo-camera";
 import { useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import * as ImagePicker from 'expo-image-picker';
 import { CameraControls } from '@/components/camera/camera-controls';
 import { ImagePreview } from '@/components/camera/image-preview';
+
 
 interface Props {
   onCapture: (uri: string) => Promise<void>;
@@ -27,6 +29,25 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
       }
     } catch (error) {
       console.error('Failed to take photo:', error);
+    }
+  };
+
+  const handleGalleryPress = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (permission.status !== 'granted') {
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled && result.assets[0]) {
+      setUri(result.assets[0].uri);
     }
   };
 
@@ -61,6 +82,7 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
           <CameraControls
             onCapture={handleTakePhoto}
             onClose={onClose}
+            onGalleryPress={handleGalleryPress}
             onFlashToggle={() => setFlashEnabled(!flashEnabled)}
             flashEnabled={flashEnabled}
           />
