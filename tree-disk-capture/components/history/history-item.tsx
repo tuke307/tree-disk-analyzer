@@ -1,9 +1,8 @@
-import { Pressable, View } from 'react-native';
+import { Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { CaptureData } from '@/lib/constants/types';
 import { CardWithImage, CardImage, CardHeader, CardDescription, CardTitle } from '@/components/ui/card';
-import { Text } from '@/components/ui/text';
 
 interface Props {
   capture: CaptureData;
