@@ -7,14 +7,13 @@ import { ImagePreview } from '@/components/camera/image-preview';
 
 
 interface Props {
-  onCapture: (uri: string) => Promise<void>;
-  onCaptureSaved: () => void;
+  onCapture: (uri: string) => Promise<string | undefined>;
+  onCaptureSaved: (id: string) => void;
   onClose: () => void;
 }
 
 export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
   const cameraRef = useRef<CameraView>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uri, setUri] = useState<string | null>(null);
   const [flashEnabled, setFlashEnabled] = useState(false);
 
@@ -53,8 +52,10 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
 
   const handleSave = async () => {
     if (uri) {
-      await onCapture(uri);
-      onCaptureSaved();
+      const captureId = await onCapture(uri);
+      if (captureId) {
+        onCaptureSaved(captureId);
+      }
     }
   };
 
@@ -65,11 +66,8 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
           uri={uri}
           onRetake={() => setUri(null)}
           onSave={async () => {
-            setIsAnalyzing(true);
             await handleSave();
-            setIsAnalyzing(false);
           }}
-          isLoading={isAnalyzing}
         />
       ) : (
         <CameraView

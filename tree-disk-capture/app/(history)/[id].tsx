@@ -15,11 +15,13 @@ export default function CaptureDetails() {
 
   const [title, setTitle] = useState('');
   const [isSaved, setIsSaved] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(true);
 
   useEffect(() => {
     if (capture) {
       const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
       setTitle(capture.title || `analysis ${formattedDate}`);
+      setIsAnalyzing(!capture.analysis);
     }
   }, [capture]);
 
@@ -56,33 +58,41 @@ export default function CaptureDetails() {
           onChangeText={setTitle}
         />
 
-        <Text className="text-lg">
-          Predicted Age: {capture.analysis.predictedAge}
-        </Text>
-        <Text className="text-lg">
-          Location: {capture.analysis.predictedLocation}
-        </Text>
-        <Text className="text-lg">
-          Captured: {formattedDate}
-        </Text>
-      </View>
+        {isAnalyzing ? (
+          <View className="items-center py-4">
+            <Text>Analyzing image...</Text>
+          </View>
+        ) : (
+          <View className="flex-1">
+            <Text className="text-lg">
+              Predicted Age: {capture.analysis.predictedAge}
+            </Text>
+            <Text className="text-lg">
+              Location: {capture.analysis.predictedLocation}
+            </Text>
+            <Text className="text-lg">
+              Captured: {formattedDate}
+            </Text>
 
-      <View className="gap-2 mt-auto">
-        <Button
-          onPress={async () => {
-            await updateCaptureTitle(capture.id, title);
-            setIsSaved(true);
-          }}>
-          <Text>{isSaved ? 'Saved!' : 'Save'}</Text>
-        </Button>
-        <Button
-          variant='destructive'
-          onPress={async () => {
-            await deleteCapture(capture.id);
-            router.replace('/');
-          }}>
-          <Text>Delete</Text>
-        </Button>
+            <View className="gap-2 mt-auto">
+              <Button
+                onPress={async () => {
+                  await updateCaptureTitle(capture.id, title);
+                  setIsSaved(true);
+                }}>
+                <Text>{isSaved ? 'Saved!' : 'Save'}</Text>
+              </Button>
+              <Button
+                variant='destructive'
+                onPress={async () => {
+                  await deleteCapture(capture.id);
+                  router.replace('/');
+                }}>
+                <Text>Delete</Text>
+              </Button>
+            </View>
+          </View>
+        )}
       </View>
     </View>
   );
