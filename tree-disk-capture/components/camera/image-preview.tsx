@@ -31,7 +31,7 @@ export function ImagePreview({
           <Button
             onPress={onRetake}
             className='flex-row gap-2 items-center'>
-            <RotateCcwIcon className='text-foreground'/>
+            <RotateCcwIcon className='text-primary-foreground'/>
             <Text>
               Retake
             </Text>
@@ -48,7 +48,7 @@ export function ImagePreview({
               </Text>
             ) : (
               <View className='flex-row gap-2 items-center'>
-                <SaveIcon className='text-foreground'/>
+                <SaveIcon className='text-primary-foreground'/>
                 <Text>
                   Save
                 </Text>
