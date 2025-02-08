@@ -36,13 +36,11 @@ export function CameraControls({
           variant="ghost"
           size="icon"
         >
-
           {flashEnabled ? (
             <FlashlightIcon />
           ) : (
             <FlashlightOffIcon />
           )}
-
         </Button>
       </View>
 
