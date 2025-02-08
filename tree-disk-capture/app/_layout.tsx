@@ -1,7 +1,7 @@
 import "@/global.css";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, StyleSheet, StatusBar, Platform } from "react-native";
+import { Platform } from "react-native";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NAV_THEME } from "@/lib/constants/theme";
 import { Theme, ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
@@ -28,62 +28,62 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
+  const [isMounted, setIsMounted] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      const theme = await AsyncStorage.getItem('theme');
-      if (Platform.OS === 'web') {
-        // Adds the background color to the html element to prevent white background on overscroll.
-        document.documentElement.classList.add('bg-background');
-      }
-      if (!theme) {
-        AsyncStorage.setItem('theme', colorScheme);
-        setIsColorSchemeLoaded(true);
-        return;
-      }
-      const colorTheme = theme === 'dark' ? 'dark' : 'light';
-      if (colorTheme !== colorScheme) {
-        setColorScheme(colorTheme);
-
-        setIsColorSchemeLoaded(true);
-        return;
-      }
-      setIsColorSchemeLoaded(true);
-    })().finally(() => {
-      SplashScreen.hideAsync();
-    });
+    loadTheme();
+    return () => setIsMounted(false);
   }, []);
 
-  if (!isColorSchemeLoaded) {
-    return null;
-  }
+  useEffect(() => {
+    if (isColorSchemeLoaded) {
+      hideSplashScreen();
+    }
+  }, [isColorSchemeLoaded]);
+
+  const hideSplashScreen = async () => {
+    try {
+      await SplashScreen.hideAsync();
+    } catch (error) {
+      console.error('Failed to hide splash screen:', error);
+    }
+  };
+
+  const loadTheme = async () => {
+    try {
+      const theme = await AsyncStorage.getItem('theme');
+
+      if (Platform.OS === 'web') {
+        document.documentElement.classList.add('bg-background');
+      }
+
+      if (!theme) {
+        await AsyncStorage.setItem('theme', colorScheme);
+      } else {
+        const colorTheme = theme === 'dark' ? 'dark' : 'light';
+        if (colorTheme !== colorScheme) {
+          setColorScheme(colorTheme);
+        }
+      }
+
+      if (isMounted) {
+        setIsColorSchemeLoaded(true);
+      }
+    } catch (error) {
+      console.error('Failed to load theme:', error);
+      // Set loaded state even on error to prevent hanging
+      setIsColorSchemeLoaded(true);
+    }
+  };
 
   return (
     <SafeAreaProvider>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-        <View style={StyleSheet.absoluteFill}>
-          <StatusBar />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              presentation: 'fullScreenModal'
-            }}
-          >
-            <Stack.Screen
-              name="index"
-              options={{
-                title: 'Tree Rings',
-              }}
-            />
-            <Stack.Screen
-              name="capture"
-              options={{
-                title: 'New Capture',
-                presentation: 'fullScreenModal',
-              }}
-            />
-          </Stack>
-        </View>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            presentation: 'fullScreenModal'
+          }} />
       </ThemeProvider>
     </SafeAreaProvider>
   );
