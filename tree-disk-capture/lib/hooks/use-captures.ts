@@ -60,5 +60,17 @@ export function useCaptures() {
     await loadCaptures();
   };
 
-  return { captures, saveCapture, getCaptureById, updateCaptureTitle, deleteCapture, refreshCaptures };
+  const updateCapture = async (updatedCapture: CaptureData) => {
+    const updatedCaptures = captures.map(c => 
+      c.id === updatedCapture.id ? updatedCapture : c
+    );
+    try {
+      await AsyncStorage.setItem('captures', JSON.stringify(updatedCaptures));
+      setCaptures(updatedCaptures);
+    } catch (error) {
+      console.error('Error updating capture:', error);
+    }
+  };
+
+  return { captures, saveCapture, getCaptureById, updateCaptureTitle, deleteCapture, refreshCaptures, updateCapture };
 }
