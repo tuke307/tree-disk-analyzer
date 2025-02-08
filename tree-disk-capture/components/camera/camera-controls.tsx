@@ -28,7 +28,7 @@ export function CameraControls({
           variant="ghost"
           size="icon"
         >
-          <XIcon />
+          <XIcon className='text-foreground' />
         </Button>
 
         <Button
@@ -37,9 +37,9 @@ export function CameraControls({
           size="icon"
         >
           {flashEnabled ? (
-            <FlashlightIcon />
+            <FlashlightIcon className='text-foreground' />
           ) : (
-            <FlashlightOffIcon />
+            <FlashlightOffIcon className='text-foreground'/>
           )}
         </Button>
       </View>
@@ -52,7 +52,7 @@ export function CameraControls({
           size="icon"
           className='h-12 w-12'
         >
-          <CameraIcon size={32} />
+          <CameraIcon size={32} className='text-foreground'/>
         </Button>
       </View>
     </View>

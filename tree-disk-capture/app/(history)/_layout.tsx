@@ -8,7 +8,7 @@ export default function HistoryLayout() {
       screenOptions={({ navigation }) => ({
         headerLeft: () => (
           <Button variant="ghost" size="icon" onPress={() => navigation.goBack()}>
-            <ArrowLeftIcon />
+            <ArrowLeftIcon className='text-foreground'/>
           </Button>
         ),
       })}
