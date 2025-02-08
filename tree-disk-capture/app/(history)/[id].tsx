@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';  // Add useCallback
 import { View, Image, ScrollView } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useCaptures } from '@/lib/hooks/use-captures';
@@ -15,17 +15,33 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { analyzeImage } from '@/lib/constants/api';  // Add this import
 
 export default function CaptureDetails() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   const router = useRouter();
-  const { getCaptureById, updateCaptureTitle, deleteCapture } = useCaptures();
+  const { getCaptureById, updateCaptureTitle, deleteCapture, updateCapture } = useCaptures();  // Add updateCapture
   const capture = getCaptureById(id as string);
 
   const [title, setTitle] = useState('');
-  const [isSaved, setIsSaved] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
+
+  // Add debounced save
+  const debouncedUpdateTitle = useCallback(
+    async (newTitle: string) => {
+      if (capture?.id) {
+        await updateCaptureTitle(capture.id, newTitle);
+      }
+    },
+    [capture?.id, updateCaptureTitle]
+  );
+
+  // Handle title changes
+  const handleTitleChange = (newTitle: string) => {
+    setTitle(newTitle);
+    debouncedUpdateTitle(newTitle);
+  };
 
   useEffect(() => {
     if (capture) {
@@ -34,10 +50,6 @@ export default function CaptureDetails() {
       setIsAnalyzing(!capture.analysis);
     }
   }, [capture]);
-
-  useEffect(() => {
-    setIsSaved(false);
-  }, [title]);
 
   // Set modal header title to current title
   useEffect(() => {
@@ -54,6 +66,23 @@ export default function CaptureDetails() {
 
   const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
 
+  const handleRetryAnalysis = async () => {
+    if (!capture) return;
+
+    setIsAnalyzing(true);
+    try {
+      const newAnalysis = await analyzeImage(capture.uri);
+      await updateCapture({
+        ...capture,
+        analysis: newAnalysis
+      });
+    } catch (error) {
+      console.error('Failed to reanalyze:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   return (
     <ScrollView className="flex-1">
       <View className="flex-1 p-4">
@@ -67,7 +96,7 @@ export default function CaptureDetails() {
 
           <Input
             value={title}
-            onChangeText={setTitle}
+            onChangeText={handleTitleChange}
             className="mb-4 pl-4"
             style={{ width: 250 }}
           />
@@ -89,12 +118,10 @@ export default function CaptureDetails() {
 
               <View className="flex-row justify-start gap-4 mb-4">
                 <Button
-                  className="flex-initial"
-                  onPress={async () => {
-                    await updateCaptureTitle(capture.id, title);
-                    setIsSaved(true);
-                  }}>
-                  <Text>{isSaved ? 'Saved!' : 'Save'}</Text>
+                  variant="outline"
+                  onPress={handleRetryAnalysis}
+                >
+                  <Text>Retry Analysis</Text>
                 </Button>
 
                 <Dialog>
