@@ -26,6 +26,7 @@ export function CameraControls({
         <Button
           onPress={onClose}
           variant="ghost"
+          size="icon"
         >
           <XIcon />
         </Button>
@@ -33,6 +34,7 @@ export function CameraControls({
         <Button
           onPress={onFlashToggle}
           variant="ghost"
+          size="icon"
         >
 
           {flashEnabled ? (
@@ -49,6 +51,8 @@ export function CameraControls({
         <Button
           onPress={onCapture}
           variant="ghost"
+          size="icon"
+          className='h-12 w-12'
         >
           <CameraIcon size={32} />
         </Button>
