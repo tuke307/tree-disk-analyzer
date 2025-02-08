@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, ScrollView } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useCaptures } from '@/lib/hooks/use-captures';
 import { Text } from '@/components/ui/text';
@@ -45,55 +45,61 @@ export default function CaptureDetails() {
   const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
 
   return (
-    <View className="flex-1 p-4">
-      <View className="flex-1 gap-2">
-        <Image
-          source={{ uri: capture.uri }}
-          className="w-full h-64 rounded-lg mb-4"
-          resizeMode="cover"
-        />
+    <ScrollView className="flex-1">
+      <View className="flex-1 p-4">
+        <View className="flex-1 gap-2">
+          <Image
+            source={{ uri: capture.uri }}
+            className="w-full rounded-lg mb-4"
+            style={{ aspectRatio: 1 }}
+            resizeMode="contain"
+          />
 
-        <Input
-          value={title}
-          onChangeText={setTitle}
-        />
+          <Input
+            value={title}
+            onChangeText={setTitle}
+            className="mb-4 pl-4"
+            style={{ width: 250 }}
+          />
 
-        {isAnalyzing ? (
-          <View className="items-center py-4">
-            <Text>Analyzing image...</Text>
-          </View>
-        ) : (
-          <View className="flex-1">
-            <Text className="text-lg">
-              Predicted Age: {capture.analysis.predictedAge}
-            </Text>
-            <Text className="text-lg">
-              Location: {capture.analysis.predictedLocation}
-            </Text>
-            <Text className="text-lg">
-              Captured: {formattedDate}
-            </Text>
-
-            <View className="gap-2 mt-auto">
-              <Button
-                onPress={async () => {
-                  await updateCaptureTitle(capture.id, title);
-                  setIsSaved(true);
-                }}>
-                <Text>{isSaved ? 'Saved!' : 'Save'}</Text>
-              </Button>
-              <Button
-                variant='destructive'
-                onPress={async () => {
-                  await deleteCapture(capture.id);
-                  router.replace('/');
-                }}>
-                <Text>Delete</Text>
-              </Button>
+          {isAnalyzing ? (
+            <View className="items-center py-4">
+              <Text>Analyzing image...</Text>
             </View>
-          </View>
-        )}
+          ) : (
+            <View className="flex-1">
+              <View className="mb-12">
+                <Text className="text-lg">
+                  Predicted Age: {capture.analysis.predictedAge}
+                </Text>
+                <Text className="text-lg">
+                  Captured: {formattedDate}
+                </Text>
+              </View>
+
+              <View className="flex-row justify-start gap-4 mb-4">
+                <Button
+                  className="flex-initial"
+                  onPress={async () => {
+                    await updateCaptureTitle(capture.id, title);
+                    setIsSaved(true);
+                  }}>
+                  <Text>{isSaved ? 'Saved!' : 'Save'}</Text>
+                </Button>
+                <Button
+                  className="flex-initial"
+                  variant='destructive'
+                  onPress={async () => {
+                    await deleteCapture(capture.id);
+                    router.replace('/');
+                  }}>
+                  <Text>Delete</Text>
+                </Button>
+              </View>
+            </View>
+          )}
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
