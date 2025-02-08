@@ -15,19 +15,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { analyzeImage } from '@/lib/constants/api';  // Add this import
+import { analyzeImage } from '@/lib/constants/api';
 
 export default function CaptureDetails() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   const router = useRouter();
-  const { getCaptureById, updateCaptureTitle, deleteCapture, updateCapture } = useCaptures();  // Add updateCapture
+  const { getCaptureById, updateCaptureTitle, deleteCapture, updateCapture } = useCaptures();
   const capture = getCaptureById(id as string);
 
   const [title, setTitle] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(true);
 
-  // Add debounced save
   const debouncedUpdateTitle = useCallback(
     async (newTitle: string) => {
       if (capture?.id) {
