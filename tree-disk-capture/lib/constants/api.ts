@@ -3,7 +3,6 @@ export async function analyzeImage(uri: string) {
   // return demo data
   return {
     predictedAge: 42,
-    predictedLocation: 'Forest',
   };
 
 

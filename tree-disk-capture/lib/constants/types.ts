@@ -5,7 +5,6 @@ export interface CaptureData {
     timestamp: string;
     analysis: {
       predictedAge: number;
-      predictedLocation: string;
     };
   }
   
