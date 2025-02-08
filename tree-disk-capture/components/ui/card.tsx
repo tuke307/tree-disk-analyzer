@@ -52,29 +52,4 @@ const CardFooter = React.forwardRef<ViewRef, ViewProps>(({ className, ...props }
 ));
 CardFooter.displayName = 'CardFooter';
 
-const CardImage = React.forwardRef<ViewRef, ViewProps>(({ className, ...props }, ref) => (
-  <View
-    ref={ref}
-    className={cn('flex h-full items-center justify-center', className)}
-    {...props}
-  />
-));
-CardImage.displayName = 'CardImage';
-
-const CardWithImage = React.forwardRef<ViewRef, ViewProps>(({ className, ...props }, ref) => (
-  <Card ref={ref} className={className}>
-    <CardContent className="flex-row gap-4 min-h-[100px] items-center py-4" {...props} />
-  </Card>
-));
-CardWithImage.displayName = 'CardWithImage';
-
-export {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  CardImage,
-  CardWithImage,
-};
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };
