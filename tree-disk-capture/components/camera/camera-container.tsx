@@ -20,7 +20,6 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
     try {
       const photo = await cameraRef.current?.takePictureAsync();
 
-      alert(`photo captured with dimensions: ${photo!.width} x ${photo!.height}`);
       console.log(JSON.stringify(photo));
 
       if (photo?.uri) {
