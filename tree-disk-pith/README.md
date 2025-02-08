@@ -79,22 +79,26 @@ tree-disk-pith \
 
 1. Create and activate virtual environment:
 ```bash
+poetry config virtualenvs.in-project true
 poetry env use python
-poetry install
-poetry shell
 ```
 
-2. Running tests:
+```bash
+poetry install
+eval $(poetry env activate)
+```
+
+1. Running tests:
 ```bash
 poetry run pytest
 ```
 
-3. fetch dataset
+1. fetch dataset
 ```bash
 python fetch_dataset.py
 ```
 
-4. Download pretrained model
+1. Download pretrained model
 ```bash
 python fetch_pretrained_model.py
 ```
