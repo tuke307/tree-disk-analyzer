@@ -1,8 +1,8 @@
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { CaptureData } from '@/lib/constants/types';
-import { Button } from '@/components/ui/button';
+import { CardWithImage, CardImage, CardHeader, CardDescription, CardTitle } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
 
 interface Props {
@@ -13,26 +13,25 @@ export function HistoryItem({ capture }: Props) {
   const formattedDate = new Date(capture.timestamp).toLocaleDateString();
   
   return (
-    <Button
+    <Pressable
       onPress={() => router.push(`/${capture.id}`)}
-      className="rounded-lg p-4 mb-4 flex-row"
+      className="mb-4"
     >
-      <Image
-        source={{ uri: capture.uri }}
-        className="w-20 h-20 rounded-lg"
-        contentFit="cover"
-      />
-      <View className="ml-4 flex-1">
-        <Text className="font-semibold mb-1">
-          Tree Age: {capture.analysis.predictedAge}
-        </Text>
-        <Text>
-          Location: {capture.analysis.predictedLocation}
-        </Text>
-        <Text>
-          Captured: {formattedDate}
-        </Text>
-      </View>
-    </Button>
+      {({ pressed }) => (
+        <CardWithImage className={`${pressed ? 'opacity-70' : ''}`}>
+          <CardImage>
+            <Image
+              source={{ uri: capture.uri }}
+              className="w-20 h-20 rounded-lg"
+              contentFit="cover"
+            />
+          </CardImage>
+          <CardHeader className="flex-1 p-0">
+            <CardTitle className="text-base">Tree Analysis Result</CardTitle>
+            <CardDescription>Captured: {formattedDate}</CardDescription>
+          </CardHeader>
+        </CardWithImage>
+      )}
+    </Pressable>
   );
 }
