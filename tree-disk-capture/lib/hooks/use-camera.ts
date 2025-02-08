@@ -1,6 +1,7 @@
 import { useCameraPermissions } from 'expo-camera';
 import { useCaptures } from '@/lib/hooks/use-captures';
 import { analyzeImage } from '@/lib/constants/api';
+import { v4 as uuidv4 } from 'uuid';
 
 export function useCamera() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -10,7 +11,7 @@ export function useCamera() {
     try {
       const analysisResult = await analyzeImage(uri);
       const now = new Date();
-      const id = now.toString();
+      const id = uuidv4();
       
       const newCapture = {
         id,
