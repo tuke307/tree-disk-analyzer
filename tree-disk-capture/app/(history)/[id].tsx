@@ -5,6 +5,16 @@ import { useCaptures } from '@/lib/hooks/use-captures';
 import { Text } from '@/components/ui/text';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export default function CaptureDetails() {
   const { id } = useLocalSearchParams();
@@ -86,15 +96,37 @@ export default function CaptureDetails() {
                   }}>
                   <Text>{isSaved ? 'Saved!' : 'Save'}</Text>
                 </Button>
-                <Button
-                  className="flex-initial"
-                  variant='destructive'
-                  onPress={async () => {
-                    await deleteCapture(capture.id);
-                    router.replace('/');
-                  }}>
-                  <Text>Delete</Text>
-                </Button>
+
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="flex-initial" variant='destructive'>
+                      <Text>Delete</Text>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className='sm:max-w-[425px]'>
+                    <DialogHeader>
+                      <DialogTitle>Delete Capture</DialogTitle>
+                      <DialogDescription>
+                        Are you sure you want to delete this capture? This action cannot be undone.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button>
+                          <Text>Cancel</Text>
+                        </Button>
+                      </DialogClose>
+                      <Button
+                        variant='destructive'
+                        onPress={async () => {
+                          await deleteCapture(capture.id);
+                          router.replace('/');
+                        }}>
+                        <Text>Delete</Text>
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </View>
             </View>
           )}
