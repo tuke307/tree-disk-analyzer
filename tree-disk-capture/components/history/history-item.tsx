@@ -1,4 +1,4 @@
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { CaptureData } from '@/lib/constants/types';
@@ -11,7 +11,7 @@ interface Props {
 
 export function HistoryItem({ capture }: Props) {
   const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
-  
+
   return (
     <Button
       variant="outline"
@@ -25,7 +25,7 @@ export function HistoryItem({ capture }: Props) {
           contentFit="cover"
         />
         <View className="flex-1">
-          <Text className="text-xl font-semibold leading-none tracking-tight">{capture.title}</Text>
+          <Text className="text-xl leading-none tracking-tight">{capture.title}</Text>
           <Text className="text-sm text-muted-foreground">
             Captured: {formattedDate}
           </Text>
