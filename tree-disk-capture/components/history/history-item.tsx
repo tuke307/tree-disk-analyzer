@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function HistoryItem({ capture }: Props) {
-  const formattedDate = new Date(capture.timestamp).toLocaleDateString();
+  const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
   
   return (
     <Pressable

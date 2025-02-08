@@ -16,6 +16,8 @@ export default function CaptureDetails() {
     );
   }
 
+  const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
+
   return (
     <View className="flex-1 p-4 gap-2">
       <Image
@@ -30,7 +32,7 @@ export default function CaptureDetails() {
         Location: {capture.analysis.predictedLocation}
       </Text>
       <Text className="text-lg">
-        Captured: {new Date(capture.timestamp).toLocaleDateString()}
+        Captured: {formattedDate}
       </Text>
     </View>
   );
