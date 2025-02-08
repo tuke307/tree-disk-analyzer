@@ -26,7 +26,7 @@ export function HistoryItem({ capture }: Props) {
             />
           </CardImage>
           <CardHeader className="flex-1 p-0">
-            <CardTitle className="text-base">Tree Analysis Result</CardTitle>
+            <CardTitle className="text-base">{capture.title}</CardTitle>
             <CardDescription>Captured: {formattedDate}</CardDescription>
           </CardHeader>
         </CardWithImage>

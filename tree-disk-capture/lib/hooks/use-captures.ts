@@ -34,5 +34,31 @@ export function useCaptures() {
     return captures.find(capture => capture.id === id);
   };
 
-  return { captures, saveCapture, getCaptureById };
+  const updateCaptureTitle = async (id: string, title: string) => {
+    const updatedCaptures = captures.map(capture =>
+      capture.id === id ? { ...capture, title } : capture
+    );
+    try {
+      await AsyncStorage.setItem('captures', JSON.stringify(updatedCaptures));
+      setCaptures(updatedCaptures);
+    } catch (error) {
+      console.error('Error updating capture title:', error);
+    }
+  };
+
+  const deleteCapture = async (id: string) => {
+    const updatedCaptures = captures.filter(capture => capture.id !== id);
+    try {
+      await AsyncStorage.setItem('captures', JSON.stringify(updatedCaptures));
+      setCaptures(updatedCaptures);
+    } catch (error) {
+      console.error('Error deleting capture:', error);
+    }
+  };
+
+  const refreshCaptures = async () => {
+    await loadCaptures();
+  };
+
+  return { captures, saveCapture, getCaptureById, updateCaptureTitle, deleteCapture, refreshCaptures };
 }

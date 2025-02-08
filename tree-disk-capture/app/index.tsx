@@ -1,5 +1,6 @@
+import { useCallback } from 'react';
 import { View, ScrollView } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { HistoryList } from '@/components/history/history-list';
 import { NewCaptureButton } from '@/components/buttons/new-capture-button';
 import { useCaptures } from '@/lib/hooks/use-captures';
@@ -7,8 +8,14 @@ import { Label } from '@/components/ui/label';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Home() {
-  const { captures } = useCaptures();
+  const { captures, refreshCaptures } = useCaptures();
   const insets = useSafeAreaInsets();
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshCaptures();
+    }, [refreshCaptures])
+  );
 
   return (
     <View className="flex-1 m-4" style={{ paddingTop: insets.top }}>
