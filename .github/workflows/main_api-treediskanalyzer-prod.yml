@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'tree-disk-api/**'
   workflow_dispatch:
 
 jobs:
@@ -15,6 +17,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+          path: tree-disk-api
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -29,6 +33,7 @@ jobs:
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
+        context: '{{defaultContext}}:tree-disk-api'
         push: true
         tags: tonylukeregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_9928dccc56224794952aafcf7d620986 }}/treediskanalyzer/api:${{ github.sha }}
         file: ./Dockerfile
