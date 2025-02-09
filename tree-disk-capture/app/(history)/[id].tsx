@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Dimensions } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useCaptures } from '@/lib/hooks/use-captures';
 import { Text } from '@/components/ui/text';
@@ -34,6 +34,14 @@ export default function CaptureDetails() {
   const [title, setTitle] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Calculate display dimensions based on screen width
+  const screenWidth = Dimensions.get('window').width * 0.9; // 90% of screen width for padding
+  const originalWidth = capture?.width || 800;
+  const originalHeight = capture?.height || 600;
+  const aspectRatio = originalWidth / originalHeight;
+  const displayWidth = Math.min(originalWidth, screenWidth);
+  const displayHeight = displayWidth / aspectRatio;
 
   // Initialize with existing analysis data if available
   const [analysisData, setAnalysisData] = useState<{
@@ -164,8 +172,8 @@ export default function CaptureDetails() {
               segmentation={analysisData.segmentation || capture.analysis?.segmentation}
               pith={analysisData.pith || capture.analysis?.pith}
               rings={analysisData.rings || capture.analysis?.rings}
-              width={capture.width || 800}
-              height={capture.height || 600}
+              width={displayWidth}
+              height={displayHeight}
               showSegmentation={overlayVisibility.segmentation}
               showPith={overlayVisibility.pith}
               showRings={overlayVisibility.rings}
