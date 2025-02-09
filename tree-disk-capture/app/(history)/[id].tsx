@@ -21,6 +21,7 @@ import { ImagePith, RingsDetection, SegmentationResult } from '@/lib/constants/t
 import { ProgressStep } from '@/components/history/progress-step';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function CaptureDetails() {
   // Updated to include the optional query parameter "analyze"
@@ -158,10 +159,10 @@ export default function CaptureDetails() {
 
   return (
     <ScrollView className="flex-1">
-      <View className="flex-1 p-4">
+      <View className="flex-1 p-4 gap-4">
         {/* Image Overlay Container */}
-        <View className="mb-8">
-          <View className="rounded-lg overflow-hidden">
+        <View>
+          <View className="rounded-lg overflow-hidden items-center">
             <ImageOverlay
               uri={capture.uri}
               segmentation={analysisData.segmentation || capture.analysis?.segmentation}
@@ -177,9 +178,11 @@ export default function CaptureDetails() {
         </View>
 
         {/* Overlay Controls */}
-        <View className="mb-6 p-4 bg-gray-100 rounded-lg">
-          <Text className="text-lg font-semibold mb-3">Overlay Controls</Text>
-          <View className="gap-3">
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Overlay Controls</CardTitle>
+          </CardHeader>
+          <CardContent className="flex-col gap-2">
             <View className="flex-row items-center gap-2">
               <Switch
                 checked={overlayVisibility.segmentation}
@@ -210,18 +213,34 @@ export default function CaptureDetails() {
               />
               <Label nativeID="rings-toggle">Show Rings</Label>
             </View>
-          </View>
-        </View>
+          </CardContent>
+        </Card>
 
         {/* Content Container */}
-        <View className="flex-1 gap-2">
-          <Input
-            value={title}
-            onChangeText={handleTitleChange}
-            className="mb-4 pl-4"
-            style={{ width: 250 }}
-          />
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Capture Details</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input
+              value={title}
+              onChangeText={handleTitleChange}
+              className="mb-4 pl-4"
+              style={{ width: 250 }}
+            />
+            <View className="flex-row items-center gap-4">
+              <Label className="text-lg">Captured</Label>
+              <Text>{formattedDate}</Text>
+            </View>
+            <View className="flex-row items-center gap-4">
+              <Label className="text-lg">Predicted Age</Label>
+              <Text>{capture.analysis?.predictedAge ?? 'N/A'}</Text>
+            </View>
+          </CardContent>
+        </Card>
 
+        {/* Analysis Progress */}
+        <View className="flex-1 gap-2 mt-4">
           {isAnalyzing ? (
             <View className="items-center py-4 gap-4">
               <Text className="text-lg font-semibold">Analysis Progress</Text>
@@ -230,19 +249,10 @@ export default function CaptureDetails() {
                 <ProgressStep label="Pith Detection" active={analysisProgress.pithDetection} />
                 <ProgressStep label="Ring Detection" active={analysisProgress.ringDetection} />
               </View>
-              {error && <Text className="text-red-500">{error}</Text>}
+              {error && <Text className="text-destructive">{error}</Text>}
             </View>
           ) : (
             <View className="flex-1">
-              <View className="mb-12">
-                <Text className="text-lg">
-                  Predicted Age: {capture.analysis?.predictedAge ?? 'N/A'}
-                </Text>
-                <Text className="text-lg">
-                  Captured: {formattedDate}
-                </Text>
-              </View>
-
               <View className="flex-row justify-start gap-4">
                 <Button variant="outline" onPress={handleRetryAnalysis}>
                   <Text>Retry Analysis</Text>
