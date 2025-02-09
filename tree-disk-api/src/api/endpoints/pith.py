@@ -4,7 +4,7 @@ import treediskpith
 from PIL import Image
 import io
 
-from config import OUTPUT_DIR, INPUT_DIR, YOLO_MODEL_PATH, DEBUG, SAVE_RESULTS
+from config.settings import OUTPUT_DIR, INPUT_DIR, YOLO_MODEL_PATH, DEBUG, SAVE_RESULTS
 
 router = APIRouter()
 

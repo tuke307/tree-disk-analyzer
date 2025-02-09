@@ -4,7 +4,7 @@ from PIL import Image
 import io
 from io import BytesIO
 
-from config import OUTPUT_DIR, INPUT_DIR, U2NET_MODEL_PATH, DEBUG, SAVE_RESULTS
+from config.settings import OUTPUT_DIR, INPUT_DIR, U2NET_MODEL_PATH, DEBUG, SAVE_RESULTS
 
 router = APIRouter()
 

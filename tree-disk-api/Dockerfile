@@ -38,9 +38,16 @@ COPY --from=builder /app/.venv .venv
 # Copy application code
 COPY . .
 
+# Add the source directory to PYTHONPATH so imports resolve correctly
+ENV PYTHONPATH="/app/src"
+
+# Copy the entrypoint script into the image and set execute permission
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Activate virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
 
 EXPOSE 3100
 
-CMD ["gunicorn", "main:app", "-c", "gunicorn.conf.py"]
+ENTRYPOINT ["/entrypoint.sh"]

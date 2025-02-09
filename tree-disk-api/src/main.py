@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from config import create_dirs
+from config.preparation import create_dirs, download_u2net_model, download_yolo_model
 from api.router import router
 
 
@@ -12,6 +12,8 @@ async def lifespan(app: FastAPI):
     print("FastAPI app started.")
 
     create_dirs()
+    download_u2net_model()
+    download_yolo_model()
 
     yield
 
