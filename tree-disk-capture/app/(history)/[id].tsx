@@ -151,7 +151,7 @@ export default function CaptureDetails() {
     );
   }
 
-  const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
+  const formattedDate = new Date(Number(capture.timestamp)).toLocaleDateString('de-DE');
 
   return (
     <ScrollView className="flex-1">
