@@ -1,10 +1,40 @@
 export interface CaptureData {
-    id: string;
-    title: string;
-    uri: string;
-    timestamp: string;
-    analysis: {
-      predictedAge: number;
-    };
-  }
-  
+  id: string;
+  title: string;
+  uri: string;
+  timestamp: string;
+  analysis: AnalysisResult | undefined;
+}
+
+export interface AnalysisResult {
+  segmentation: SegmentationResult | undefined;
+  pith: ImagePith | undefined;
+  rings: RingsDetection | undefined;
+  predictedAge: number | undefined;
+}
+
+export interface SegmentationResult {
+  maskUri: string;
+}
+
+export interface ImagePith {
+  x: number;
+  y: number;
+}
+
+export interface RingsDetection {
+  rings: Array<{
+    radius: number;
+    confidence: number;
+  }>;
+  processedImageUri?: string;
+}
+
+export interface DemoData {
+  capture: CaptureData;
+  analysisSteps: {
+    segmentation: SegmentationResult;
+    pith: ImagePith;
+    rings: RingsDetection;
+  };
+}
