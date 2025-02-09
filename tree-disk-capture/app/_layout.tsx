@@ -7,6 +7,7 @@ import { NAV_THEME } from "@/lib/constants/theme";
 import { Theme, ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from "@/lib/hooks/use-color-scheme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LoadSkiaWeb } from "@shopify/react-native-skia/lib/module/web";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -28,13 +29,31 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
+  const [skiaLoaded, setSkiaLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(true);
 
+  // Load theme from AsyncStorage.
   useEffect(() => {
     loadTheme();
     return () => setIsMounted(false);
   }, []);
 
+  // Load Skia assets.
+  useEffect(() => {
+    if (Platform.OS === "web") {
+      console.debug("Loading Skia on web...");
+      LoadSkiaWeb({ locateFile: () => "/canvaskit.wasm" })
+        .then(() => setSkiaLoaded(true))
+        .catch((error) => {
+          console.error("Failed to load Skia on web:", error);
+          setSkiaLoaded(true);
+        });
+    } else {
+      setSkiaLoaded(true);
+    }
+  }, []);
+
+  // Hide the splash screen once both color scheme & Skia are loaded.
   useEffect(() => {
     if (isColorSchemeLoaded) {
       hideSplashScreen();
@@ -75,6 +94,11 @@ export default function RootLayout() {
       setIsColorSchemeLoaded(true);
     }
   };
+
+  // render nothing until both theme and Skia are loaded.
+  if (!isColorSchemeLoaded || !skiaLoaded) {
+    return null;
+  }
 
   return (
     <SafeAreaProvider>
