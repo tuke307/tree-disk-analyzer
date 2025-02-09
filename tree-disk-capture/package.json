@@ -11,7 +11,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "postinstall": "npx setup-skia-web public && node path-fs-canvaskit-postinstall.js"
+    "postinstall": "npx setup-skia-web public && node path-fs-canvaskit-postinstall.js && npx tailwindcss -i ./global.css -o ./node_modules/.cache/nativewind/global.css"
   },
   "jest": {
     "preset": "jest-expo"
