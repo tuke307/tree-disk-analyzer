@@ -18,7 +18,7 @@ import {
 import { analyzeImage } from '@/lib/constants/api';
 
 export default function CaptureDetails() {
-  const { id } = useLocalSearchParams();
+  const { id, analyze } = useLocalSearchParams();
   const navigation = useNavigation();
   const router = useRouter();
   const { getCaptureById, updateCaptureTitle, deleteCapture, updateCapture } = useCaptures();
@@ -46,9 +46,9 @@ export default function CaptureDetails() {
     if (capture) {
       const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
       setTitle(capture.title || `analysis ${formattedDate}`);
-      setIsAnalyzing(!capture.analysis);
+      setIsAnalyzing(analyze === 'true'); // Only show analyzing if analyze is true via the route
     }
-  }, [capture]);
+  }, [capture, analyze]);
 
   // Set modal header title to current title
   useEffect(() => {
@@ -108,7 +108,7 @@ export default function CaptureDetails() {
             <View className="flex-1">
               <View className="mb-12">
                 <Text className="text-lg">
-                  Predicted Age: {capture.analysis.predictedAge}
+                  Predicted Age: {capture.analysis?.predictedAge}
                 </Text>
                 <Text className="text-lg">
                   Captured: {formattedDate}
