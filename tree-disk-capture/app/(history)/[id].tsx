@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';  // Add useCallback
-import { View, Image, ScrollView } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import { View, Image, ScrollView, Dimensions } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useCaptures } from '@/lib/hooks/use-captures';
 import { Text } from '@/components/ui/text';
@@ -15,9 +15,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { analyzeImage } from '@/lib/constants/api';
+import { detectPith, detectRings, segmentImage } from '@/lib/constants/api';
+import { ImageOverlay } from '@/components/history/image-overlay';
+import { ImagePith, RingsDetection, SegmentationResult } from '@/lib/constants/types';
+import { ProgressStep } from '@/components/history/progress-step';
 
 export default function CaptureDetails() {
+  // Updated to include the optional query parameter "analyze"
   const { id, analyze } = useLocalSearchParams();
   const navigation = useNavigation();
   const router = useRouter();
@@ -26,6 +30,64 @@ export default function CaptureDetails() {
 
   const [title, setTitle] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Initialize with existing analysis data if available
+  const [analysisData, setAnalysisData] = useState<{
+    segmentation?: SegmentationResult;
+    pith?: ImagePith;
+    rings?: RingsDetection;
+  }>(capture?.analysis || {});
+
+  const [analysisProgress, setAnalysisProgress] = useState({
+    segmentation: !!capture?.analysis?.segmentation,
+    pithDetection: !!capture?.analysis?.pith,
+    ringDetection: !!capture?.analysis?.rings,
+  });
+
+  const handleRetryAnalysis = async () => {
+    if (!capture) return;
+
+    setIsAnalyzing(true);
+    setError(null);
+    setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
+
+    try {
+      // Step 1: Segmentation
+      const segmentation = await segmentImage(capture.uri);
+      setAnalysisProgress(p => ({ ...p, segmentation: true }));
+      setAnalysisData({ segmentation });
+
+      // Step 2: Pith Detection
+      const pith = await detectPith(segmentation.maskUri);
+      setAnalysisProgress(p => ({ ...p, pithDetection: true }));
+      setAnalysisData(prev => ({ ...prev, pith }));
+
+      // Step 3: Ring Detection
+      // const rings = await detectRings(capture.uri, segmentation.maskUri, pith.x, pith.y);
+      // setAnalysisProgress(p => ({ ...p, ringDetection: true }));
+
+      const newAnalysis = {
+        // predictedAge: rings.rings.length,
+        segmentation,
+        pith,
+        // rings
+      };
+
+      // await updateCapture({
+      //   ...capture,
+      //   analysis: newAnalysis
+      // });
+
+      setAnalysisData(newAnalysis);
+    } catch (error) {
+      console.error('Analysis failed:', error);
+      setError('Analysis failed. Please try again.');
+      setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const debouncedUpdateTitle = useCallback(
     async (newTitle: string) => {
@@ -46,9 +108,30 @@ export default function CaptureDetails() {
     if (capture) {
       const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
       setTitle(capture.title || `analysis ${formattedDate}`);
-      setIsAnalyzing(analyze === 'true'); // Only show analyzing if analyze is true via the route
+      setIsAnalyzing(!capture.analysis);
+
+      // Initialize with existing analysis data
+      if (capture.analysis) {
+        setAnalysisData({
+          segmentation: capture.analysis.segmentation,
+          pith: capture.analysis.pith,
+          rings: capture.analysis.rings
+        });
+        setAnalysisProgress({
+          segmentation: !!capture.analysis.segmentation,
+          pithDetection: !!capture.analysis.pith,
+          ringDetection: !!capture.analysis.rings
+        });
+      }
     }
-  }, [capture, analyze]);
+  }, [capture]);
+
+  // Trigger analysis automatically if the optional query param "analyze" is "true"
+  useEffect(() => {
+    if (analyze === 'true' && capture && !capture.analysis) {
+      handleRetryAnalysis();
+    }
+  }, [analyze, capture]);
 
   // Set modal header title to current title
   useEffect(() => {
@@ -65,34 +148,25 @@ export default function CaptureDetails() {
 
   const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
 
-  const handleRetryAnalysis = async () => {
-    if (!capture) return;
-
-    setIsAnalyzing(true);
-    try {
-      const newAnalysis = await analyzeImage(capture.uri);
-      await updateCapture({
-        ...capture,
-        analysis: newAnalysis
-      });
-    } catch (error) {
-      console.error('Failed to reanalyze:', error);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
   return (
     <ScrollView className="flex-1">
       <View className="flex-1 p-4">
-        <View className="flex-1 gap-2">
-          <Image
-            source={{ uri: capture.uri }}
-            className="w-full rounded-lg mb-4"
-            style={{ aspectRatio: 1 }}
-            resizeMode="contain"
-          />
+        {/* Image Overlay Container */}
+        <View className="mb-8">
+          <View className="rounded-lg overflow-hidden">
+            <ImageOverlay
+              uri={capture.uri}
+              segmentation={analysisData.segmentation || capture.analysis?.segmentation}
+              pith={analysisData.pith || capture.analysis?.pith}
+              rings={analysisData.rings || capture.analysis?.rings}
+              width={capture.width || 800}  // Add fallback value
+              height={capture.height || 600} // Add fallback value
+            />
+          </View>
+        </View>
 
+        {/* Content Container */}
+        <View className="flex-1 gap-2">
           <Input
             value={title}
             onChangeText={handleTitleChange}
@@ -101,35 +175,38 @@ export default function CaptureDetails() {
           />
 
           {isAnalyzing ? (
-            <View className="items-center py-4">
-              <Text>Analyzing image...</Text>
+            <View className="items-center py-4 gap-4">
+              <Text className="text-lg font-semibold">Analysis Progress</Text>
+              <View className="flex-row gap-4">
+                <ProgressStep label="Segmentation" active={analysisProgress.segmentation} />
+                <ProgressStep label="Pith Detection" active={analysisProgress.pithDetection} />
+                <ProgressStep label="Ring Detection" active={analysisProgress.ringDetection} />
+              </View>
+              {error && <Text className="text-red-500">{error}</Text>}
             </View>
           ) : (
             <View className="flex-1">
               <View className="mb-12">
                 <Text className="text-lg">
-                  Predicted Age: {capture.analysis?.predictedAge}
+                  Predicted Age: {capture.analysis?.predictedAge ?? 'N/A'}
                 </Text>
                 <Text className="text-lg">
                   Captured: {formattedDate}
                 </Text>
               </View>
 
-              <View className="flex-row justify-start gap-4 mb-4">
-                <Button
-                  variant="outline"
-                  onPress={handleRetryAnalysis}
-                >
+              <View className="flex-row justify-start gap-4">
+                <Button variant="outline" onPress={handleRetryAnalysis}>
                   <Text>Retry Analysis</Text>
                 </Button>
 
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button className="flex-initial" variant='destructive'>
+                    <Button className="flex-initial" variant="destructive">
                       <Text>Delete</Text>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className='sm:max-w-[425px]'>
+                  <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                       <DialogTitle>Delete Capture</DialogTitle>
                       <DialogDescription>
@@ -143,7 +220,7 @@ export default function CaptureDetails() {
                         </Button>
                       </DialogClose>
                       <Button
-                        variant='destructive'
+                        variant="destructive"
                         onPress={async () => {
                           await deleteCapture(capture.id);
                           router.replace('/');
