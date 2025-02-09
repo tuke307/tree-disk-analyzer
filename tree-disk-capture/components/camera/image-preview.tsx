@@ -37,7 +37,6 @@ export function ImagePreview({
 
           <Button
             onPress={onSave}
-
             className='flex-row gap-2 items-center'
           >
             <ArrowRightIcon className='text-primary-foreground' />
