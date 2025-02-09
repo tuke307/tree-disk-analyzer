@@ -10,6 +10,9 @@ interface ImageOverlayProps {
     rings?: RingsDetection;
     width: number;
     height: number;
+    showSegmentation?: boolean;
+    showPith?: boolean;
+    showRings?: boolean;
 }
 const loadSkiaImage = async (uri: string): Promise<SkImage | null> => {
     let data;
@@ -23,7 +26,17 @@ const loadSkiaImage = async (uri: string): Promise<SkImage | null> => {
     return Skia.Image.MakeImageFromEncoded(data);
 };
 
-export const ImageOverlay = ({ uri, segmentation, pith, rings, width, height }: ImageOverlayProps) => {
+export const ImageOverlay = ({ 
+    uri, 
+    segmentation, 
+    pith, 
+    rings, 
+    width, 
+    height,
+    showSegmentation = true,
+    showPith = true,
+    showRings = true 
+}: ImageOverlayProps) => {
     const [image, setImage] = useState<SkImage | null>(null);
     const [maskImage, setMaskImage] = useState<SkImage | null>(null);
 
@@ -58,7 +71,7 @@ export const ImageOverlay = ({ uri, segmentation, pith, rings, width, height }: 
                 />
 
                 {/* Segmentation Mask Overlay */}
-                {maskImage && (
+                {maskImage && showSegmentation && (
                     <Image
                         image={maskImage}
                         fit="contain"
@@ -68,7 +81,7 @@ export const ImageOverlay = ({ uri, segmentation, pith, rings, width, height }: 
                 )}
 
                 {/* Pith Point */}
-                {pith && (
+                {pith && showPith && (
                     <Circle
                         cx={pith.x}
                         cy={pith.y}
@@ -78,7 +91,7 @@ export const ImageOverlay = ({ uri, segmentation, pith, rings, width, height }: 
                 )}
 
                 {/* Growth Rings */}
-                {rings?.rings.map((ring, index) => (
+                {rings && showRings && rings.rings.map((ring, index) => (
                     <Circle
                         key={`ring-${index}`}
                         cx={pith?.x ?? 0}

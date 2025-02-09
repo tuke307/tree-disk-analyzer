@@ -19,6 +19,8 @@ import { detectPith, detectRings, segmentImage } from '@/lib/constants/api';
 import { ImageOverlay } from '@/components/history/image-overlay';
 import { ImagePith, RingsDetection, SegmentationResult } from '@/lib/constants/types';
 import { ProgressStep } from '@/components/history/progress-step';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 export default function CaptureDetails() {
   // Updated to include the optional query parameter "analyze"
@@ -43,6 +45,12 @@ export default function CaptureDetails() {
     segmentation: !!capture?.analysis?.segmentation,
     pithDetection: !!capture?.analysis?.pith,
     ringDetection: !!capture?.analysis?.rings,
+  });
+
+  const [overlayVisibility, setOverlayVisibility] = useState({
+    segmentation: true,
+    pith: true,
+    rings: true,
   });
 
   const handleRetryAnalysis = async () => {
@@ -161,7 +169,47 @@ export default function CaptureDetails() {
               rings={analysisData.rings || capture.analysis?.rings}
               width={capture.width || 800}  // Add fallback value
               height={capture.height || 600} // Add fallback value
+              showSegmentation={overlayVisibility.segmentation}
+              showPith={overlayVisibility.pith}
+              showRings={overlayVisibility.rings}
             />
+          </View>
+        </View>
+
+        {/* Overlay Controls */}
+        <View className="mb-6 p-4 bg-gray-100 rounded-lg">
+          <Text className="text-lg font-semibold mb-3">Overlay Controls</Text>
+          <View className="gap-3">
+            <View className="flex-row items-center gap-2">
+              <Switch
+                checked={overlayVisibility.segmentation}
+                onCheckedChange={(checked) =>
+                  setOverlayVisibility(prev => ({ ...prev, segmentation: checked }))
+                }
+                nativeID="segmentation-toggle"
+              />
+              <Label nativeID="segmentation-toggle">Show Segmentation</Label>
+            </View>
+            <View className="flex-row items-center gap-2">
+              <Switch
+                checked={overlayVisibility.pith}
+                onCheckedChange={(checked) =>
+                  setOverlayVisibility(prev => ({ ...prev, pith: checked }))
+                }
+                nativeID="pith-toggle"
+              />
+              <Label nativeID="pith-toggle">Show Pith</Label>
+            </View>
+            <View className="flex-row items-center gap-2">
+              <Switch
+                checked={overlayVisibility.rings}
+                onCheckedChange={(checked) =>
+                  setOverlayVisibility(prev => ({ ...prev, rings: checked }))
+                }
+                nativeID="rings-toggle"
+              />
+              <Label nativeID="rings-toggle">Show Rings</Label>
+            </View>
           </View>
         </View>
 
