@@ -25,11 +25,7 @@ export interface ImagePith {
 }
 
 export interface RingsDetection {
-  rings: Array<{
-    radius: number;
-    confidence: number;
-  }>;
-  processedImageUri?: string;
+  ringsUri: string;
 }
 
 export interface DemoData {

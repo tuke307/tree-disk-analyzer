@@ -73,14 +73,14 @@ export default function CaptureDetails() {
       setAnalysisData(prev => ({ ...prev, pith }));
 
       // Step 3: Ring Detection
-      // const rings = await detectRings(capture.uri, segmentation.maskUri, pith.x, pith.y);
-      // setAnalysisProgress(p => ({ ...p, ringDetection: true }));
+      const rings = await detectRings(segmentation.maskUri, pith.x, pith.y);
+      setAnalysisProgress(p => ({ ...p, ringDetection: true }));
 
       const newAnalysis = {
         predictedAge: undefined,
         segmentation,
         pith,
-        rings: undefined,
+        rings
       };
 
       // Save the updated analysis data

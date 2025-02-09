@@ -39,17 +39,31 @@ export const ImageOverlay = ({
 }: ImageOverlayProps) => {
     const [image, setImage] = useState<SkImage | null>(null);
     const [maskImage, setMaskImage] = useState<SkImage | null>(null);
+    const [ringsImage, setRingsImage] = useState<SkImage | null>(null);
+
 
     useEffect(() => {
         const loadImages = async () => {
-            const img = await loadSkiaImage(uri);
+            if (uri){
+                const img = await loadSkiaImage(uri);
+                if (img) {
+                    setImage(img);
+                }
+            }
             
-            if (!img || !segmentation || !segmentation.maskUri) return;
+            if (segmentation && segmentation.maskUri) {
+                const mImg = await loadSkiaImage(segmentation.maskUri);
+                if (mImg) {
+                    setMaskImage(mImg);
+                }
+            }
 
-            const mImg = await loadSkiaImage(segmentation.maskUri);
-
-            setImage(img);
-            setMaskImage(mImg);
+            if (rings && rings.ringsUri) {
+                const rImg = await loadSkiaImage(rings.ringsUri);
+                if (rImg) {
+                    setRingsImage(rImg);
+                }
+            }
         };
 
         loadImages();
@@ -90,18 +104,15 @@ export const ImageOverlay = ({
                     />
                 )}
 
-                {/* Growth Rings */}
-                {rings && showRings && rings.rings.map((ring, index) => (
-                    <Circle
-                        key={`ring-${index}`}
-                        cx={pith?.x ?? 0}
-                        cy={pith?.y ?? 0}
-                        r={ring.radius}
-                        color="rgba(0, 255, 0, 0.5)"
-                        style="stroke"
-                        strokeWidth={2}
+                {/* Growth Rings Mask Overlay */}
+                {rings && showRings && (
+                    <Image
+                        image={ringsImage}
+                        fit="contain"
+                        rect={{ x: 0, y: 0, width, height }}
+                        opacity={0.4}
                     />
-                ))}
+                )}
             </Canvas>
         </View>
     );

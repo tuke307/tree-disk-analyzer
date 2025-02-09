@@ -87,15 +87,13 @@ export async function detectPith(maskUri: string): Promise<ImagePith> {
 }
 
 export async function detectRings(
-  uri: string,
   maskUri: string,
   cx: number,
   cy: number
 ): Promise<RingsDetection> {
   try {
     const formData = new FormData();
-    formData.append('image', base64ToBlob(uri));
-    formData.append('mask', base64ToBlob(maskUri));
+    formData.append('image', base64ToBlob(maskUri));
 
     const response = await fetch(`${API_URL}/rings/detect?cx=${cx}&cy=${cy}`, {
       method: 'POST',
@@ -106,7 +104,12 @@ export async function detectRings(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return await response.json() as RingsDetection;
+    const imageBlob = await response.blob();
+    const base64Image = await blobToBase64(imageBlob);
+
+    return {
+      ringsUri: base64Image,
+    };
   } catch (error) {
     console.error('API error:', error);
     throw error;
