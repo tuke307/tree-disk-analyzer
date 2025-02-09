@@ -5,7 +5,7 @@ from PIL import Image
 import io
 from io import BytesIO
 
-from ...config import OUTPUT_DIR, INPUT_DIR, U2NET_MODEL_PATH
+from ...config import OUTPUT_DIR, INPUT_DIR, U2NET_MODEL_PATH, DEBUG, SAVE_RESULTS
 
 router = APIRouter()
 
@@ -34,8 +34,8 @@ async def segment_image(
         input_image=path,
         model_path=U2NET_MODEL_PATH,
         output_dir=OUTPUT_DIR,
-        save_results=True,
-        debug=True,
+        save_results=SAVE_RESULTS,
+        debug=DEBUG,
     )
     result_image, mask_original_dim = treedisksegmentation.run()
 

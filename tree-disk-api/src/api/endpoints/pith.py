@@ -6,7 +6,7 @@ from PIL import Image
 import io
 from io import BytesIO
 
-from ...config import OUTPUT_DIR, INPUT_DIR, YOLO_MODEL_PATH
+from ...config import OUTPUT_DIR, INPUT_DIR, YOLO_MODEL_PATH, DEBUG, SAVE_RESULTS
 
 router = APIRouter()
 
@@ -36,8 +36,8 @@ async def detect_pith(
         model_path=YOLO_MODEL_PATH,
         output_dir=OUTPUT_DIR,
         method="apd_dl",
-        save_results=True,
-        debug=True,
+        save_results=SAVE_RESULTS,
+        debug=DEBUG,
     )
     img_in, img_processed, pith = treediskpith.run()
 

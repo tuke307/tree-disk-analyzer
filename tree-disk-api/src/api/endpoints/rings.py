@@ -6,7 +6,7 @@ import io
 import numpy as np
 from io import BytesIO
 
-from ...config import OUTPUT_DIR, INPUT_DIR
+from ...config import OUTPUT_DIR, INPUT_DIR, DEBUG, SAVE_RESULTS
 
 router = APIRouter()
 
@@ -38,7 +38,8 @@ async def detect_rings(
         output_dir=OUTPUT_DIR,
         cx=cx,
         cy=cy,
-        save_results=True,
+        save_results=SAVE_RESULTS,
+        debug=DEBUG,
     )
     results = treediskrings.run()
 
