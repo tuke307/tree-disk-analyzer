@@ -1,7 +1,6 @@
 import { View } from 'react-native';
-import { HistoryItem } from './history-item';
-import { CaptureData } from '@/constants/types';
-import { ThemedView } from '../ThemedView';
+import { HistoryItem } from '@/components/history/history-item';
+import { CaptureData } from '@/lib/constants/types';
 
 interface Props {
   captures: CaptureData[];
@@ -9,10 +8,10 @@ interface Props {
 
 export function HistoryList({ captures }: Props) {
   return (
-    <ThemedView>
+    <View>
       {captures.map((capture) => (
         <HistoryItem key={capture.id} capture={capture} />
       ))}
-    </ThemedView>
+    </View>
   );
 }

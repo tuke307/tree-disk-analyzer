@@ -1,59 +1,73 @@
-import { View, Pressable } from 'react-native';
-import { FontAwesome6 } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
-import { ThemedView } from '../ThemedView';
+import { View } from 'react-native';
+import { FlashlightIcon } from '@/lib/icons/FlashlightIcon';
+import { FlashlightOffIcon } from '@/lib/icons/FlashlightOffIcon';
+import { XIcon } from '@/lib/icons/XIcon';
+import { CameraIcon } from '@/lib/icons/CameraIcon';
+import { ImagesIcon } from '@/lib/icons/ImagesIcon';
+import { Button } from '@/components/ui/button';
 
 interface CameraControlsProps {
   onCapture: () => void;
-  onFlipCamera?: () => void;
-  showFlip?: boolean;
+  onClose: () => void;
+  onGalleryPress: () => void;
+  onFlashToggle: () => void;
+  flashEnabled: boolean;
 }
 
-export function CameraControls({ 
-  onCapture, 
-  onFlipCamera, 
-  showFlip = true 
+export function CameraControls({
+  onCapture,
+  onClose,
+  onGalleryPress,
+  onFlashToggle,
+  flashEnabled
 }: CameraControlsProps) {
+
   return (
-    <ThemedView className="absolute bottom-10 left-0 right-0">
-      <ThemedView className="flex-row items-center justify-between px-8">
-        {/* Spacer or additional control on the left */}
-        <ThemedView className="w-12 h-12" />
-
-        {/* Capture Button */}
-        <Pressable
-          onPress={onCapture}
-          className="w-20 h-20 rounded-full border-4 items-center justify-center"
+    <View className="flex-1">
+      {/* Top Controls */}
+      <View className="absolute top-12 left-0 right-0 flex-row justify-between p-4">
+        <Button
+          onPress={onClose}
+          variant="ghost"
+          size="icon"
         >
-          {({ pressed }) => (
-            <ThemedView 
-              className={`w-16 h-16 rounded-full ${
-                pressed ? 'opacity-70' : 'opacity-100'
-              }`}
-            />
-          )}
-        </Pressable>
+          <XIcon className='text-foreground' />
+        </Button>
 
-        {/* Flip Camera Button */}
-        {showFlip && (
-          <Pressable 
-            onPress={onFlipCamera}
-            className="w-12 h-12 items-center justify-center"
-          >
-            {({ pressed }) => (
-              <FontAwesome6 
-                name="camera-rotate" 
-                size={28} 
-                color="white" 
-                style={{ opacity: pressed ? 0.7 : 1 }}
-              />
-            )}
-          </Pressable>
-        )}
-        
-        {/* If no flip button, add spacer */}
-        {!showFlip && <ThemedView className="w-12 h-12" />}
-      </ThemedView>
-    </ThemedView>
+        <Button
+          onPress={onFlashToggle}
+          variant="ghost"
+          size="icon"
+        >
+          {flashEnabled ? (
+            <FlashlightIcon className='text-foreground' />
+          ) : (
+            <FlashlightOffIcon className='text-foreground' />
+          )}
+        </Button>
+      </View>
+
+      {/* Bottom Capture Button */}
+      <View className="absolute bottom-12 left-0 right-0 flex-row justify-between items-center px-12">
+        <Button
+          onPress={onGalleryPress}
+          variant="ghost"
+          size="icon"
+        >
+          <ImagesIcon className='text-foreground' />
+        </Button>
+
+        <Button
+          onPress={onCapture}
+          variant="ghost"
+          size="icon"
+          className='h-12 w-12'
+        >
+          <CameraIcon size={32} className='text-foreground' />
+        </Button>
+
+        <View /> {/* Placeholder for symmetry */}
+      </View>
+    </View>
   );
 }

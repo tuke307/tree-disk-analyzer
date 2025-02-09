@@ -1,25 +1,36 @@
-import { View, ScrollView, Text } from 'react-native';
-import { router } from 'expo-router';
+import { useCallback } from 'react';
+import { View, ScrollView } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
 import { HistoryList } from '@/components/history/history-list';
 import { NewCaptureButton } from '@/components/buttons/new-capture-button';
-import { useCaptures } from '@/hooks/use-captures';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
+import { useCaptures } from '@/lib/hooks/use-captures';
+import { Label } from '@/components/ui/label';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Home() {
-  const { captures } = useCaptures();
+  const { captures, refreshCaptures } = useCaptures();
+  const insets = useSafeAreaInsets();
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshCaptures();
+    }, [refreshCaptures])
+  );
 
   return (
-    <ThemedView className="flex-1 bg-gray-900">
-      <NewCaptureButton onPress={() => router.push('/capture')} />
-      <ThemedView className="flex-1">
+    <View className="flex-1 m-4" style={{ paddingTop: insets.top }}>
+      <View className="h-1/3">
+        <NewCaptureButton onPress={() => router.push('/capture')} />
+      </View>
+
+      <View className="flex-1">
         <ScrollView className="flex-1">
-          <ThemedView className="p-4">
-            <ThemedText className="text-white text-xl font-bold mb-4">History</ThemedText>
+          <View className="mt-4">
+            <Label className="text-xl font-bold mb-4">History</Label>
             <HistoryList captures={captures} />
-          </ThemedView>
+          </View>
         </ScrollView>
-      </ThemedView>
-    </ThemedView>
+      </View>
+    </View>
   );
 }

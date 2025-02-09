@@ -63,9 +63,13 @@ tree-disk-segmentation --input_image ./input/baumscheibe.jpg --output_dir ./outp
 
 1. Create and activate virtual environment:
 ```bash
+poetry config virtualenvs.in-project true
 poetry env use python
+```
+
+```bash
 poetry install
-poetry shell
+eval $(poetry env activate)
 ```
 
 2. Running tests:

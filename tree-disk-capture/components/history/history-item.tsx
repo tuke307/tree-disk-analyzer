@@ -1,38 +1,36 @@
-import { View, Text, Pressable } from 'react-native';
+import { View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { CaptureData } from '@/constants/types';
-import { ThemedView } from '../ThemedView';
-import { ThemedText } from '../ThemedText';
+import { CaptureData } from '@/lib/constants/types';
+import { Button } from '../ui/button';
+import { Text } from '../ui/text';
 
 interface Props {
   capture: CaptureData;
 }
 
 export function HistoryItem({ capture }: Props) {
-  const formattedDate = new Date(capture.timestamp).toLocaleDateString();
-  
+  const formattedDate = new Date(Number(capture.timestamp)).toLocaleDateString('de-DE');
+
   return (
-    <Pressable 
+    <Button
+      variant="outline"
       onPress={() => router.push(`/${capture.id}`)}
-      className="bg-gray-800 rounded-lg p-4 mb-4 flex-row"
+      className="flex-1 w-full mb-4 p-0 overflow-hidden"
     >
-      <Image
-        source={{ uri: capture.uri }}
-        className="w-20 h-20 rounded-lg"
-        contentFit="cover"
-      />
-      <ThemedView className="ml-4 flex-1">
-        <ThemedText className="font-semibold mb-1">
-          Tree Age: {capture.analysis.predictedAge}
-        </ThemedText>
-        <ThemedText>
-          Location: {capture.analysis.predictedLocation}
-        </ThemedText>
-        <ThemedText>
-          Captured: {formattedDate}
-        </ThemedText>
-      </ThemedView>
-    </Pressable>
+      <View className="flex-row items-center w-full p-4 gap-4">
+        <Image
+          source={{ uri: capture.uri }}
+          className="w-20 h-20 rounded-lg"
+          contentFit="cover"
+        />
+        <View className="flex-1">
+          <Text className="text-xl leading-none tracking-tight">{capture.title}</Text>
+          <Text className="text-sm text-muted-foreground">
+            Captured: {formattedDate}
+          </Text>
+        </View>
+      </View>
+    </Button>
   );
 }

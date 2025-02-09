@@ -2,9 +2,13 @@
 
 ## Installation
 ```bash
+poetry config virtualenvs.in-project true
 poetry env use python
+```
+
+```bash
 poetry install
-poetry shell
+eval $(poetry env activate)
 ```
 
 ## Usage Examples
