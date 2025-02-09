@@ -1,29 +1,13 @@
 import { useCameraPermissions } from 'expo-camera';
 import { useCaptures } from '@/lib/hooks/use-captures';
-import { analyzeImage } from '@/lib/constants/api';
-import { v4 as uuidv4 } from 'uuid';
 
 export function useCamera() {
   const [permission, requestPermission] = useCameraPermissions();
-  const { saveCapture } = useCaptures();
+  const { addCapture } = useCaptures();
 
-  const handleCapture = async (uri: string): Promise<string | undefined> => {
+  const handleCapture = async (uri: string, width: number, height: number): Promise<string | undefined> => {
     try {
-      const analysisResult = await analyzeImage(uri);
-      const now = new Date();
-      const id = uuidv4();
-      
-      const newCapture = {
-        id,
-        title: 'analysis ' + now.toLocaleDateString('de-DE'),
-        uri,
-        timestamp: now.toISOString(),
-        analysis: analysisResult,
-      };
-      
-      await saveCapture(newCapture);
-
-      return id;
+      return await addCapture(uri, width, height);
     } catch (error) {
       console.error('Error processing capture:', error);
       return undefined;

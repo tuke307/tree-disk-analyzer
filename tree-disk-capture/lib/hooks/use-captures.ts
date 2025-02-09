@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CaptureData } from '@/lib/constants/types';
+import uuid from 'react-native-uuid';
 
 export function useCaptures() {
   const [captures, setCaptures] = useState<CaptureData[]>([]);
@@ -72,5 +73,35 @@ export function useCaptures() {
     }
   };
 
-  return { captures, saveCapture, getCaptureById, updateCaptureTitle, deleteCapture, refreshCaptures, updateCapture };
+  const addCapture = async (uri: string, width: number, height: number) => {
+    const newCapture: CaptureData = {
+      id: uuid.v4().toString(),
+      uri,
+      timestamp: Date.now().toString(),
+      width,
+      height,
+      title: `analysis ${new Date().toLocaleDateString('de-DE')}`,
+      analysis: undefined
+    };
+
+    try {
+      const updatedCaptures = [newCapture, ...captures];
+      await AsyncStorage.setItem('captures', JSON.stringify(updatedCaptures));
+      setCaptures(updatedCaptures);
+      return newCapture.id;
+    } catch (error) {
+      console.error('Error saving capture:', error);
+      return undefined;
+    }
+  };
+
+  return { 
+    captures, 
+    addCapture,  // Primary method for adding new captures
+    getCaptureById, 
+    updateCaptureTitle, 
+    deleteCapture, 
+    refreshCaptures, 
+    updateCapture 
+  };
 }
