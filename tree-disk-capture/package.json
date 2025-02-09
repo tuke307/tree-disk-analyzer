@@ -22,6 +22,7 @@
     "@rn-primitives/dialog": "^1.1.0",
     "@rn-primitives/label": "^1.1.0",
     "@rn-primitives/slot": "^1.1.0",
+    "@rn-primitives/switch": "^1.1.0",
     "@rn-primitives/types": "^1.1.0",
     "@shopify/react-native-skia": "1.5.0",
     "class-variance-authority": "^0.7.1",
