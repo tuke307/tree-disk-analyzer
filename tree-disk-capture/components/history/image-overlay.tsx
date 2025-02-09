@@ -69,6 +69,10 @@ export const ImageOverlay = ({
         loadImages();
     }, [uri, segmentation]);
 
+    // Compute scaling ratios if image is loaded.
+    const scaleX = image ? width / image.width() : 1;
+    const scaleY = image ? height / image.height() : 1;
+
     return (
         <View style={{ width, height }}>
             <Canvas style={{ flex: 1 }}>
@@ -92,8 +96,8 @@ export const ImageOverlay = ({
                 {/* Pith Point */}
                 {pith && showPith && (
                     <Circle
-                        cx={pith.x}
-                        cy={pith.y}
+                        cx={pith.x * scaleX}
+                        cy={pith.y * scaleY}
                         r={6}
                         color="rgba(255, 0, 0, 0.8)"
                     />
