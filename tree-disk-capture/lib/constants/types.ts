@@ -4,6 +4,8 @@ export interface CaptureData {
   uri: string;
   timestamp: string;
   analysis: AnalysisResult | undefined;
+  width: number;
+  height: number;
 }
 
 export interface AnalysisResult {

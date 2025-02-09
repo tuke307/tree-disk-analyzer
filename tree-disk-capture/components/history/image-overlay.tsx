@@ -8,6 +8,8 @@ interface ImageOverlayProps {
     segmentation?: SegmentationResult;
     pith?: ImagePith;
     rings?: RingsDetection;
+    width: number;
+    height: number;
 }
 const loadSkiaImage = async (uri: string): Promise<SkImage | null> => {
     let data;
@@ -21,11 +23,9 @@ const loadSkiaImage = async (uri: string): Promise<SkImage | null> => {
     return Skia.Image.MakeImageFromEncoded(data);
 };
 
-export const ImageOverlay = ({ uri, segmentation, pith, rings }: ImageOverlayProps) => {
+export const ImageOverlay = ({ uri, segmentation, pith, rings, width, height }: ImageOverlayProps) => {
     const [image, setImage] = useState<SkImage | null>(null);
     const [maskImage, setMaskImage] = useState<SkImage | null>(null);
-
-    const screenWidth = Dimensions.get('window').width;
 
     useEffect(() => {
         const loadImages = async () => {
@@ -44,19 +44,17 @@ export const ImageOverlay = ({ uri, segmentation, pith, rings }: ImageOverlayPro
 
     if (!image || !segmentation) return null;
 
-    // Calculate scaling factors
-    const imageAspectRatio = image.width() / image.height();
-    const displayHeight = screenWidth / imageAspectRatio;
-    const scaleFactor = screenWidth / image.width();
+    // Use original dimensions instead of screen width
+    const scaleFactor = 1; // Since we're using original dimensions
 
     return (
-        <View style={{ width: screenWidth, height: displayHeight }}>
+        <View style={{ width, height }}>
             <Canvas style={{ flex: 1 }}>
                 {/* Base Image */}
                 <Image
                     image={image}
                     fit="contain"
-                    rect={{ x: 0, y: 0, width: screenWidth, height: displayHeight }}
+                    rect={{ x: 0, y: 0, width, height }}
                 />
 
                 {/* Segmentation Mask Overlay */}
@@ -64,7 +62,7 @@ export const ImageOverlay = ({ uri, segmentation, pith, rings }: ImageOverlayPro
                     <Image
                         image={maskImage}
                         fit="contain"
-                        rect={{ x: 0, y: 0, width: screenWidth, height: displayHeight }}
+                        rect={{ x: 0, y: 0, width, height }}
                         opacity={0.4}
                     />
                 )}
@@ -72,8 +70,8 @@ export const ImageOverlay = ({ uri, segmentation, pith, rings }: ImageOverlayPro
                 {/* Pith Point */}
                 {pith && (
                     <Circle
-                        cx={pith.x * scaleFactor}
-                        cy={pith.y * scaleFactor}
+                        cx={pith.x}
+                        cy={pith.y}
                         r={6}
                         color="rgba(255, 0, 0, 0.8)"
                     />
@@ -83,9 +81,9 @@ export const ImageOverlay = ({ uri, segmentation, pith, rings }: ImageOverlayPro
                 {rings?.rings.map((ring, index) => (
                     <Circle
                         key={`ring-${index}`}
-                        cx={pith?.x ? pith.x * scaleFactor : 0}
-                        cy={pith?.y ? pith.y * scaleFactor : 0}
-                        r={ring.radius * scaleFactor}
+                        cx={pith?.x ?? 0}
+                        cy={pith?.y ?? 0}
+                        r={ring.radius}
                         color="rgba(0, 255, 0, 0.5)"
                         style="stroke"
                         strokeWidth={2}

@@ -7,7 +7,7 @@ import { ImagePreview } from '@/components/camera/image-preview';
 
 
 interface Props {
-  onCapture: (uri: string) => Promise<string | undefined>;
+  onCapture: (uri: string, width: number, height: number) => Promise<string | undefined>;
   onCaptureSaved: (id: string) => void;
   onClose: () => void;
 }
@@ -16,15 +16,20 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
   const cameraRef = useRef<CameraView>(null);
   const [uri, setUri] = useState<string | null>(null);
   const [flashEnabled, setFlashEnabled] = useState(false);
+  const [photoData, setPhotoData] = useState<{ uri: string, width: number, height: number } | null>(null);
 
   const handleTakePhoto = async () => {
     try {
       const photo = await cameraRef.current?.takePictureAsync();
-
-      console.log(JSON.stringify(photo));
-
-      if (photo?.uri) {
+      if (photo) {
+        // Include width and height from the photo
         setUri(photo.uri);
+        // Store the dimensions for later use when saving
+        setPhotoData({
+          uri: photo.uri,
+          width: photo.width,
+          height: photo.height
+        });
       }
     } catch (error) {
       console.error('Failed to take photo:', error);
@@ -51,8 +56,8 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
   };
 
   const handleSave = async () => {
-    if (uri) {
-      const captureId = await onCapture(uri);
+    if (uri && photoData) {
+      const captureId = await onCapture(photoData.uri, photoData.width, photoData.height);
       if (captureId) {
         onCaptureSaved(captureId);
       }
