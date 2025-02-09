@@ -16,3 +16,11 @@ U2NET_MODEL_PATH = ROOT_DIR / "models" / "u2net.pth"
 
 DEBUG = os.environ.get("DEBUG", False)
 SAVE_RESULTS = os.environ.get("SAVE_RESULTS", False)
+
+
+def create_dirs():
+    """
+    Create necessary directories if they do not exist.
+    """
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    INPUT_DIR.mkdir(parents=True, exist_ok=True)

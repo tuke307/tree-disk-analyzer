@@ -3,12 +3,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from .api.router import router
+from config import create_dirs
+from api.router import router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("FastAPI app started.")
+
+    create_dirs()
 
     yield
 
