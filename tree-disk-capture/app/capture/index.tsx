@@ -19,7 +19,7 @@ export default function Capture() {
   return (
     <CameraContainer 
       onCapture={handleCapture}
-      onCaptureSaved={(id) => router.replace(`/${id}`)}
+      onCaptureSaved={(id) => router.replace(`/${id}?analyze=true`)}
       onClose={() => router.replace('/')}
     />
   );
