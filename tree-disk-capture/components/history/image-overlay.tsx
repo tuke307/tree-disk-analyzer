@@ -69,11 +69,6 @@ export const ImageOverlay = ({
         loadImages();
     }, [uri, segmentation]);
 
-    if (!image || !segmentation) return null;
-
-    // Use original dimensions instead of screen width
-    const scaleFactor = 1; // Since we're using original dimensions
-
     return (
         <View style={{ width, height }}>
             <Canvas style={{ flex: 1 }}>
