@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .endpoints import segmentation, pith, rings, health
+from api.endpoints import segmentation, pith, rings, health
 
 # Create routers
 router = APIRouter()

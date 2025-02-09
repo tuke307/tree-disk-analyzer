@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Response, UploadFile, File, HTTPException
-from typing import List
+from fastapi import APIRouter, Response, UploadFile, File
 import treedisksegmentation
 from PIL import Image
 import io
 from io import BytesIO
 
-from ...config import OUTPUT_DIR, INPUT_DIR, U2NET_MODEL_PATH, DEBUG, SAVE_RESULTS
+from config import OUTPUT_DIR, INPUT_DIR, U2NET_MODEL_PATH, DEBUG, SAVE_RESULTS
 
 router = APIRouter()
 

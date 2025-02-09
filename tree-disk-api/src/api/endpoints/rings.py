@@ -1,12 +1,10 @@
 from fastapi import APIRouter, Response, UploadFile, File, HTTPException
-from typing import List
 import treediskrings
 from PIL import Image
 import io
-import numpy as np
 from io import BytesIO
 
-from ...config import OUTPUT_DIR, INPUT_DIR, DEBUG, SAVE_RESULTS
+from config import OUTPUT_DIR, INPUT_DIR, DEBUG, SAVE_RESULTS
 
 router = APIRouter()
 
