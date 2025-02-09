@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Image, ScrollView, Dimensions } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useCaptures } from '@/lib/hooks/use-captures';
 import { Text } from '@/components/ui/text';
@@ -32,7 +32,7 @@ export default function CaptureDetails() {
   const capture = getCaptureById(id as string);
 
   const [title, setTitle] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(true);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Initialize with existing analysis data if available
@@ -77,16 +77,14 @@ export default function CaptureDetails() {
       // setAnalysisProgress(p => ({ ...p, ringDetection: true }));
 
       const newAnalysis = {
-        // predictedAge: rings.rings.length,
+        predictedAge: undefined,
         segmentation,
         pith,
-        // rings
+        rings: undefined,
       };
 
-      // await updateCapture({
-      //   ...capture,
-      //   analysis: newAnalysis
-      // });
+      // Save the updated analysis data
+      await updateCapture({ ...capture, analysis: newAnalysis });
 
       setAnalysisData(newAnalysis);
     } catch (error) {
@@ -115,9 +113,7 @@ export default function CaptureDetails() {
 
   useEffect(() => {
     if (capture) {
-      const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
-      setTitle(capture.title || `analysis ${formattedDate}`);
-      setIsAnalyzing(!capture.analysis);
+      setTitle(capture.title);
 
       // Initialize with existing analysis data
       if (capture.analysis) {
@@ -168,8 +164,8 @@ export default function CaptureDetails() {
               segmentation={analysisData.segmentation || capture.analysis?.segmentation}
               pith={analysisData.pith || capture.analysis?.pith}
               rings={analysisData.rings || capture.analysis?.rings}
-              width={capture.width || 800}  // Add fallback value
-              height={capture.height || 600} // Add fallback value
+              width={capture.width || 800}
+              height={capture.height || 600}
               showSegmentation={overlayVisibility.segmentation}
               showPith={overlayVisibility.pith}
               showRings={overlayVisibility.rings}
