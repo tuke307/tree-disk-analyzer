@@ -38,7 +38,7 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
 
   const handleGalleryPress = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
     if (permission.status !== 'granted') {
       return;
     }
@@ -48,14 +48,21 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
       quality: 1,
     });
 
-    console.log(result);
+    console.log("Photo gallery: ", result);
 
     if (!result.canceled && result.assets[0]) {
-      setUri(result.assets[0].uri);
+      const asset = result.assets[0];
+      setUri(asset.uri);
+      setPhotoData({
+        uri: asset.uri,
+        width: asset.width,
+        height: asset.height,
+      });
     }
   };
 
   const handleSave = async () => {
+    console.log('Saving capture:', photoData);
     if (uri && photoData) {
       const captureId = await onCapture(photoData.uri, photoData.width, photoData.height);
       if (captureId) {
