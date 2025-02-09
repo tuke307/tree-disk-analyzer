@@ -26,16 +26,16 @@ const loadSkiaImage = async (uri: string): Promise<SkImage | null> => {
     return Skia.Image.MakeImageFromEncoded(data);
 };
 
-export const ImageOverlay = ({ 
-    uri, 
-    segmentation, 
-    pith, 
-    rings, 
-    width, 
+export const ImageOverlay = ({
+    uri,
+    segmentation,
+    pith,
+    rings,
+    width,
     height,
     showSegmentation = true,
     showPith = true,
-    showRings = true 
+    showRings = true
 }: ImageOverlayProps) => {
     const [image, setImage] = useState<SkImage | null>(null);
     const [maskImage, setMaskImage] = useState<SkImage | null>(null);
@@ -44,13 +44,13 @@ export const ImageOverlay = ({
 
     useEffect(() => {
         const loadImages = async () => {
-            if (uri){
+            if (uri) {
                 const img = await loadSkiaImage(uri);
                 if (img) {
                     setImage(img);
                 }
             }
-            
+
             if (segmentation && segmentation.maskUri) {
                 const mImg = await loadSkiaImage(segmentation.maskUri);
                 if (mImg) {
