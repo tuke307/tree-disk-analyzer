@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/segment",
+    "/image",
     responses={
         429: {"description": "Too Many Requests"},
     },
