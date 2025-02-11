@@ -4,8 +4,9 @@ import { router, useFocusEffect } from 'expo-router';
 import { HistoryList } from '@/components/history/history-list';
 import { NewCaptureButton } from '@/components/buttons/new-capture-button';
 import { useCaptures } from '@/lib/hooks/use-captures';
-import { Label } from '@/components/ui/label';
+import { Text } from '@/components/ui/text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 export default function Home() {
   const { captures, refreshCaptures } = useCaptures();
@@ -26,7 +27,7 @@ export default function Home() {
       <View className="flex-1">
         <ScrollView className="flex-1">
           <View className="mt-4">
-            <Label className="text-xl font-bold mb-4">History</Label>
+            <Text className="text-xl font-bold mb-4">History</Text>
             <HistoryList captures={captures} />
           </View>
         </ScrollView>
