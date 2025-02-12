@@ -14,22 +14,28 @@ interface Props {
 
 export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
   const cameraRef = useRef<CameraView>(null);
-  const [uri, setUri] = useState<string | null>(null);
   const [flashEnabled, setFlashEnabled] = useState(false);
-  const [photoData, setPhotoData] = useState<{ uri: string, width: number, height: number } | null>(null);
+  const [photoData, setPhotoData] = useState<{ base64: string, width: number, height: number } | null>(null);
 
   const handleTakePhoto = async () => {
     try {
-      const photo = await cameraRef.current?.takePictureAsync();
+      const photo = await cameraRef.current?.takePictureAsync({
+        quality: 1,
+        base64: true,
+      });
+
       if (photo) {
-        // Include width and height from the photo
-        setUri(photo.uri);
-        // Store the dimensions for later use when saving
-        setPhotoData({
-          uri: photo.uri,
-          width: photo.width,
-          height: photo.height
-        });
+        console.log('Photo taken:', photo);
+
+        if (photo.base64) {
+          setPhotoData({
+            base64: photo.base64,
+            width: photo.width,
+            height: photo.height,
+          });
+        } else {
+          console.error("Photo base64 is undefined.");
+        }
       }
     } catch (error) {
       console.error('Failed to take photo:', error);
@@ -46,25 +52,30 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       quality: 1,
+      base64: true,
     });
 
-    console.log("Photo gallery: ", result);
+    console.log("ImagePicker result:", result);
 
     if (!result.canceled && result.assets[0]) {
       const asset = result.assets[0];
-      setUri(asset.uri);
-      setPhotoData({
-        uri: asset.uri,
-        width: asset.width,
-        height: asset.height,
-      });
+
+      if (asset.base64) {
+        setPhotoData({
+          base64: asset.base64,
+          width: asset.width,
+          height: asset.height,
+        });
+      } else {
+        console.error("Asset base64 is undefined.");
+      }
     }
   };
 
   const handleSave = async () => {
     console.log('Saving capture:', photoData);
-    if (uri && photoData) {
-      const captureId = await onCapture(photoData.uri, photoData.width, photoData.height);
+    if (photoData) {
+      const captureId = await onCapture(photoData.base64, photoData.width, photoData.height);
       if (captureId) {
         onCaptureSaved(captureId);
       }
@@ -73,10 +84,10 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
 
   return (
     <View className="flex-1">
-      {uri ? (
+      {photoData ? (
         <ImagePreview
-          uri={uri}
-          onRetake={() => setUri(null)}
+          base64={photoData?.base64 || ''}
+          onRetake={() => setPhotoData(null)}
           onSave={async () => {
             await handleSave();
           }}
