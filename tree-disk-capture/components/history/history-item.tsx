@@ -2,8 +2,8 @@ import { View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Capture } from '@/lib/database/models';
-import { Button } from '../ui/button';
-import { Text } from '../ui/text';
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
 
 interface Props {
   capture: Capture;
