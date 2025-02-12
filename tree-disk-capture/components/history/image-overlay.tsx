@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Canvas, Circle, Image, Skia, SkImage, useImage } from "@shopify/react-native-skia";
-import { Dimensions, View } from 'react-native';
-import { ImagePith, RingsDetection, SegmentationResult } from '@/lib/constants/types';
+import { View } from 'react-native';
+import { Pith, Rings, Segmentation } from '@/lib/database/models';
 
 interface ImageOverlayProps {
     uri: string;
-    segmentation?: SegmentationResult;
-    pith?: ImagePith;
-    rings?: RingsDetection;
+    segmentation?: Segmentation;
+    pith?: Pith;
+    rings?: Rings;
     width: number;
     height: number;
     showSegmentation?: boolean;
     showPith?: boolean;
     showRings?: boolean;
 }
+
 const loadSkiaImage = async (uri: string): Promise<SkImage | null> => {
     let data;
     if (uri.startsWith('data:')) {
@@ -51,15 +52,15 @@ export const ImageOverlay = ({
                 }
             }
 
-            if (segmentation && segmentation.maskUri) {
-                const mImg = await loadSkiaImage(segmentation.maskUri);
+            if (segmentation && segmentation.imageBase64) {
+                const mImg = await loadSkiaImage(segmentation.imageBase64);
                 if (mImg) {
                     setMaskImage(mImg);
                 }
             }
 
-            if (rings && rings.ringsUri) {
-                const rImg = await loadSkiaImage(rings.ringsUri);
+            if (rings && rings.imageBase64) {
+                const rImg = await loadSkiaImage(rings.imageBase64);
                 if (rImg) {
                     setRingsImage(rImg);
                 }

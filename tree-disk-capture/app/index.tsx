@@ -9,13 +9,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 export default function Home() {
-  const { captures, refreshCaptures } = useCaptures();
+  const { captures, loadCaptures } = useCaptures();
   const insets = useSafeAreaInsets();
 
   useFocusEffect(
     useCallback(() => {
-      refreshCaptures();
-    }, [refreshCaptures])
+      loadCaptures();
+    }, [loadCaptures])
   );
 
   return (
