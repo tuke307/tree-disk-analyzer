@@ -15,21 +15,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { detectPith, detectRings, segmentImage } from '@/lib/constants/api';
+import { detectPith, detectRings, segmentImage } from '@/lib/api/api';
 import { ImageOverlay } from '@/components/history/image-overlay';
-import { ImagePith, RingsDetection, SegmentationResult } from '@/lib/constants/types';
+import { Pith, Rings, Segmentation } from '@/lib/database/models';
 import { ProgressStep } from '@/components/history/progress-step';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function CaptureDetails() {
+export default async function CaptureDetails() {
   // Updated to include the optional query parameter "analyze"
   const { id, analyze } = useLocalSearchParams();
   const navigation = useNavigation();
   const router = useRouter();
-  const { getCaptureById, updateCaptureTitle, deleteCapture, updateCapture } = useCaptures();
-  const capture = getCaptureById(id as string);
+  const { getCaptureById, deleteCapture, updateCapture } = useCaptures();
+  const capture = await getCaptureById(id as string);
 
   const [title, setTitle] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -45,9 +45,9 @@ export default function CaptureDetails() {
 
   // Initialize with existing analysis data if available
   const [analysisData, setAnalysisData] = useState<{
-    segmentation?: SegmentationResult;
-    pith?: ImagePith;
-    rings?: RingsDetection;
+    segmentation?: Segmentation;
+    pith?: Pith;
+    rings?: Rings;
   }>(capture?.analysis || {});
 
   const [analysisProgress, setAnalysisProgress] = useState({
@@ -71,21 +71,20 @@ export default function CaptureDetails() {
 
     try {
       // Step 1: Segmentation
-      const segmentation = await segmentImage(capture.uri);
+      const segmentation = await segmentImage(capture.image_base64);
       setAnalysisProgress(p => ({ ...p, segmentation: true }));
       setAnalysisData({ segmentation });
 
       // Step 2: Pith Detection
-      const pith = await detectPith(segmentation.maskUri);
+      const pith = await detectPith(segmentation.imageBase64);
       setAnalysisProgress(p => ({ ...p, pithDetection: true }));
       setAnalysisData(prev => ({ ...prev, pith }));
 
       // Step 3: Ring Detection
-      const rings = await detectRings(segmentation.maskUri, pith.x, pith.y);
+      const rings = await detectRings(segmentation.imageBase64, pith.x, pith.y);
       setAnalysisProgress(p => ({ ...p, ringDetection: true }));
 
       const newAnalysis = {
-        predictedAge: undefined,
         segmentation,
         pith,
         rings
@@ -104,19 +103,16 @@ export default function CaptureDetails() {
     }
   };
 
-  const debouncedUpdateTitle = useCallback(
-    async (newTitle: string) => {
-      if (capture?.id) {
-        await updateCaptureTitle(capture.id, newTitle);
-      }
-    },
-    [capture?.id, updateCaptureTitle]
-  );
-
   // Handle title changes
-  const handleTitleChange = (newTitle: string) => {
-    setTitle(newTitle);
-    debouncedUpdateTitle(newTitle);
+  const handleUpdateTitle = async (newTitle: string) => {
+    if (capture) {
+      // Create an updated capture object with the new title
+      const updatedCapture = { ...capture, title: newTitle };
+      // Update the capture in the database
+      await updateCapture(updatedCapture);
+      // Optionally update local state if needed
+      setTitle(newTitle);
+    }
   };
 
   useEffect(() => {
@@ -168,7 +164,7 @@ export default function CaptureDetails() {
         <View>
           <View className="rounded-lg overflow-hidden items-center">
             <ImageOverlay
-              uri={capture.uri}
+              uri={capture.image_base64}
               segmentation={analysisData.segmentation || capture.analysis?.segmentation}
               pith={analysisData.pith || capture.analysis?.pith}
               rings={analysisData.rings || capture.analysis?.rings}
@@ -228,7 +224,7 @@ export default function CaptureDetails() {
           <CardContent>
             <Input
               value={title}
-              onChangeText={handleTitleChange}
+              onChangeText={handleUpdateTitle}
               className="mb-4 pl-4"
               style={{ width: 250 }}
             />
