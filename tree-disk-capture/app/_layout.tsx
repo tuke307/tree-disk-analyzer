@@ -8,6 +8,7 @@ import { Theme, ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation
 import { useColorScheme } from "@/lib/hooks/use-color-scheme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoadSkiaWeb } from "@shopify/react-native-skia/lib/module/web";
+import { PortalHost } from '@rn-primitives/portal';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -108,6 +109,7 @@ export default function RootLayout() {
             headerShown: false,
             presentation: 'fullScreenModal'
           }} />
+        <PortalHost />
       </ThemeProvider>
     </SafeAreaProvider>
   );
