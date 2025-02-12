@@ -6,13 +6,13 @@ import { ArrowRightIcon } from '@/lib/icons/ArrowRightIcon';
 import { Text } from '@/components/ui/text';
 
 interface ImagePreviewProps {
-  uri: string;
+  base64: string;
   onRetake: () => void;
   onSave: () => void;
 }
 
 export function ImagePreview({
-  uri,
+  base64,
   onRetake,
   onSave,
 }: ImagePreviewProps) {
@@ -20,7 +20,7 @@ export function ImagePreview({
     <SafeAreaView className="flex-1">
       <View className="flex-1">
         <Image
-          source={{ uri }}
+          source={{ uri: base64 }}
           className='flex-1 m-32'
           contentFit="contain"
         />
