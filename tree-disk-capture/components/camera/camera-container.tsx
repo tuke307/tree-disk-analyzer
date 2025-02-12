@@ -4,7 +4,7 @@ import { StyleSheet, View } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import { CameraControls } from '@/components/camera/camera-controls';
 import { ImagePreview } from '@/components/camera/image-preview';
-
+import { completeBase64Data } from "@/lib/utils/image";
 
 interface Props {
   onCapture: (uri: string, width: number, height: number) => Promise<string | undefined>;
@@ -15,7 +15,7 @@ interface Props {
 export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
   const cameraRef = useRef<CameraView>(null);
   const [flashEnabled, setFlashEnabled] = useState(false);
-  const [photoData, setPhotoData] = useState<{ base64: string, width: number, height: number } | null>(null);
+  const [photoData, setPhotoData] = useState<{ base64: string, uri: string, width: number, height: number } | null>(null);
 
   const handleTakePhoto = async () => {
     try {
@@ -28,8 +28,10 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
         console.log('Photo taken:', photo);
 
         if (photo.base64) {
+
           setPhotoData({
-            base64: photo.base64,
+            base64: completeBase64Data(photo.base64, photo.uri),
+            uri: photo.uri,
             width: photo.width,
             height: photo.height,
           });
@@ -62,7 +64,8 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
 
       if (asset.base64) {
         setPhotoData({
-          base64: asset.base64,
+          base64: completeBase64Data(asset.base64, asset.uri),
+          uri: asset.uri,
           width: asset.width,
           height: asset.height,
         });
@@ -86,7 +89,7 @@ export function CameraContainer({ onCapture, onCaptureSaved, onClose }: Props) {
     <View className="flex-1">
       {photoData ? (
         <ImagePreview
-          base64={photoData?.base64 || ''}
+          base64={photoData.base64}
           onRetake={() => setPhotoData(null)}
           onSave={async () => {
             await handleSave();
