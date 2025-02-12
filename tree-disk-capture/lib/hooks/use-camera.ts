@@ -1,6 +1,6 @@
 import { useCameraPermissions } from 'expo-camera';
 import { useCaptures } from '@/lib/hooks/use-captures';
-import { v4 as uuidv4 } from 'uuid';
+import * as Crypto from 'expo-crypto';
 
 export function useCamera() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -9,7 +9,7 @@ export function useCamera() {
   const handleCapture = async (imageBase64: string, width: number, height: number): Promise<string | undefined> => {
     try {
       const newCapture = {
-        id: uuidv4(),
+        id: Crypto.randomUUID(),
         title: "analysis " + Date.now().toLocaleString('de-DE'),
         image_base64: imageBase64,
         timestamp: new Date(),
