@@ -17,20 +17,20 @@ import {
 } from '@/components/ui/dialog';
 import { detectPith, detectRings, segmentImage } from '@/lib/api/api';
 import { ImageOverlay } from '@/components/history/image-overlay';
-import { Pith, Rings, Segmentation } from '@/lib/database/models';
+import { Capture, Pith, Rings, Segmentation } from '@/lib/database/models';
 import { ProgressStep } from '@/components/history/progress-step';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default async function CaptureDetails() {
+export default function CaptureDetails() {
   // Updated to include the optional query parameter "analyze"
   const { id, analyze } = useLocalSearchParams();
   const navigation = useNavigation();
   const router = useRouter();
   const { getCaptureById, deleteCapture, updateCapture } = useCaptures();
-  const capture = await getCaptureById(id as string);
 
+  const [capture, setCapture] = useState<Capture | null>(null);
   const [title, setTitle] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -115,25 +115,31 @@ export default async function CaptureDetails() {
     }
   };
 
-  useEffect(() => {
-    if (capture) {
-      setTitle(capture.title);
-
-      // Initialize with existing analysis data
-      if (capture.analysis) {
-        setAnalysisData({
-          segmentation: capture.analysis.segmentation,
-          pith: capture.analysis.pith,
-          rings: capture.analysis.rings
-        });
-        setAnalysisProgress({
-          segmentation: !!capture.analysis.segmentation,
-          pithDetection: !!capture.analysis.pith,
-          ringDetection: !!capture.analysis.rings
-        });
+  const loadCapture = async () => {
+    if (id) {
+      const data = await getCaptureById(id as string);
+      if (data) {
+        setCapture(data);
+        setTitle(data.title);
+        if (data.analysis) {
+          setAnalysisData({
+            segmentation: data.analysis.segmentation,
+            pith: data.analysis.pith,
+            rings: data.analysis.rings,
+          });
+          setAnalysisProgress({
+            segmentation: !!data.analysis.segmentation,
+            pithDetection: !!data.analysis.pith,
+            ringDetection: !!data.analysis.rings,
+          });
+        }
       }
     }
-  }, [capture]);
+  };
+
+  useEffect(() => {
+    loadCapture();
+  });
 
   // Trigger analysis automatically if the optional query param "analyze" is "true"
   useEffect(() => {
