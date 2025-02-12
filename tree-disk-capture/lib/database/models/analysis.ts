@@ -3,9 +3,9 @@ import { Segmentation, Pith, Rings } from '@/lib/database/models';
 export class Analysis {
   predictedAge?: number;
 
-  segmentation!: Segmentation;
+  segmentation!: Segmentation | undefined;
 
-  pith!: Pith;
+  pith!: Pith | undefined;
 
-  rings!: Rings;
+  rings!: Rings | undefined;
 }
