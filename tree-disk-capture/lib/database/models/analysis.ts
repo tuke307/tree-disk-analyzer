@@ -7,5 +7,5 @@ export class Analysis {
 
   pith!: Pith;
 
-  ring!: Rings;
+  rings!: Rings;
 }
