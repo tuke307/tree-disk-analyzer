@@ -17,6 +17,7 @@ export function HistoryItem({ capture }: Props) {
       variant="outline"
       onPress={() => router.push(`/${capture.id}`)}
       className="flex-1 w-full mb-4 p-0 overflow-hidden"
+      style={{ minHeight: 80 }}
     >
       <View className="flex-row items-center w-full p-4 gap-4">
         <Image
