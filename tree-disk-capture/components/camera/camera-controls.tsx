@@ -48,25 +48,29 @@ export function CameraControls({
       </View>
 
       {/* Bottom Capture Button */}
-      <View className="absolute bottom-12 left-0 right-0 flex-row justify-between items-center px-12">
-        <Button
-          onPress={onGalleryPress}
-          variant="ghost"
-          size="icon"
-        >
-          <ImagesIcon className='text-foreground' />
-        </Button>
+      <View className="absolute bottom-12 left-0 right-0 flex-row items-center px-12">
+        <View className="flex-1">
+          <Button
+            onPress={onGalleryPress}
+            variant="ghost"
+            size="icon"
+          >
+            <ImagesIcon className='text-foreground' />
+          </Button>
+        </View>
 
-        <Button
-          onPress={onCapture}
-          variant="ghost"
-          size="icon"
-          className='h-12 w-12'
-        >
-          <CameraIcon size={32} className='text-foreground' />
-        </Button>
+        <View className="flex-1 items-center">
+          <Button
+            onPress={onCapture}
+            variant="ghost"
+            size="icon"
+            className='h-12 w-12'
+          >
+            <CameraIcon size={32} className='text-foreground' />
+          </Button>
+        </View>
 
-        <View /> {/* Placeholder for symmetry */}
+        <View className="flex-1" />
       </View>
     </View>
   );
