@@ -1,9 +1,9 @@
 import { View } from 'react-native';
 import { HistoryItem } from '@/components/history/history-item';
-import { CaptureData } from '@/lib/constants/types';
+import { Capture } from '@/lib/database/models';
 
 interface Props {
-  captures: CaptureData[];
+  captures: Capture[];
 }
 
 export function HistoryList({ captures }: Props) {

@@ -1,12 +1,12 @@
 import { View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { CaptureData } from '@/lib/constants/types';
+import { Capture } from '@/lib/database/models';
 import { Button } from '../ui/button';
 import { Text } from '../ui/text';
 
 interface Props {
-  capture: CaptureData;
+  capture: Capture;
 }
 
 export function HistoryItem({ capture }: Props) {
@@ -20,7 +20,7 @@ export function HistoryItem({ capture }: Props) {
     >
       <View className="flex-row items-center w-full p-4 gap-4">
         <Image
-          source={{ uri: capture.uri }}
+          source={{ uri: capture.image_base64 }}
           className="w-20 h-20 rounded-lg"
           contentFit="cover"
         />

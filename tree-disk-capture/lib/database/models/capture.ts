@@ -1,7 +1,7 @@
 import { Analysis } from '@/lib/database/models';
 
 export class Capture {
-  id!: number;
+  id!: string;
 
   title!: string;
 
@@ -13,5 +13,5 @@ export class Capture {
 
   height!: number;
 
-  analysis!: Analysis;
+  analysis?: Analysis | undefined;
 }
