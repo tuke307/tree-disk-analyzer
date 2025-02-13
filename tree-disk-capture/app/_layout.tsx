@@ -1,7 +1,7 @@
 import "@/global.css";
 import { SplashScreen, Stack } from "expo-router";
-import { useEffect, useState } from "react";
-import { Platform } from "react-native";
+import { Suspense, useEffect, useState } from "react";
+import { ActivityIndicator, Platform } from "react-native";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NAV_THEME } from "@/lib/constants/theme";
 import { Theme, ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
@@ -9,6 +9,13 @@ import { useColorScheme } from "@/lib/hooks/use-color-scheme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoadSkiaWeb } from "@shopify/react-native-skia/lib/module/web";
 import { PortalHost } from '@rn-primitives/portal';
+import { SQLiteProvider, openDatabaseSync } from 'expo-sqlite';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import migrations from '@/drizzle/migrations';
+import { useDrizzleStudio } from 'expo-drizzle-studio-plugin';
+import { EXPO_PUBLIC_DB_FILE_NAME } from "@/lib/constants/database";
+import * as schema from '@/lib/database/models';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -27,12 +34,18 @@ export {
 // Prevent the splash screen from auto-hiding before getting the color scheme.
 SplashScreen.preventAutoHideAsync();
 
+const expoDb = openDatabaseSync(EXPO_PUBLIC_DB_FILE_NAME);
+const db = drizzle(expoDb, { schema, logger: true });
+
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
   const [skiaLoaded, setSkiaLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(true);
+  const { success, error } = useMigrations(db, migrations);
 
+  useDrizzleStudio(expoDb);
+  
   // Load theme from AsyncStorage.
   useEffect(() => {
     loadTheme();
@@ -60,6 +73,12 @@ export default function RootLayout() {
       hideSplashScreen();
     }
   }, [isColorSchemeLoaded]);
+
+  useEffect(() => {
+    if (!success && error) {
+      console.error('Failed to run migrations:', error);
+    }
+  }, [success, error]);
 
   const hideSplashScreen = async () => {
     try {
@@ -102,15 +121,22 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            presentation: 'fullScreenModal'
-          }} />
-        <PortalHost />
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <Suspense fallback={<ActivityIndicator size="large" />}>
+      <SQLiteProvider
+        databaseName={EXPO_PUBLIC_DB_FILE_NAME}
+        options={{ enableChangeListener: true }}
+        useSuspense>
+        <SafeAreaProvider>
+          <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                presentation: 'fullScreenModal'
+              }} />
+            <PortalHost />
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </SQLiteProvider>
+    </Suspense>
   );
 }
