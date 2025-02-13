@@ -1,0 +1,1 @@
+export const EXPO_PUBLIC_DB_FILE_NAME = process.env.EXPO_PUBLIC_DB_FILE_NAME || 'tree-disk-capture.db';
