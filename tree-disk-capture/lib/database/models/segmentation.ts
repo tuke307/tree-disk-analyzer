@@ -1,5 +1,8 @@
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
-export class Segmentation {
+export const segmentation = sqliteTable('segmentation', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  imageBase64: text('image_base64').notNull(),
+});
 
-    imageBase64!: string;
-}
+export type Segmentation = typeof segmentation.$inferSelect;

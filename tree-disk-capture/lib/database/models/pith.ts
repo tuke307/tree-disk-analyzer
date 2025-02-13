@@ -1,6 +1,9 @@
+import { sqliteTable, integer } from 'drizzle-orm/sqlite-core';
 
-export class Pith {
-    x!: number;
+export const pith = sqliteTable('pith', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  x: integer('x').notNull(),
+  y: integer('y').notNull(),
+});
 
-    y!: number;
-}
+export type Pith = typeof pith.$inferSelect;
