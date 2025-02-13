@@ -1,30 +1,11 @@
-import { Analysis, Pith, Rings, Segmentation } from '@/lib/database/models';
-import { API_URL } from '@/lib/constants/api';
-
-
-export async function analyzeImage(uri: string): Promise<Analysis> {
-  await healthCheck();
-  
-  // Step 1: Segment image
-  const segmentation = await segmentImage(uri);
-  
-  // Step 2: Detect pith
-  const pith = await detectPith(segmentation.imageBase64);
-  
-  // Step 3: Detect rings
-  //const rings = await detectRings(uri, segmentation.maskUri, pith.x, pith.y);
-
-  return {
-    predictedAge: undefined, 
-    segmentation,
-    pith,
-    rings: undefined,
-  };
-}
+import { fetch } from 'expo/fetch';
+import { EXPO_PUBLIC_API_URL } from '@/lib/constants/api';
+import { arrayBufferToBase64, base64ToBlob, blobToBase64, completeBase64Data } from '@/lib/utils/image';
+import axios from 'axios';
 
 export async function healthCheck() {
   try {
-    const response = await fetch(`${API_URL}/health`);
+    const response = await fetch(`${EXPO_PUBLIC_API_URL}/health`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -37,12 +18,19 @@ export async function healthCheck() {
   }
 }
 
-export async function segmentImage(uri: string): Promise<Segmentation> {
-  try {
-    const formData = new FormData();
-    formData.append('image', await base64ToBlob(uri));
+export async function segmentImage(base64: string): Promise<string> {
+  const formData = new FormData();
 
-    const response = await fetch(`${API_URL}/segmentation/image`, {
+  try {
+    const blob = await base64ToBlob(base64);
+    formData.append('image', blob, "active_contour_ac6_very_small.png");
+
+    console.log(
+      'Sending image to API for segmentation:',
+      `${EXPO_PUBLIC_API_URL}/segmentation/image`
+    );
+
+    const response = await fetch(`${EXPO_PUBLIC_API_URL}/segmentation/image`, {
       method: 'POST',
       body: formData,
     });
@@ -51,24 +39,25 @@ export async function segmentImage(uri: string): Promise<Segmentation> {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const imageBlob = await response.blob();
-    const base64Image = await blobToBase64(imageBlob);
+    console.log('API response:', response);
+    const arrayBuffer = await response.arrayBuffer();
+    console.log('Array buffer:', arrayBuffer.byteLength);
+    const base64Image = arrayBufferToBase64(arrayBuffer);
+    console.log('Base64 image:', base64Image.length);
 
-    return {
-      imageBase64: base64Image,
-    };
+    return completeBase64Data(base64Image);
   } catch (error) {
     console.error('API error:', error);
     throw error;
   }
 }
 
-export async function detectPith(maskUri: string): Promise<Pith> {
+export async function detectPith(base64: string): Promise<{ x: number; y: number }> {
   try {
     const formData = new FormData();
-    formData.append('image', await base64ToBlob(maskUri));
+    formData.append('image', await base64ToBlob(base64));
 
-    const response = await fetch(`${API_URL}/pith/detect`, {
+    const response = await fetch(`${EXPO_PUBLIC_API_URL}/pith/detect`, {
       method: 'POST',
       body: formData,
     });
@@ -77,7 +66,7 @@ export async function detectPith(maskUri: string): Promise<Pith> {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return await response.json() as Pith;
+    return await response.json();
   } catch (error) {
     console.error('API error:', error);
     throw error;
@@ -85,15 +74,15 @@ export async function detectPith(maskUri: string): Promise<Pith> {
 }
 
 export async function detectRings(
-  maskUri: string,
+  base64: string,
   cx: number,
   cy: number
-): Promise<Rings> {
+): Promise<string> {
   try {
     const formData = new FormData();
-    formData.append('image', await base64ToBlob(maskUri));
+    formData.append('image', await base64ToBlob(base64));
 
-    const response = await fetch(`${API_URL}/rings/detect?cx=${cx}&cy=${cy}`, {
+    const response = await fetch(`${EXPO_PUBLIC_API_URL}/rings/detect?cx=${cx}&cy=${cy}`, {
       method: 'POST',
       body: formData,
     });
@@ -102,28 +91,12 @@ export async function detectRings(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const imageBlob = await response.blob();
-    const base64Image = await blobToBase64(imageBlob);
+    const arrayBuffer = await response.arrayBuffer();
+    const base64Image = arrayBufferToBase64(arrayBuffer);
 
-    return {
-      imageBase64: base64Image,
-    };
+    return completeBase64Data(base64Image);
   } catch (error) {
     console.error('API error:', error);
     throw error;
   }
-}
-
-async function base64ToBlob(dataURL: string): Promise<Blob> {
-  const response = await fetch(dataURL);
-  return await response.blob();
-}
-
-function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
 }
