@@ -1,14 +1,14 @@
 import { View } from 'react-native';
 import { HistoryItem } from '@/components/history/history-item';
-import { Capture } from '@/lib/database/models';
+import { CaptureWithAnalysis } from '@/lib/database/models';
 
 interface Props {
-  captures: Capture[];
+  captures: CaptureWithAnalysis[];
 }
 
 export function HistoryList({ captures }: Props) {
   return (
-    <View className='flex-1 w-full gap-2'>
+    <View className='flex-1 gap-2'>
       {captures.map((capture) => (
         <HistoryItem key={capture.id} capture={capture} />
       ))}
