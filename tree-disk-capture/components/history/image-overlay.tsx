@@ -46,6 +46,7 @@ export const ImageOverlay = ({
     useEffect(() => {
         const loadImages = async () => {
             if (uri) {
+                console.log('Loading base image');
                 const img = await loadSkiaImage(uri);
                 if (img) {
                     setImage(img);
@@ -53,6 +54,7 @@ export const ImageOverlay = ({
             }
 
             if (segmentation && segmentation.imageBase64) {
+                console.log('Loading segmentation image');
                 const mImg = await loadSkiaImage(segmentation.imageBase64);
                 if (mImg) {
                     setMaskImage(mImg);
@@ -60,6 +62,7 @@ export const ImageOverlay = ({
             }
 
             if (rings && rings.imageBase64) {
+                console.log('Loading rings image');
                 const rImg = await loadSkiaImage(rings.imageBase64);
                 if (rImg) {
                     setRingsImage(rImg);
