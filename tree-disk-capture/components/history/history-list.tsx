@@ -8,7 +8,7 @@ interface Props {
 
 export function HistoryList({ captures }: Props) {
   return (
-    <View>
+    <View className='flex-1 w-full gap-2'>
       {captures.map((capture) => (
         <HistoryItem key={capture.id} capture={capture} />
       ))}
