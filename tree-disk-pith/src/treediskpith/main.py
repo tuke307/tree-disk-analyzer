@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 def run() -> Tuple[
     np.ndarray,
     np.ndarray,
+    np.ndarray,
 ]:
     """
     Main function to run tree ring detection.
@@ -50,4 +51,4 @@ def run() -> Tuple[
 
     except Exception as e:
         logger.error(f"Error during processing: {str(e)}", exc_info=True)
-        return None
+        return np.array([]), np.array([]), np.array([])
