@@ -4,11 +4,13 @@ from src.main import app
 
 client = TestClient(app)
 
-@pytest.mark.parametrize("expected_status, expected_response", [
-    ("/", 200, {"status": "healthy"})
-])
-def test_health(expected_status, expected_response):
-    response = client.get("/health")
+
+@pytest.mark.parametrize(
+    "path, expected_status, expected_response",
+    [("/health", 200, {"status": "healthy"})],
+)
+def test_health(path, expected_status, expected_response):
+    response = client.get(path)
 
     assert response.status_code == expected_status
     assert response.json() == expected_response
