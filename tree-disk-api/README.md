@@ -17,3 +17,8 @@ eval $(poetry env activate)
 ```bash
 uvicorn src.main:app --reload
 ```
+
+### test
+```bash
+pytest
+```
