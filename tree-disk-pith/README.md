@@ -20,6 +20,7 @@ import treediskpith
 # Configure the analyzer
 treediskpith.configure(
     input_image="input/tree-disk4.png",
+    model_path="models/apd_dl.h5",
     save_results=True,
 )
 
@@ -35,24 +36,15 @@ treediskpith.configure(
 
 Basic usage:
 ```bash
-tree-disk-pith --input_image ./input/tree-disk3.png --new_shape 640 --debug
-```
-
-Save intermediate results:
-```bash
-tree-disk-pith --input_image ./input/tree-disk3.png --new_shape 640 --debug --method apd_pcl --save_results
+tree-disk-pith --input_image ./input/tree-disk3.png
 ```
 
 Advanced usage with custom parameters:
 ```bash
 tree-disk-pith \
     --input_image input/tree-disk3.png \
-    --cx 1204 \
-    --cy 1264 \
     --output_dir custom_output/ \
-    --sigma 4.0 \
-    --th_low 10 \
-    --th_high 25 \
+    --new_shape 640 \
     --save_results \
     --debug
 ```
@@ -63,12 +55,7 @@ tree-disk-pith \
 |----------|------|----------|---------|-------------|
 | `--input_image` | str | Yes | - | Input image file path |
 | `--output_dir` | str | Yes | - | Output directory path |
-| `--method` | str | No | apd | Detection method to use. Choices are apd, apd_pcl, or apd_dl |
 | `--model_path` | str | No | - | Path to the weights file (required if using apd_dl method) |
-| `--percent_lo` | float | No | 0.7 | percent_lo parameter for the algorithm |
-| `--st_w` | int | No | 3 | st_w parameter for the algorithm |
-| `--lo_w` | int | No | 3 | lo_w parameter for the algorithm |
-| `--st_sigma` | float | No | 1.2 | st_sigma parameter for the algorithm |
 | `--new_shape` | int | No | 0 | New shape for resizing the input image. If 0, no resizing is done |
 | `--debug` | flag | No | False | Enable debug mode to save intermediate images and outputs |
 | `--save_results` | flag | No | False | Save intermediate images, labelme and config file |
@@ -88,17 +75,17 @@ poetry install
 eval $(poetry env activate)
 ```
 
-1. Running tests:
+2. Running tests:
 ```bash
-poetry run pytest
+pytest
 ```
 
-1. fetch dataset
+3. fetch dataset
 ```bash
 python fetch_dataset.py
 ```
 
-1. Download pretrained model
+4. Download pretrained model
 ```bash
 python fetch_pretrained_model.py
 ```

@@ -8,8 +8,7 @@ import pandas as pd
 
 from .visualization.color import Color
 from .processing.image_processing import resize_image_using_pil_lib
-from .detection.pith_detection import apd, apd_pcl, apd_dl
-from .detection.detection_method import DetectionMethod
+from .detection.pith_detection import apd_dl
 from .utils.file_utils import write_json, save_image
 from .config import config
 
@@ -39,38 +38,8 @@ def tree_disk_pith_detector(img_in: np.ndarray) -> Tuple[np.ndarray, np.ndarray]
         path = str(Path(config.output_dir) / "resized.png")
         save_image(img_processed, path)
 
-    # Select and run detection method
-    detection_methods = {
-        DetectionMethod.APD: lambda: apd(
-            img_processed,
-            config.st_sigma,
-            config.st_w,
-            config.lo_w,
-            rf=7,
-            percent_lo=config.percent_lo,
-            max_iter=11,
-            epsilon=1e-3,
-            debug=config.debug,
-            output_dir=config.output_dir,
-        ),
-        DetectionMethod.APD_PCL: lambda: apd_pcl(
-            img_processed,
-            config.st_sigma,
-            config.st_w,
-            config.lo_w,
-            rf=7,
-            percent_lo=config.percent_lo,
-            max_iter=11,
-            epsilon=1e-3,
-            debug=config.debug,
-            output_dir=config.output_dir,
-        ),
-        DetectionMethod.APD_DL: lambda: apd_dl(
-            img_processed, str(config.output_dir), str(config.model_path)
-        ),
-    }
-
-    pith = detection_methods[config.method]()
+    # run detection method
+    pith = apd_dl(img_processed, str(config.output_dir), str(config.model_path))
 
     # Handle debug visualization
     if config.save_results:
@@ -105,4 +74,4 @@ def tree_disk_pith_detector(img_in: np.ndarray) -> Tuple[np.ndarray, np.ndarray]
         }
         write_json(data, path)
 
-    return img_processed, pith
+    return img_processed, np.array(pith)

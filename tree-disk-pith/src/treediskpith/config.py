@@ -4,7 +4,6 @@ import json
 import logging
 from typing import Any, Dict, Optional
 from datetime import datetime
-from .detection.detection_method import DetectionMethod
 
 from .utils.file_utils import ensure_directory
 
@@ -21,27 +20,17 @@ class Config:
     Attributes:
         input_image (str): Input image file path.
         output_dir (str): Output directory path.
-        method (Method): Detection method to use.
-        percent_lo (float): Percent_lo parameter for detection.
-        st_w (int): ST_W parameter for spatial filtering.
-        lo_w (int): LO_W parameter for local optimization.
-        st_sigma (float): ST_Sigma parameter for Gaussian filtering.
         new_shape (int): New shape for resizing the image.
         debug (bool): Enable debug mode for additional logging.
-        model_path (Optional[str]): Path to model file (required for 'apd_dl' method).
+        model_path (Optional[str]): Path to model file.
     """
 
     # -------------- Input/Output Settings ----------------
     input_image: Optional[Path] = None
     output_dir: Path = Path("./output/")
-    method: DetectionMethod = DetectionMethod.APD
-    model_path: Optional[str] = None
+    model_path: Optional[Path] = None
 
     # -------------- Processing Parameters ----------------
-    percent_lo: float = 0.1
-    st_w: int = 5
-    lo_w: int = 3
-    st_sigma: float = 1.0
     new_shape: int = 0
 
     # -------------- Operation Modes ----------------
@@ -60,8 +49,10 @@ class Config:
                 self._change_history[field_name] = []
 
         # Validate method-specific requirements
-        if self.method == DetectionMethod.APD_DL and not self.model_path:
-            raise ValueError("model_path is required when using APD_DL method")
+        if not self.model_path:
+            logger.warning(
+                "model_path is not set yet. It is required for proper operation. Please configure it accordingly."
+            )
 
     def _validate_and_set_paths(self):
         """Validate and set all path-related fields."""
@@ -92,7 +83,7 @@ class Config:
                 raise ValueError(f"Model file does not exist: {model_path}")
             if not model_path.is_file():
                 raise ValueError(f"Model path is not a file: {model_path}")
-            self.model_path = str(model_path.resolve())
+            self.model_path = model_path.resolve()
 
     def _log_change(self, param: str, old_value: Any, new_value: Any):
         """Log a parameter change with timestamp."""
@@ -124,8 +115,6 @@ class Config:
 
             old_value = getattr(self, key)
             if old_value != new_value:
-                if key == "method":
-                    new_value = DetectionMethod(new_value)
                 setattr(self, key, new_value)
                 self._log_change(key, old_value, new_value)
 
@@ -151,11 +140,7 @@ class Config:
     def to_dict(self) -> dict:
         """Convert configuration to dictionary, excluding internal fields."""
         return {
-            k: (
-                v.value
-                if isinstance(v, DetectionMethod)
-                else str(v) if isinstance(v, Path) else v
-            )
+            k: (str(v) if isinstance(v, Path) else v)
             for k, v in self.__dict__.items()
             if not k.startswith("_")
         }
@@ -186,9 +171,7 @@ def configure(**kwargs):
     Example:
         >>> configure(
         ...     input_image="sample.jpg",
-        ...     method="apd_dl",
         ...     model_path="model.pth",
-        ...     st_w=7
         ... )
     """
     config.update(**kwargs)

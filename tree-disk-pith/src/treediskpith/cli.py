@@ -18,28 +18,10 @@ def parse_arguments():
         "--output_dir", type=str, default=Config.output_dir, help="Output directory"
     )
     parser.add_argument(
-        "--method",
-        type=str,
-        choices=["apd", "apd_pcl", "apd_dl"],
-        default=Config.method,
-        help="Method to use: 'apd', 'apd_pcl', or 'apd_dl'",
-    )
-    parser.add_argument(
         "--model_path",
         type=str,
         default=Config.model_path,
-        help="Path to the weights file (required for method 'apd_dl')",
-    )
-    parser.add_argument(
-        "--percent_lo",
-        type=float,
-        default=Config.percent_lo,
-        help="percent_lo parameter",
-    )
-    parser.add_argument("--st_w", type=int, default=Config.st_w, help="st_w parameter")
-    parser.add_argument("--lo_w", type=int, default=Config.lo_w, help="lo_w parameter")
-    parser.add_argument(
-        "--st_sigma", type=float, default=Config.st_sigma, help="st_sigma parameter"
+        help="Path to the weights file",
     )
     parser.add_argument(
         "--new_shape",
@@ -62,11 +44,6 @@ def main():
     configure(
         input_image=args.input_image,
         output_dir=args.output_dir,
-        method=args.method,
-        percent_lo=args.percent_lo,
-        st_w=args.st_w,
-        lo_w=args.lo_w,
-        st_sigma=args.st_sigma,
         new_shape=args.new_shape,
         debug=args.debug,
         model_path=args.model_path,
