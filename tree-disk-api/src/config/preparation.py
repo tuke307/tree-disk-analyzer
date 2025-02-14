@@ -15,6 +15,12 @@ def download_u2net_model():
     """
     Download the model from Google Drive.
     """
+    if U2NET_MODEL_PATH.exists():
+        logger.info(
+            f"U2NET model already exists at {U2NET_MODEL_PATH}, skipping download."
+        )
+        return
+
     file_id = "10HXfiEMT4QapiRXMSSEJEAViRmRmSDUW"
     url = f"https://drive.google.com/uc?id={file_id}"
 
@@ -27,6 +33,12 @@ def download_yolo_model():
     """
     Download the model from Google Drive.
     """
+    if YOLO_MODEL_PATH.exists():
+        logger.info(
+            f"YOLO model already exists at {YOLO_MODEL_PATH}, skipping download."
+        )
+        return
+
     file_id = "1_-dDH4DNiL8wbgiPWPaNqne7kbJyZc8z"
     url = f"https://drive.google.com/uc?id={file_id}"
 
