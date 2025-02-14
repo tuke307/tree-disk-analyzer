@@ -88,9 +88,7 @@ class LeastSquaresSolution:
 
         for idx, line in enumerate(self.lines):
             x1, y1, x2, y2 = line
-            a, b, c = self.compute_line_coefficients(
-                np.array([x1, y1]), np.array([x2, y2])
-            )
+            a, b, c = self.compute_line_coefficients((x1, y1), (x2, y2))
             # Normalize coefficients
             norm = np.sqrt(a**2 + b**2)
             norm = max(norm, 1e-8)  # Avoid division by zero
