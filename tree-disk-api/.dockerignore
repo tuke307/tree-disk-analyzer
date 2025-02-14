@@ -34,3 +34,7 @@ output/
 input/
 tests/
 models/
+
+# env
+.env
+.env.*
