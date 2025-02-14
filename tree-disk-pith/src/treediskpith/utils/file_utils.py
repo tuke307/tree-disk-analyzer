@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import cv2
 import shutil
-from typing import Union, Dict
+from typing import Union, Dict, Any
 import numpy as np
 import logging
 
@@ -62,7 +62,7 @@ def load_json(filepath: Union[str, Path]) -> Dict:
     return data
 
 
-def write_json(content: any, filepath: Union[str, Path]) -> None:
+def write_json(content: Any, filepath: Union[str, Path]) -> None:
     """
     Writes a dictionary to a JSON file.
 
