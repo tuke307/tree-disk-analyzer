@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 def run() -> Tuple[
     np.ndarray,
     np.ndarray,
+    np.ndarray,
 ]:
     """
     Main function to run tree ring detection.
@@ -36,7 +37,7 @@ def run() -> Tuple[
         config.log_all_configs()
 
         logger.info(f"Loading input image: {config.input_image}")
-        img_in = load_image(config.input_image)
+        img_in = load_image(str(config.input_image))
 
         logger.info("Running tree disk pith detection...")
         img_processed, pith = tree_disk_pith_detector(img_in)
@@ -50,4 +51,4 @@ def run() -> Tuple[
 
     except Exception as e:
         logger.error(f"Error during processing: {str(e)}", exc_info=True)
-        return None
+        return np.array([]), np.array([]), np.array([])
