@@ -250,7 +250,7 @@ def find_detections(
         plt.savefig(output_path)
         plt.close()
 
-    return inliers, line[0], line[1], residuals[inliers], good_alignment
+    return inliers, line[0], line[1], residuals[inliers], bool(good_alignment)
 
 
 def get_duplicated_elements_in_array(arr: np.ndarray) -> np.ndarray:
