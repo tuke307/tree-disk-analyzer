@@ -26,12 +26,6 @@ def parse_arguments() -> argparse.Namespace:
         "--output_dir", default="./output", help="Output directory", metavar="DIR"
     )
     parser.add_argument(
-        "--root_dir",
-        default="./",
-        help="Root directory of the repository",
-        metavar="DIR",
-    )
-    parser.add_argument(
         "--sigma",
         type=float,
         default=Config.sigma,
@@ -106,7 +100,6 @@ def main():
     # Configure settings from CLI arguments
     configure(
         input_image=args.input_image,
-        root_dir=args.root_dir,
         output_dir=args.output_dir,
         cx=args.cx,
         cy=args.cy,

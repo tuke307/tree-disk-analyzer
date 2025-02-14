@@ -26,9 +26,6 @@ class Config:
     output_dir: Path = Path("./output/")
     """Directory where results and debug information will be saved."""
 
-    root_dir: Path = Path("./")
-    """Root directory of the project."""
-
     # -------------- Image Processing Parameters ----------------
 
     cx: Optional[int] = None
@@ -87,17 +84,8 @@ class Config:
 
     def _validate_and_set_paths(self):
         """Validate and set all path-related fields."""
-        # Validate root directory
-        root_path = Path(self.root_dir).resolve()
-        if not root_path.exists():
-            raise ValueError(f"Root directory does not exist: {root_path}")
-        self.root_dir = root_path
-
         # Set up output directory
         output_path = Path(self.output_dir)
-        if not output_path.is_absolute():
-            output_path = root_path / output_path
-
         try:
             self.output_dir = ensure_directory(output_path, clear=self.clear_output)
         except PermissionError:
@@ -110,8 +98,6 @@ class Config:
         # Validate input image if provided
         if self.input_image:
             input_path = Path(self.input_image)
-            if not input_path.is_absolute():
-                input_path = root_path / input_path
 
             if not input_path.exists():
                 raise ValueError(f"Input image file does not exist: {input_path}")
