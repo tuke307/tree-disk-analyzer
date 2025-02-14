@@ -32,8 +32,8 @@ class Config:
     """
 
     # -------------- Input/Output Settings ----------------
-    input_image: str = ""
-    output_dir: str = "./output/"
+    input_image: Optional[Path] = None
+    output_dir: Path = Path("./output/")
     method: DetectionMethod = DetectionMethod.APD
     model_path: Optional[str] = None
 
@@ -72,12 +72,12 @@ class Config:
                 raise ValueError(f"Input image file does not exist: {input_path}")
             if not input_path.is_file():
                 raise ValueError(f"Input image path is not a file: {input_path}")
-            self.input_image = str(input_path.resolve())
+            self.input_image = input_path.resolve()
 
         # Set up output directory
         output_path = Path(self.output_dir)
         try:
-            self.output_dir = str(ensure_directory(output_path))
+            self.output_dir = ensure_directory(output_path)
         except PermissionError:
             raise ValueError(
                 f"Cannot create output directory (permission denied): {output_path}"
@@ -132,7 +132,7 @@ class Config:
         if needs_validation:
             self._validate_and_set_paths()
 
-    def get_change_history(self, param: str = None) -> Dict:
+    def get_change_history(self, param: Optional[str] = None) -> Dict:
         """
         Get change history for a specific parameter or all parameters.
 
