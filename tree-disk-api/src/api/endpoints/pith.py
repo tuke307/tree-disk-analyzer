@@ -3,10 +3,18 @@ from fastapi.responses import JSONResponse
 import treediskpith
 from PIL import Image
 import io
+import logging
 
-from config.settings import OUTPUT_DIR, INPUT_DIR, YOLO_MODEL_PATH, DEBUG, SAVE_RESULTS
+from ...config.settings import (
+    OUTPUT_DIR,
+    INPUT_DIR,
+    YOLO_MODEL_PATH,
+    DEBUG,
+    SAVE_RESULTS,
+)
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -17,10 +25,12 @@ router = APIRouter()
 )
 async def detect_pith(
     image: UploadFile = File(...),
-) -> None:
+) -> JSONResponse:
     """
     Detect the pith in the image.<br>
     """
+    logger.debug("Pith detection endpoint called.")
+
     # Read and process image
     contents = await image.read()
     img = Image.open(io.BytesIO(contents))

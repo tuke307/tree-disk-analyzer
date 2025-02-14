@@ -3,10 +3,18 @@ import treedisksegmentation
 from PIL import Image
 import io
 from io import BytesIO
+import logging
 
-from config.settings import OUTPUT_DIR, INPUT_DIR, U2NET_MODEL_PATH, DEBUG, SAVE_RESULTS
+from ...config.settings import (
+    OUTPUT_DIR,
+    INPUT_DIR,
+    U2NET_MODEL_PATH,
+    DEBUG,
+    SAVE_RESULTS,
+)
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -21,6 +29,8 @@ async def segment_image(
     """
     Segment the image and return the segmented image.<br>
     """
+    logger.debug("Segmentation endpoint called.")
+
     # Read and process image
     contents = await image.read()
     img = Image.open(io.BytesIO(contents))
