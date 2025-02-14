@@ -18,7 +18,7 @@ tree-disk-pith = "^0.1.4"
 tree-disk-rings = "^0.4.5" 
 gdown = "^5.2.0"
 
-[poetry.group.dev.dependencies]
+[tool.poetry.group.dev.dependencies]
 tree-disk-segmentation = { path = "../tree-disk-segmentation" }
 tree-disk-pith = { path = "../tree-disk-pith" }
 tree-disk-rings = { path = "../tree-disk-rings" }
