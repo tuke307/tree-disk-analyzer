@@ -3,7 +3,7 @@ import cv2
 from typing import Optional, Tuple, Any
 
 from ..visualization.color import Color
-from ..visualization.drawing import Shapes
+from ..visualization.drawing import LineDrawing, Shapes
 
 
 def filter_lo_around_c(
@@ -91,8 +91,8 @@ def get_lines_idx_within_rectangular_region(
         # Draw rectangular region
         img = img_in.copy()
         img = cv2.rectangle(img, (top_x, top_y), (bottom_x, bottom_y), Color.black, 2)
-        Shapes.draw_lsd_lines(
-            l_lines_within_region, img, output_path=output_path, lines_all=L
+        LineDrawing.draw_lsd_lines(
+            l_lines_within_region, img, output_path=output_path or "", lines_all=L
         )
 
     return l_lines_within_region, weights_within_region
