@@ -44,6 +44,8 @@ def create_dirs():
     MODEL_PATH.mkdir(parents=True, exist_ok=True)
 
 
-create_dirs()
-download_u2net_model()
-download_yolo_model()
+if __name__ == "__main__":
+    # When running this file directly, create dirs and download models.
+    create_dirs()
+    download_u2net_model()
+    download_yolo_model()
