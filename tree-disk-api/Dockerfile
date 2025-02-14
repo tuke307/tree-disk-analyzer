@@ -25,7 +25,7 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock ./
 
 # Install project dependencies (production only)
-RUN poetry install --no-root
+RUN poetry install --without dev --no-directory
 
 # Stage 2: Runtime stage
 FROM python:3.12-slim
