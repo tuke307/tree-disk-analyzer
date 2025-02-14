@@ -15,7 +15,7 @@ def download_u2net_model():
     """
     Download the model from Google Drive.
     """
-    file_id = "1ao1ovG1Qtx4b7EoskHXmi2E9rp5CHLcZ"
+    file_id = "10HXfiEMT4QapiRXMSSEJEAViRmRmSDUW"
     url = f"https://drive.google.com/uc?id={file_id}"
 
     logger.info(f"Downloading Google Drive file from: {url}")
