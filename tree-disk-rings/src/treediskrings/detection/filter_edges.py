@@ -217,12 +217,12 @@ def get_border_curve(img: np.ndarray, l_ch_f: List[Curve]) -> Curve:
     return border_curve
 
 
-def change_reference_axis(ch_e_matrix: np.array) -> np.array:
+def change_reference_axis(ch_e_matrix: np.ndarray) -> np.ndarray:
     """
     Changes the reference axis of the edge matrix to the center (cx, cy).
 
     Args:
-        ch_e_matrix (np.array): Edge matrix.
+        ch_e_matrix (np.ndarray): Edge matrix.
 
     Returns:
         np.array: Transformed edge matrix.
@@ -333,7 +333,7 @@ def filter_edges_by_threshold(m_ch_e: np.ndarray, theta: np.ndarray) -> np.ndarr
 
 
 def filter_edges(
-    devernay_edges: np.array,
+    devernay_edges: np.ndarray,
     gradient_x_img: np.ndarray,
     gradient_y_img: np.ndarray,
     img_pre: np.ndarray,
@@ -346,7 +346,7 @@ def filter_edges(
     is computed and filtered depending on threshold (alpha). Implements Algorithm 4 in the supplementary material.
 
     Args:
-        devernay_edges (np.array): Devernay curves in matrix format.
+        devernay_edges (np.ndarray): Devernay curves in matrix format.
         gradient_x_img (np.ndarray): Gradient image in x direction.
         gradient_y_img (np.ndarray): Gradient image in y direction.
         img_pre (np.ndarray): Input image.

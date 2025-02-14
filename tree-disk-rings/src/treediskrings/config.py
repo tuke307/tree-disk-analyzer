@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import json
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from datetime import datetime
 
 from .utils.file_utils import ensure_directory
@@ -20,30 +20,30 @@ class Config:
 
     # -------------- Input/Output Settings ----------------
 
-    input_image: str = ""
+    input_image: Optional[Path] = None
     """Path to the input image file."""
 
-    output_dir: str = "./output/"
+    output_dir: Path = Path("./output/")
     """Directory where results and debug information will be saved."""
 
-    root_dir: str = "./"
+    root_dir: Path = Path("./")
     """Root directory of the project."""
 
     # -------------- Image Processing Parameters ----------------
 
-    cx: int = None
+    cx: Optional[int] = None
     """Center x-coordinate in the image."""
 
-    cy: int = None
+    cy: Optional[int] = None
     """Center y-coordinate in the image."""
 
     sigma: float = 3.0
     """Gaussian kernel parameter for Canny edge detector. Controls edge smoothing."""
 
-    output_height: int = None
+    output_height: Optional[int] = None
     """Target height for image resizing. If 0, maintains original height."""
 
-    output_width: int = None
+    output_width: Optional[int] = None
     """Target width for image resizing. If 0, maintains original width."""
 
     # -------------- Edge Detection Parameters ----------------
@@ -156,7 +156,7 @@ class Config:
         if needs_validation:
             self._validate_and_set_paths()
 
-    def get_change_history(self, param: str = None) -> Dict:
+    def get_change_history(self, param: Optional[str] = None) -> Dict:
         """
         Get change history for a specific parameter or all parameters.
 

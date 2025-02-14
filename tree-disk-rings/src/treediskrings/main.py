@@ -49,6 +49,10 @@ def run() -> Tuple[
         config.log_all_configs()
 
         logger.info(f"Loading input image: {config.input_image}")
+
+        if config.input_image is None:
+            raise ValueError("Input image path cannot be None")
+
         img_in = load_image(config.input_image)
 
         logger.info("Running tree ring detection...")
@@ -96,4 +100,12 @@ def run() -> Tuple[
 
     except Exception as e:
         logger.error(f"Error during processing: {str(e)}", exc_info=True)
-        return None
+        return (
+            np.array([]),
+            np.array([]),
+            np.array([]),
+            [],
+            [],
+            [],
+            [],
+        )

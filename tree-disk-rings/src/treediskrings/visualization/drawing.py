@@ -112,8 +112,8 @@ class Drawing:
         from ..geometry.curve import Curve
 
         y, x = curve.geometry.xy
-        y = np.ndarray(y).astype(int)
-        x = np.ndarray(x).astype(int)
+        y = np.array(y).astype(int)
+        x = np.array(x).astype(int)
         pts = np.vstack((x, y)).T
         isClosed = False
         img = cv2.polylines(img, [pts], isClosed, color, thickness)
@@ -170,8 +170,8 @@ class Drawing:
         from ..geometry.ray import Ray
 
         y, x = ray.geometry.xy
-        y = np.ndarray(y).astype(int)
-        x = np.ndarray(x).astype(int)
+        y = np.array(y).astype(int)
+        x = np.array(x).astype(int)
         start_point = (x[0], y[0])
         end_point = (x[1], y[1])
         image = cv2.line(img, start_point, end_point, color, thickness)

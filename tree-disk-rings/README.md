@@ -100,7 +100,7 @@ eval $(poetry env activate)
 
 2. Running tests:
 ```bash
-poetry run pytest
+pytest
 ```
 
 3. Compile the external C code:
