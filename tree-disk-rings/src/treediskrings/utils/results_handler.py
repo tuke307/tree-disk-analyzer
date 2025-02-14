@@ -89,7 +89,10 @@ def chain_to_labelme(img_in: np.ndarray, chain_list: List[Chain]) -> Dict[str, A
         "flags": {},
         "shapes": [],
         "imageData": None,
-        "center": [config.cy * height_cte, config.cx * width_cte],
+        "center": [
+            (config.cy * height_cte) if config.cy is not None else None,
+            (config.cx * width_cte) if config.cx is not None else None,
+        ],
     }
 
     for idx, chain in enumerate(completed_chains):

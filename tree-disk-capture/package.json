@@ -30,15 +30,22 @@
     "@rn-primitives/tooltip": "~1.1.0",
     "@rn-primitives/types": "~1.1.0",
     "@shopify/react-native-skia": "1.5.0",
+    "babel-plugin-inline-import": "^3.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
-    "expo": "^52.0.25",
+    "drizzle-orm": "^0.39.3",
+    "expo": "^52.0.33",
     "expo-camera": "~16.0.15",
+    "expo-crypto": "~14.0.2",
+    "expo-dev-client": "~5.0.12",
+    "expo-drizzle-studio-plugin": "^0.1.1",
+    "expo-image": "~2.0.5",
     "expo-image-picker": "~16.0.5",
     "expo-linking": "~7.0.4",
     "expo-navigation-bar": "~4.0.7",
     "expo-router": "~4.0.16",
     "expo-splash-screen": "~0.29.20",
+    "expo-sqlite": "~15.1.2",
     "expo-status-bar": "~2.0.1",
     "expo-system-ui": "~4.0.7",
     "lucide-react-native": "^0.378.0",
@@ -56,12 +63,12 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "3.3.5",
     "tailwindcss-animate": "^1.0.7",
-    "zustand": "^4.4.7",
-    "expo-image": "~2.0.4"
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@types/react": "~18.3.12",
+    "drizzle-kit": "^0.30.4",
     "typescript": "^5.3.3"
   }
 }

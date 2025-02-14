@@ -3,10 +3,12 @@ import treediskrings
 from PIL import Image
 import io
 from io import BytesIO
+import logging
 
-from config.settings import OUTPUT_DIR, INPUT_DIR, DEBUG, SAVE_RESULTS
+from ...config.settings import OUTPUT_DIR, INPUT_DIR, DEBUG, SAVE_RESULTS
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -19,10 +21,12 @@ async def detect_rings(
     cx: int,
     cy: int,
     image: UploadFile = File(...),
-) -> None:
+) -> Response:
     """
     Detect the rings in the image.<br>
     """
+    logger.debug("Rings detection endpoint called.")
+
     # Read and process image
     contents = await image.read()
     img = Image.open(io.BytesIO(contents))
@@ -39,7 +43,16 @@ async def detect_rings(
         save_results=SAVE_RESULTS,
         debug=DEBUG,
     )
-    results = treediskrings.run()
+
+    (
+        img_in,
+        img_pre,
+        devernay_edges,
+        devernay_curves_f,
+        devernay_curves_s,
+        devernay_curves_c,
+        devernay_curves_p,
+    ) = treediskrings.run()
 
     # read the output image OUTPUT_DIR/output.png
     output_path = OUTPUT_DIR / "output.png"

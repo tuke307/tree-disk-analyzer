@@ -8,7 +8,10 @@ export default function Capture() {
   const { permission, requestPermission, handleCapture } = useCamera();
 
   if (!permission?.granted) {
-    return <PermissionRequest onRequestPermission={requestPermission} />;
+    return <PermissionRequest
+      onRequestPermission={requestPermission}
+      onClose={() => router.replace('/')}
+    />;
   }
 
   if (!permission) {
@@ -17,7 +20,7 @@ export default function Capture() {
   }
 
   return (
-    <CameraContainer 
+    <CameraContainer
       onCapture={handleCapture}
       onCaptureSaved={(id) => router.replace(`/${id}?analyze=true`)}
       onClose={() => router.replace('/')}

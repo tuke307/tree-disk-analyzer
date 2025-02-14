@@ -1,6 +1,10 @@
 from enum import Enum
 from typing import List, Optional, Tuple, Any
 
+import matplotlib
+
+matplotlib.use("Agg")  # non-interactive; Must be set before importing pyplot
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -10,13 +14,13 @@ from ..geometry.curve import Curve
 from ..geometry.chain import Chain, TypeChains, EndPoints
 
 
-def euclidean_distance(pix1: np.array, pix2: np.array) -> float:
+def euclidean_distance(pix1: np.ndarray, pix2: np.ndarray) -> float:
     """
     Calculates the Euclidean distance between two pixels.
 
     Args:
-        pix1 (np.array): Coordinates of the first pixel.
-        pix2 (np.array): Coordinates of the second pixel.
+        pix1 (np.ndarray): Coordinates of the first pixel.
+        pix2 (np.ndarray): Coordinates of the second pixel.
 
     Returns:
         float: Euclidean distance between pix1 and pix2.
@@ -170,14 +174,14 @@ def angular_distance_between_chains(
 
 
 def minimum_euclidean_distance_between_vector_and_matrix(
-    vector: np.array, matrix: np.array
+    vector: np.ndarray, matrix: np.ndarray
 ) -> float:
     """
     Compute minimum Euclidean distance between a vector and each row in a matrix.
 
     Args:
-        vector (np.array): Vector.
-        matrix (np.array): Matrix.
+        vector (np.ndarray): Vector.
+        matrix (np.ndarray): Matrix.
 
     Returns:
         float: Minimum distance.
@@ -359,9 +363,6 @@ def visualize_chains_over_image(
 
     if filename:
         plt.savefig(filename)
-    else:
-        plt.show()
-
     plt.close()
 
 

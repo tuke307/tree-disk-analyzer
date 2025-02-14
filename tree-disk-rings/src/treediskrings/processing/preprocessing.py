@@ -30,7 +30,7 @@ def get_image_shape(img_in: np.ndarray) -> Tuple[int, int]:
     return height, width
 
 
-def resize(img_in: cv2.typing.MatLike) -> Tuple[np.array, int, int]:
+def resize(img_in: cv2.typing.MatLike) -> np.ndarray:
     """
     Resize image and keep the center of the image in the same position. Implements Algorithm 2 in the supplementary material.
 
@@ -38,7 +38,7 @@ def resize(img_in: cv2.typing.MatLike) -> Tuple[np.array, int, int]:
         img_in (cv2.typing.MatLike): Image to resize.
 
     Returns:
-        Tuple[np.array, int, int]: Resized image, resized y's center coordinate, resized x's center coordinate.
+        np.ndarray: Resized image, resized y's center coordinate, resized x's center coordinate.
     """
     logger.debug("Resizing image")
 
@@ -68,7 +68,7 @@ def resize(img_in: cv2.typing.MatLike) -> Tuple[np.array, int, int]:
 
 def resize_image_using_pil_lib(
     img_in: cv2.typing.MatLike, target_width, target_height
-) -> np.array:
+) -> np.ndarray:
     """
     Resize image using PIL library.
 
@@ -76,7 +76,7 @@ def resize_image_using_pil_lib(
         img_in (cv2.typing.MatLike): Input image.
 
     Returns:
-        np.array: Matrix with the resized image.
+        np.ndarray: Matrix with the resized image.
     """
     image_pil = Image.fromarray(img_in)
     image_pil = image_pil.resize(
@@ -194,7 +194,7 @@ def rgb2gray(img_r: np.ndarray) -> np.ndarray:
     return cv2.cvtColor(img_r, cv2.COLOR_BGR2GRAY)
 
 
-def preprocessing(img_in: cv2.typing.MatLike) -> Tuple[np.ndarray, int, int]:
+def preprocessing(img_in: cv2.typing.MatLike) -> np.ndarray:
     """
     Image preprocessing steps. Following actions are made:
     - Image resize
@@ -206,7 +206,7 @@ def preprocessing(img_in: cv2.typing.MatLike) -> Tuple[np.ndarray, int, int]:
         img_in (cv2.typing.MatLike): Segmented image.
 
     Returns:
-        Tuple[np.ndarray, int, int]: Equalized image, pith y's coordinate after resize, pith x's coordinate after resize.
+        np.ndarray: Equalized image, pith y's coordinate after resize, pith x's coordinate after resize.
     """
     if config.output_height is None and config.output_width is None:
         img_resized = img_in

@@ -238,7 +238,7 @@ class Chain:
 
         return change_border
 
-    def get_nodes_coordinates(self) -> Tuple[np.array, np.array]:
+    def get_nodes_coordinates(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         Gets the coordinates of the nodes in the chain.
 
@@ -246,7 +246,7 @@ class Chain:
             None
 
         Returns:
-            Tuple[np.array, np.array]: Arrays of x and y coordinates.
+            Tuple[np.ndarray, np.ndarray]: Arrays of x and y coordinates.
         """
         x = [dot.x for dot in self.l_nodes]
         y = [dot.y for dot in self.l_nodes]
@@ -298,7 +298,7 @@ class Chain:
 
     def to_array(
         self,
-    ) -> Tuple[np.array, np.array, np.array]:
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Returns nodes coordinates in a numpy array, along with endpoint coordinates.
 
@@ -306,7 +306,7 @@ class Chain:
             None
 
         Returns:
-            Tuple[np.array, np.array, np.array]:
+            Tuple[np.ndarray, np.ndarray, np.ndarray]:
                 nodes (np.ndarray): Coordinates of nodes.
                 c1a (np.array): Coordinates of extA.
                 c1b (np.array): Coordinates of extB.

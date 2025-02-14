@@ -1,14 +1,26 @@
 from contextlib import asynccontextmanager
+from cv2 import log
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import logging
 
-from api.router import router
+from .config.settings import DEBUG, log_settings
+from .api.router import router
+
+logger = logging.getLogger(__name__)
+
+logging_level = logging.DEBUG if DEBUG else logging.INFO
+logging.basicConfig(level=logging_level)
+logging.getLogger("uvicorn").setLevel(logging_level)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("FastAPI app started.")
+    logger.info("Starting the application.")
+
+    # print all settings in debug
+    log_settings()
 
     yield
 

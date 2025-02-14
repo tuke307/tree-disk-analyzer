@@ -1,6 +1,6 @@
 import logging
 import gdown
-from config.settings import (
+from .settings import (
     INPUT_DIR,
     OUTPUT_DIR,
     MODEL_PATH,

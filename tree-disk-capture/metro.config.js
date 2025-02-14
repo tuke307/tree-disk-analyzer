@@ -13,4 +13,6 @@ config.transformer.getTransformOptions = async () => ({
     },
 });
 
+config.resolver.sourceExts.push('sql');
+
 module.exports = withNativeWind(config, { input: "./global.css" });

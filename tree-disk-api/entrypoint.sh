@@ -2,7 +2,7 @@
 set -e
 
 echo "Downloading models..."
-python src/config/preparation.py
+python -m src.config.preparation
 
 echo "Starting server..."
-exec gunicorn main:app -c gunicorn.conf.py
+exec gunicorn src.main:app -c gunicorn.conf.py

@@ -15,22 +15,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { detectPith, detectRings, segmentImage } from '@/lib/constants/api';
+import { detectPith, detectRings, segmentImage } from '@/lib/api/api';
 import { ImageOverlay } from '@/components/history/image-overlay';
-import { ImagePith, RingsDetection, SegmentationResult } from '@/lib/constants/types';
+import { Analysis, AnalysisWithRelations, Capture, CaptureWithAnalysis, Pith, Rings, Segmentation } from '@/lib/database/models';
 import { ProgressStep } from '@/components/history/progress-step';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { createNewAnalysis, createNewPith, createNewRings, createNewSegmentation } from '@/lib/database/helpers/helpers';
 
 export default function CaptureDetails() {
-  // Updated to include the optional query parameter "analyze"
   const { id, analyze } = useLocalSearchParams();
   const navigation = useNavigation();
   const router = useRouter();
-  const { getCaptureById, updateCaptureTitle, deleteCapture, updateCapture } = useCaptures();
-  const capture = getCaptureById(id as string);
+  const { getCaptureById, deleteCapture, updateCapture } = useCaptures();
 
+  const [capture, setCapture] = useState<CaptureWithAnalysis | null>(null);
   const [title, setTitle] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,16 +44,12 @@ export default function CaptureDetails() {
   const displayHeight = displayWidth / aspectRatio;
 
   // Initialize with existing analysis data if available
-  const [analysisData, setAnalysisData] = useState<{
-    segmentation?: SegmentationResult;
-    pith?: ImagePith;
-    rings?: RingsDetection;
-  }>(capture?.analysis || {});
+  const [analysisData, setAnalysisData] = useState<AnalysisWithRelations | null>(null);
 
   const [analysisProgress, setAnalysisProgress] = useState({
-    segmentation: !!capture?.analysis?.segmentation,
-    pithDetection: !!capture?.analysis?.pith,
-    ringDetection: !!capture?.analysis?.rings,
+    segmentation: Boolean(capture?.analysis?.segmentation),
+    pithDetection: Boolean(capture?.analysis?.pith),
+    ringDetection: Boolean(capture?.analysis?.rings),
   });
 
   const [overlayVisibility, setOverlayVisibility] = useState({
@@ -70,31 +66,41 @@ export default function CaptureDetails() {
     setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
 
     try {
+      const newAnalysis = createNewAnalysis();
+
+      console.log('Starting analysis for capture:', capture.id);
+
       // Step 1: Segmentation
-      const segmentation = await segmentImage(capture.uri);
+      const segBase64Image = await segmentImage(capture.imageBase64);
       setAnalysisProgress(p => ({ ...p, segmentation: true }));
-      setAnalysisData({ segmentation });
+      const newSegmentation = createNewSegmentation(segBase64Image);
+      newAnalysis.segmentation = newSegmentation;
 
       // Step 2: Pith Detection
-      const pith = await detectPith(segmentation.maskUri);
+      const pithData = await detectPith(segBase64Image);
       setAnalysisProgress(p => ({ ...p, pithDetection: true }));
-      setAnalysisData(prev => ({ ...prev, pith }));
+      const newPith = createNewPith(pithData.x, pithData.y);
+      newAnalysis.pith = newPith;
 
       // Step 3: Ring Detection
-      const rings = await detectRings(segmentation.maskUri, pith.x, pith.y);
+      const ringsBase64Image = await detectRings(segBase64Image, pithData.x, pithData.y);
       setAnalysisProgress(p => ({ ...p, ringDetection: true }));
+      const newRings = createNewRings(ringsBase64Image);
+      newAnalysis.rings = newRings;
 
-      const newAnalysis = {
-        predictedAge: undefined,
-        segmentation,
-        pith,
-        rings
+      console.log('Analysis complete:', newAnalysis.id);
+
+      const updatedCapture: CaptureWithAnalysis = {
+        ...capture,
+        analysis: newAnalysis
       };
 
-      // Save the updated analysis data
-      await updateCapture({ ...capture, analysis: newAnalysis });
+      const savedCapture = await updateCapture(updatedCapture);
 
-      setAnalysisData(newAnalysis);
+      if (savedCapture) {
+        setAnalysisData(savedCapture.analysis || null);
+        setCapture(savedCapture);
+      }
     } catch (error) {
       console.error('Analysis failed:', error);
       setError('Analysis failed. Please try again.');
@@ -104,40 +110,55 @@ export default function CaptureDetails() {
     }
   };
 
-  const debouncedUpdateTitle = useCallback(
-    async (newTitle: string) => {
-      if (capture?.id) {
-        await updateCaptureTitle(capture.id, newTitle);
-      }
-    },
-    [capture?.id, updateCaptureTitle]
-  );
-
   // Handle title changes
-  const handleTitleChange = (newTitle: string) => {
-    setTitle(newTitle);
-    debouncedUpdateTitle(newTitle);
+  const handleUpdateTitle = async (newTitle: string) => {
+    if (capture) {
+      const updatedCapture = { ...capture, title: newTitle };
+      await updateCapture(updatedCapture);
+      setTitle(newTitle);
+    }
+  };
+
+  const loadCapture = async () => {
+    if (!id) return;
+
+    try {
+      const data = await getCaptureById(id as string);
+      if (data) {
+        setCapture(data);
+        setTitle(data.title);
+
+        if (data.analysis) {
+          const analysisData: AnalysisWithRelations = {
+            id: data.analysis.id,
+            predictedAge: data.analysis.predictedAge,
+            segmentationId: data.analysis.segmentationId,
+            pithId: data.analysis.pithId,
+            ringsId: data.analysis.ringsId,
+            segmentation: data.analysis.segmentation,
+            pith: data.analysis.pith,
+            rings: data.analysis.rings,
+          };
+
+          setAnalysisData(analysisData);
+          setAnalysisProgress({
+            segmentation: !!data.analysis.segmentation,
+            pithDetection: !!data.analysis.pith,
+            ringDetection: !!data.analysis.rings,
+          });
+        } else {
+          setAnalysisData(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading capture:', error);
+      setError('Failed to load capture');
+    }
   };
 
   useEffect(() => {
-    if (capture) {
-      setTitle(capture.title);
-
-      // Initialize with existing analysis data
-      if (capture.analysis) {
-        setAnalysisData({
-          segmentation: capture.analysis.segmentation,
-          pith: capture.analysis.pith,
-          rings: capture.analysis.rings
-        });
-        setAnalysisProgress({
-          segmentation: !!capture.analysis.segmentation,
-          pithDetection: !!capture.analysis.pith,
-          ringDetection: !!capture.analysis.rings
-        });
-      }
-    }
-  }, [capture]);
+    loadCapture();
+  }, []); // no dependencies, only run once
 
   // Trigger analysis automatically if the optional query param "analyze" is "true"
   useEffect(() => {
@@ -159,7 +180,7 @@ export default function CaptureDetails() {
     );
   }
 
-  const formattedDate = new Date(Number(capture.timestamp)).toLocaleDateString('de-DE');
+  const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
 
   return (
     <ScrollView className="flex-1">
@@ -168,10 +189,10 @@ export default function CaptureDetails() {
         <View>
           <View className="rounded-lg overflow-hidden items-center">
             <ImageOverlay
-              uri={capture.uri}
-              segmentation={analysisData.segmentation || capture.analysis?.segmentation}
-              pith={analysisData.pith || capture.analysis?.pith}
-              rings={analysisData.rings || capture.analysis?.rings}
+              uri={capture.imageBase64}
+              segmentation={analysisData?.segmentation || capture.analysis?.segmentation}
+              pith={analysisData?.pith || capture.analysis?.pith}
+              rings={analysisData?.rings || capture.analysis?.rings}
               width={displayWidth}
               height={displayHeight}
               showSegmentation={overlayVisibility.segmentation}
@@ -228,7 +249,7 @@ export default function CaptureDetails() {
           <CardContent>
             <Input
               value={title}
-              onChangeText={handleTitleChange}
+              onChangeText={handleUpdateTitle}
               className="mb-4 pl-4"
               style={{ width: 250 }}
             />

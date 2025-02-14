@@ -10,12 +10,12 @@ from importlib import resources
 from ..config import config
 
 
-def get_devernay_path():
+def get_devernay_path() -> str:
     """Get the absolute path to the devernay binary."""
-    package = 'treediskrings.externals'
+    package = "treediskrings.externals"
 
     # Get the path to the resource file
-    devernay_path = resources.files(package) / 'devernay.out'
+    devernay_path = str(resources.files(package) / "devernay.out")
 
     # Ensure the file exists and is executable
     if not os.path.isfile(devernay_path):
@@ -27,7 +27,7 @@ def get_devernay_path():
     return devernay_path
 
 
-def load_curves(output_txt: str) -> np.array:
+def load_curves(output_txt: Path) -> np.ndarray:
     """
     Loads curves from a text file.
 
@@ -35,13 +35,13 @@ def load_curves(output_txt: str) -> np.array:
         output_txt (str): Path to the output text file containing curves.
 
     Returns:
-        np.array: Array of curves loaded from the file.
+        np.ndarray: Array of curves loaded from the file.
     """
     curves_list = pd.read_csv(output_txt, delimiter=" ", header=None).values
     return curves_list
 
 
-def convert_image_to_pgm(img_pre: np.ndarray) -> str:
+def convert_image_to_pgm(img_pre: np.ndarray) -> Path:
     """
     Converts an image to PGM format and saves it.
 
@@ -51,7 +51,7 @@ def convert_image_to_pgm(img_pre: np.ndarray) -> str:
     Returns:
         str: Path to the saved image file.
     """
-    image_path = config.output_dir / "test.pgm"
+    image_path = Path(config.output_dir) / "test.pgm"
     cv2.imwrite(str(image_path), img_pre)
 
     return image_path
@@ -70,7 +70,7 @@ def delete_files(files: List[Path]) -> None:
 
 def gradient_load(
     img: np.ndarray, gx_path: str, gy_path: str
-) -> Tuple[np.array, np.array]:
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Loads gradient images from files.
 
@@ -80,7 +80,7 @@ def gradient_load(
         gy_path (str): Path to the gradient Y file.
 
     Returns:
-        Tuple[np.array, np.array]: Gradient images Gx and Gy.
+        Tuple[np.ndarray, np.ndarray]: Gradient images Gx and Gy.
     """
     Gx = np.zeros_like(img, dtype=float)
     Gy = np.zeros_like(img, dtype=float)
@@ -105,9 +105,9 @@ def execute_command(
     Returns:
         Tuple[Path, Path, Path]: Paths to the gradient X, gradient Y, and output text files.
     """
-    output_txt = config.output_dir / "output.txt"
-    gx_path = config.output_dir / "gx.txt"
-    gy_path = config.output_dir / "gy.txt"
+    output_txt = Path(config.output_dir) / "output.txt"
+    gx_path = Path(config.output_dir) / "gx.txt"
+    gy_path = Path(config.output_dir) / "gy.txt"
     devernay_path = get_devernay_path()
     command = (
         f"{devernay_path} {image_path} -s {sigma} -l {low} -h {high} "

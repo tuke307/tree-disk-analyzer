@@ -15,13 +15,14 @@ gunicorn = "^23.0.0"
 python-multipart = "^0.0.17"
 tree-disk-segmentation = "^0.1.3"
 tree-disk-pith = "^0.1.4"
-tree-disk-rings = "^0.4.5" 
+tree-disk-rings = "^0.4.7" 
 gdown = "^5.2.0"
+python-dotenv = "^1.0.1"
 
-[poetry.group.dev.dependencies]
-tree-disk-segmentation = { path = "../tree-disk-segmentation" }
-tree-disk-pith = { path = "../tree-disk-pith" }
-tree-disk-rings = { path = "../tree-disk-rings" }
+[tool.poetry.group.dev.dependencies]
+tree-disk-segmentation = { path = "../tree-disk-segmentation", develop = true }
+tree-disk-pith = { path = "../tree-disk-pith", develop = true }
+tree-disk-rings = { path = "../tree-disk-rings", develop = true }
 pytest = "^8.3.3"
 httpx = "^0.27.2"
 

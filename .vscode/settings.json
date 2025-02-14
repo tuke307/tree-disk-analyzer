@@ -10,5 +10,13 @@
     "[jsonc]": {
         "editor.defaultFormatter": "vscode.json-language-features",
         "editor.formatOnSave": true
-    }
+    },
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/tree-disk-api/src",
+        "${workspaceFolder}/tree-disk-pith/src",
+        "${workspaceFolder}/tree-disk-rings/src",
+        "${workspaceFolder}/tree-disk-segmentation/src"
+    ],
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.typeCheckingMode": "basic",
 }

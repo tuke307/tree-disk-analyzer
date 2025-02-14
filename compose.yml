@@ -1,0 +1,10 @@
+services:
+  api:
+    build:
+      context: ./tree-disk-api
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - ./tree-disk-api/.env.production.local
+    ports:
+      - 3001:3100
