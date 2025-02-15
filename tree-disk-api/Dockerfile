@@ -25,7 +25,7 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock ./
 
 # Install project dependencies (production only)
-RUN poetry install --without dev --no-directory
+RUN poetry install --only main
 
 # Stage 2: Runtime stage
 FROM python:3.12-slim
@@ -39,7 +39,7 @@ COPY --from=builder /app/.venv .venv
 COPY . .
 
 # Add the source directory to PYTHONPATH so imports resolve correctly
-ENV PYTHONPATH="/app/src"
+#ENV PYTHONPATH="/app/src"
 
 # Copy the entrypoint script into the image and set execute permission
 COPY entrypoint.sh /entrypoint.sh
