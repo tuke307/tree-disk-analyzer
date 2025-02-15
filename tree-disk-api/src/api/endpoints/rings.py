@@ -58,17 +58,13 @@ async def detect_rings(
 
     result = treediskrings.run()
 
-    if len(result) != 2:
-        raise HTTPException(
-            status_code=500, detail="Unexpected response format from tree disk analysis"
-        )
-
     devernay_curves_p, img_out = result
+
+    # count the number of rings
+    num_rings = len(devernay_curves_p)
 
     # Convert the image to base64
     img_base64 = numpy_to_base64(img_out)
 
     # Return the image as a response
-    return JSONResponse(
-        content={"devernay_curves_p": devernay_curves_p, "base64": img_base64}
-    )
+    return JSONResponse(content={"age": num_rings, "base64": img_base64})
