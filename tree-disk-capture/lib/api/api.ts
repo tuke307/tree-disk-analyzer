@@ -1,7 +1,19 @@
-import { fetch } from 'expo/fetch';
+import { fetch, FetchRequestInit } from 'expo/fetch';
 import { EXPO_PUBLIC_API_URL } from '@/lib/constants/api';
 import { arrayBufferToBase64, base64ToBlob, blobToBase64, completeBase64Data } from '@/lib/utils/image';
-import axios from 'axios';
+import { FetchResponse } from 'expo/build/winter/fetch/FetchResponse';
+
+async function fetchWithTimeout(
+  url: string,
+  options: FetchRequestInit = {},
+  timeout: number = 240000
+): Promise<FetchResponse> {
+  const fetchPromise = fetch(url, options);
+  const timeoutPromise = new Promise<FetchResponse>((_, reject) =>
+    setTimeout(() => reject(new Error('Request timed out')), timeout)
+  );
+  return Promise.race([fetchPromise, timeoutPromise]);
+}
 
 export async function healthCheck() {
   try {
@@ -77,12 +89,12 @@ export async function detectRings(
   base64: string,
   cx: number,
   cy: number
-): Promise<string> {
+): Promise<{ age: number; base64: string }> {
   try {
     const formData = new FormData();
     formData.append('image', await base64ToBlob(base64));
 
-    const response = await fetch(`${EXPO_PUBLIC_API_URL}/rings/detect?cx=${cx}&cy=${cy}`, {
+    const response = await fetchWithTimeout(`${EXPO_PUBLIC_API_URL}/rings/detect?cx=${cx}&cy=${cy}`, {
       method: 'POST',
       body: formData,
     });
@@ -91,10 +103,10 @@ export async function detectRings(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const arrayBuffer = await response.arrayBuffer();
-    const base64Image = arrayBufferToBase64(arrayBuffer);
+    // Parse the JSON response containing 'age' and 'base64'
+    const result = await response.json();
 
-    return completeBase64Data(base64Image);
+    return { age: result.age, base64: completeBase64Data(result.base64) };
   } catch (error) {
     console.error('API error:', error);
     throw error;

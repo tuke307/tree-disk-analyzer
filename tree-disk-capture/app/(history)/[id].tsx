@@ -83,10 +83,11 @@ export default function CaptureDetails() {
       newAnalysis.pith = newPith;
 
       // Step 3: Ring Detection
-      const ringsBase64Image = await detectRings(segBase64Image, pithData.x, pithData.y);
+      const { age, base64 } = await detectRings(segBase64Image, pithData.x, pithData.y);
       setAnalysisProgress(p => ({ ...p, ringDetection: true }));
-      const newRings = createNewRings(ringsBase64Image);
+      const newRings = createNewRings(base64);
       newAnalysis.rings = newRings;
+      newAnalysis.predictedAge = age;
 
       console.log('Analysis complete:', newAnalysis.id);
 
