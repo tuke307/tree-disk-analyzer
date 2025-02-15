@@ -1,30 +1,50 @@
 import os
 from pathlib import Path
 from typing import Dict, List, Tuple
+from venv import logger
 
 import cv2
 import numpy as np
 import pandas as pd
 from importlib import resources
+import sys
 
 from ..config import config
 
 
 def get_devernay_path() -> str:
-    """Get the absolute path to the devernay binary."""
-    package = "treediskrings.externals"
+    """Get the absolute path to the appropriate devernay binary based on the platform."""
+    base_package = "treediskrings.externals"
 
-    # Get the path to the resource file
-    devernay_path = str(resources.files(package) / "devernay.out")
+    # Determine subdirectory and binary name based on platform
+    if sys.platform.startswith("linux"):
+        subdir = "linux"
+        binary_name = "devernay.out"
+    elif sys.platform == "darwin":
+        subdir = "macos"
+        binary_name = "devernay.out"
+    elif sys.platform == "win32":
+        logger.warning(
+            "Windows platform detected. Devernay binary not supported on Windows."
+        )
+        # subdir = "windows"
+        # binary_name = "devernay.exe"
+    else:
+        raise RuntimeError(f"Unsupported platform: {sys.platform}")
 
-    # Ensure the file exists and is executable
-    if not os.path.isfile(devernay_path):
-        raise FileNotFoundError(f"Binary not found at {devernay_path}")
+    # Construct the path to the binary using the resources API
+    binary_path = resources.files(base_package) / subdir / binary_name
+    binary_path = str(binary_path)  # Convert to string if needed by os functions
 
-    # Make sure it's executable
-    os.chmod(devernay_path, 0o755)
+    # Ensure the file exists
+    if not os.path.isfile(binary_path):
+        raise FileNotFoundError(f"Binary not found at {binary_path}")
 
-    return devernay_path
+    # Make sure it's executable (skip on Windows)
+    if sys.platform != "win32":
+        os.chmod(binary_path, 0o755)
+
+    return binary_path
 
 
 def load_curves(output_txt: Path) -> np.ndarray:

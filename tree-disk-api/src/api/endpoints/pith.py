@@ -43,7 +43,6 @@ async def detect_pith(
         input_image=path,
         model_path=YOLO_MODEL_PATH,
         output_dir=OUTPUT_DIR,
-        method="apd_dl",
         save_results=SAVE_RESULTS,
         debug=DEBUG,
     )

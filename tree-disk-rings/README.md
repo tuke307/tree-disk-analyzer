@@ -71,7 +71,6 @@ tree-disk-rings \
 | `--cx` | int | Yes | - | Pith x-coordinate |
 | `--cy` | int | Yes | - | Pith y-coordinate |
 | `--output_dir` | str | No | `./output` | Output directory path |
-| `--root` | str | No | Current dir | Root directory of the repository |
 | `--sigma` | float | No | 3.0 | Gaussian kernel parameter for edge detection |
 | `--th_low` | float | No | 5.0 | Low threshold for gradient magnitude |
 | `--th_high` | float | No | 20.0 | High threshold for gradient magnitude |
@@ -105,5 +104,5 @@ pytest
 
 3. Compile the external C code:
 ```bash
-cd ./externas/devernay_1.0 && make clean && make
+cd ./externals/devernay_1.0 && make clean && make
 ```

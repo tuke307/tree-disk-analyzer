@@ -1196,7 +1196,9 @@ def postprocessing(l_ch_c, l_nodes_c, img_pre):
     iteracion = [0]
 
     while True:
-        ctx = ChainContext(l_ch_p, idx_start, save_path=config.output_dir, img=img_pre)
+        ctx = ChainContext(
+            l_ch_p, idx_start, save_path=str(config.output_dir), img=img_pre
+        )
 
         while len(ctx.completed_chains) > 0:
             #  l_within_chains, inward_ring and outward_ring are attributes of ctx which are updated in next line
@@ -1281,7 +1283,7 @@ def complete_chains_if_required(ch_p):
     for chain in chain_list:
         if chain.is_closed() and chain.size < chain.nr:
             inward_chain, outward_chain, _ = get_inward_and_outward_visible_chains(
-                chain_list, chain, EndPoints.A
+                chain_list, chain, EndPoints.A.value
             )
             if inward_chain is not None and outward_chain is not None:
                 complete_chain_using_2_support_ring(inward_chain, outward_chain, chain)

@@ -8,3 +8,7 @@ services:
       - ./tree-disk-api/.env.production.local
     ports:
       - 3001:3100
+    volumes:
+      - ./tree-disk-api/models:/app/models
+      - ./tree-disk-api/input:/app/input
+      - ./tree-disk-api/output:/app/output

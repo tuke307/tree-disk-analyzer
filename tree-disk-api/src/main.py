@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import logging
 
+from .config.preparation import create_dirs
 from .config.settings import DEBUG, log_settings
 from .api.router import router
 
@@ -21,6 +22,8 @@ async def lifespan(app: FastAPI):
 
     # print all settings in debug
     log_settings()
+
+    create_dirs()
 
     yield
 
