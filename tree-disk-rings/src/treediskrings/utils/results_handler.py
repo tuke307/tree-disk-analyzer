@@ -1,15 +1,26 @@
 from typing import Tuple, List, Dict, Any
 import numpy as np
 import logging
+import matplotlib.pyplot as plt
 
 from ..geometry.curve import Curve
 from ..geometry.chain import Chain, TypeChains
 from ..processing.preprocessing import resize_image_using_pil_lib
 from ..utils.file_utils import write_json
-from ..geometry.geometry_utils import visualize_chains_over_image
+from ..geometry.geometry_utils import generate_visualization
 from ..config import config
 
 logger = logging.getLogger(__name__)
+
+
+def get_completed_chains(chains: List[Chain]) -> List[Chain]:
+    """Get filtered chains for output visualization."""
+    return [
+        chain
+        for chain in chains
+        if chain.is_closed()
+        and chain.type not in [TypeChains.center, TypeChains.border]
+    ]
 
 
 def save_results(
@@ -20,13 +31,16 @@ def save_results(
     devernay_curves_s: List[Chain],
     devernay_curves_c: List[Chain],
     devernay_curves_p: List[Chain],
-) -> None:
-    """Save detection results to disk."""
-    # Convert chains to labelme format
-    labelme_data = chain_to_labelme(img_in, chain_list=devernay_curves_p)
-    json_path = config.output_dir / "labelme.json"
-    write_json(labelme_data, json_path)
-    logger.info(f"Saved labelme JSON to {json_path}")
+    save_to_disk: bool = True,
+) -> Dict[str, np.ndarray]:
+    """Save detection results to disk and return rendered visualizations."""
+
+    # Save labelme JSON
+    if save_to_disk:
+        labelme_data = chain_to_labelme(img_in, chain_list=devernay_curves_p)
+        json_path = config.output_dir / "labelme.json"
+        write_json(labelme_data, json_path)
+        logger.info(f"Saved labelme JSON to {json_path}")
 
     # Resize if necessary
     m, n, _ = img_in.shape
@@ -34,32 +48,30 @@ def save_results(
     if m != m_n:
         img_in = resize_image_using_pil_lib(img_in, m_n, n_n)
 
-    # Save visualization images
+    # Generate all visualizations
     visualizations = {
-        "input.png": (img_in, {}),
-        "preprocessing.png": (img_pre, {}),
-        "edges.png": (img_pre, {"devernay": devernay_edges}),
-        "filter.png": (img_pre, {"filter": devernay_curves_f}),
-        "chains.png": (img_in, {"chain_list": devernay_curves_s}),
-        "connect.png": (img_in, {"chain_list": devernay_curves_c}),
-        "postprocessing.png": (img_in, {"chain_list": devernay_curves_p}),
-        "output.png": (
-            img_in,
-            {
-                "chain_list": [
-                    chain
-                    for chain in devernay_curves_p
-                    if chain.is_closed()
-                    and chain.type not in [TypeChains.center, TypeChains.border]
-                ]
-            },
+        "input": img_in,
+        "preprocessing": img_pre,
+        "edges": generate_visualization(img=img_pre, devernay=devernay_edges),
+        "filter": generate_visualization(img=img_pre, filter=devernay_curves_f),
+        "chains": generate_visualization(img=img_in, chain_list=devernay_curves_s),
+        "connect": generate_visualization(img=img_in, chain_list=devernay_curves_c),
+        "postprocessing": generate_visualization(
+            img=img_in, chain_list=devernay_curves_p
+        ),
+        "output": generate_visualization(
+            img=img_in, chain_list=get_completed_chains(devernay_curves_p)
         ),
     }
 
-    for filename, (img, kwargs) in visualizations.items():
-        output_path = config.output_dir / filename
-        visualize_chains_over_image(img=img, filename=str(output_path), **kwargs)
-        logger.debug(f"Saved visualization to {output_path}")
+    # Save visualizations to disk
+    if save_to_disk:
+        for name, img in visualizations.items():
+            output_path = config.output_dir / f"{name}.png"
+            plt.imsave(str(output_path), img)
+            logger.debug(f"Saved visualization to {output_path}")
+
+    return visualizations
 
 
 def chain_to_labelme(img_in: np.ndarray, chain_list: List[Chain]) -> Dict[str, Any]:
@@ -69,12 +81,7 @@ def chain_to_labelme(img_in: np.ndarray, chain_list: List[Chain]) -> Dict[str, A
     """
     init_height, init_width, _ = img_in.shape
 
-    completed_chains = [
-        chain
-        for chain in chain_list
-        if chain.is_closed()
-        and chain.type not in [TypeChains.center, TypeChains.border]
-    ]
+    completed_chains = get_completed_chains(chain_list)
 
     width_cte = init_width / config.output_width if config.output_width != None else 1
     height_cte = (

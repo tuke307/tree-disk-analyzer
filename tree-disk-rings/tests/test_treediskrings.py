@@ -23,13 +23,8 @@ def test_treediskringss_without_save():
 
     # Run the detector
     (
-        img_in,
-        img_pre,
-        devernay_edges,
-        devernay_curves_f,
-        devernay_curves_s,
-        devernay_curves_c,
         devernay_curves_p,
+        img_out,
     ) = tda.run()
 
     # Add assertions to verify the expected behavior
@@ -52,13 +47,8 @@ def test_treediskrings_with_save():
 
     # Run the detector
     (
-        img_in,
-        img_pre,
-        devernay_edges,
-        devernay_curves_f,
-        devernay_curves_s,
-        devernay_curves_c,
         devernay_curves_p,
+        img_out,
     ) = tda.run()
 
     # Add assertions to verify the expected behavior

@@ -15,13 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 def run() -> Tuple[
-    np.ndarray,
-    np.ndarray,
-    np.ndarray,
-    List[Curve],
     List[Chain],
-    List[Chain],
-    List[Chain],
+    np.ndarray,
 ]:
     """
     Main function to run tree ring detection.
@@ -31,13 +26,8 @@ def run() -> Tuple[
 
     Returns:
         Tuple containing:
-            - img_in (np.ndarray): Original input image.
-            - img_pre (np.ndarray): Preprocessed image.
-            - devernay_curves (np.ndarray): Devernay curves in matrix format.
-            - devernay_curves_f (List[Curve]): Filtered Devernay curves.
-            - devernay_curves_s (List[Chain]): Sampled Devernay curves as Chain objects.
-            - devernay_curves_c (List[Chain]): Chain lists after connect stage.
             - devernay_curves_p (List[Chain]): Chain lists after postprocessing stage.
+            - output visualization (np.ndarray): Output visualization image.
     """
     # Set up logging based on debug setting
     logging.basicConfig(
@@ -71,24 +61,8 @@ def run() -> Tuple[
 
         exec_time = time.time() - start_time
 
-        if config.save_results:
-            logger.info("Saving results...")
-            save_results(
-                img_in,
-                img_pre,
-                devernay_edges,
-                devernay_curves_f,
-                devernay_curves_s,
-                devernay_curves_c,
-                devernay_curves_p,
-            )
-
-            config_path = config.output_dir / "config.json"
-            write_json(config.to_dict(), config_path)
-            logger.info(f"Saved configuration to {config_path}")
-
-        logger.info(f"Processing completed in {exec_time:.2f} seconds")
-        return (
+        # Get visualizations (and optionally save them)
+        vis_images = save_results(
             img_in,
             img_pre,
             devernay_edges,
@@ -96,16 +70,25 @@ def run() -> Tuple[
             devernay_curves_s,
             devernay_curves_c,
             devernay_curves_p,
+            save_to_disk=config.save_results,
+        )
+
+        # Save configuration if requested
+        if config.save_results:
+            config_path = config.output_dir / "config.json"
+            write_json(config.to_dict(), config_path)
+            logger.info(f"Saved configuration to {config_path}")
+
+        logger.info(f"Processing completed in {exec_time:.2f} seconds")
+
+        return (
+            devernay_curves_p,
+            vis_images["output"],
         )
 
     except Exception as e:
         logger.error(f"Error during processing: {str(e)}", exc_info=True)
         return (
+            [],
             np.array([]),
-            np.array([]),
-            np.array([]),
-            [],
-            [],
-            [],
-            [],
         )

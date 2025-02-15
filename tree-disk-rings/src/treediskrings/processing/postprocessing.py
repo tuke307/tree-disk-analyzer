@@ -1175,7 +1175,7 @@ def connect_radially_closest_chain(
     return True, support_chain, endpoint
 
 
-def postprocessing(l_ch_c, l_nodes_c, img_pre):
+def postprocessing(l_ch_c, l_nodes_c, img_pre) -> List[Chain]:
     """
     Posprocessing chain list. Conditions are relaxed in order to re-fine chain connections. Implements Algorithm 15
     in the supplementary material.

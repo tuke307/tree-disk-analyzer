@@ -7,6 +7,7 @@ matplotlib.use("Agg")  # non-interactive; Must be set before importing pyplot
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 from ..visualization.drawing import Drawing
 from ..geometry.node import Node
@@ -315,57 +316,6 @@ def get_nodes_angles_from_list_nodes(node_list: List[Node]) -> List[float]:
     return [node.angle for node in node_list]
 
 
-def visualize_chains_over_image(
-    chain_list: List[Chain] = [],
-    img: Optional[np.ndarray] = None,
-    filename: Optional[str] = None,
-    devernay: Optional[np.ndarray] = None,
-    filter: Optional[np.ndarray] = None,
-) -> None:
-    """
-    Visualizes chains over an image.
-
-    Args:
-        chain_list (List[Chain]): List of chains to visualize.
-        img (Optional[np.ndarray]): Image to display chains over.
-        filename (Optional[str]): Filename to save the image.
-        devernay (Optional[np.ndarray]): Devernay curves.
-        filter (Optional[np.ndarray]): Filtered curves.
-
-    Returns:
-        None
-    """
-    if devernay is not None:
-        img = Drawing.write_curves_to_image(devernay, img)
-    elif filter is not None:
-        img = write_filter_curves_to_image(filter, img)
-
-    figsize = (10, 10)
-    plt.figure(figsize=figsize)
-    plt.imshow(img, cmap="gray")
-
-    for chain in chain_list:
-        x, y = chain.get_nodes_coordinates()
-        if chain.type == TypeChains.normal:
-            if chain.is_closed():
-                x = x.tolist() + [x[0]]
-                y = y.tolist() + [y[0]]
-                plt.plot(x, y, "b", linewidth=1)
-            else:
-                plt.plot(x, y, "r", linewidth=1)
-        elif chain.type == TypeChains.border:
-            plt.plot(x, y, "k", linewidth=1)
-        else:
-            plt.scatter(int(x[0]), int(y[0]), c="k")
-
-    plt.tight_layout()
-    plt.axis("off")
-
-    if filename:
-        plt.savefig(filename)
-    plt.close()
-
-
 def visualize_selected_ch_and_chains_over_image_(
     selected_ch: List[Chain] = [],
     chain_list: List[Chain] = [],
@@ -430,3 +380,51 @@ def write_filter_curves_to_image(curves: List[Curve], img: np.ndarray) -> np.nda
         img = c.draw(img, thickness=3)
 
     return img
+
+
+def generate_visualization(
+    chain_list: List[Chain] = [],
+    img: Optional[np.ndarray] = None,
+    devernay: Optional[np.ndarray] = None,
+    filter: Optional[np.ndarray] = None,
+) -> np.ndarray:
+    """
+    Generates visualization image without saving to disk.
+    Returns the rendered image as numpy array.
+    """
+    if devernay is not None:
+        img = Drawing.write_curves_to_image(devernay, img)
+    elif filter is not None:
+        img = write_filter_curves_to_image(filter, img)
+
+    fig = plt.figure(figsize=(10, 10))
+    canvas = FigureCanvas(fig)
+    plt.imshow(img, cmap="gray")
+
+    for chain in chain_list:
+        x, y = chain.get_nodes_coordinates()
+        if chain.type == TypeChains.normal:
+            if chain.is_closed():
+                x = x.tolist() + [x[0]]
+                y = y.tolist() + [y[0]]
+                plt.plot(x, y, "b", linewidth=1)
+            else:
+                plt.plot(x, y, "r", linewidth=1)
+        elif chain.type == TypeChains.border:
+            plt.plot(x, y, "k", linewidth=1)
+        else:
+            plt.scatter(int(x[0]), int(y[0]), c="k")
+
+    plt.tight_layout()
+    plt.axis("off")
+
+    # Convert plot to image
+    canvas.draw()
+    buf = canvas.buffer_rgba()
+    width, height = canvas.get_width_height()
+    img_array = np.asarray(buf, dtype=np.uint8).reshape((height, width, 4))
+    # Convert RGBA to RGB by discarding the alpha channel.
+    img_array = img_array[..., :3]
+
+    plt.close()
+    return img_array
