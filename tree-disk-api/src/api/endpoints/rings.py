@@ -1,14 +1,26 @@
 from fastapi import APIRouter, Response, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
 import treediskrings
 from PIL import Image
 import io
 from io import BytesIO
 import logging
+import base64
+import numpy as np
+import cv2
 
 from ...config.settings import OUTPUT_DIR, INPUT_DIR, DEBUG, SAVE_RESULTS
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+def numpy_to_base64(img_array: np.ndarray) -> str:
+    """Convert a numpy array to base64 string."""
+    success, encoded_img = cv2.imencode(".png", img_array)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to encode image")
+    return base64.b64encode(encoded_img.tobytes()).decode("utf-8")
 
 
 @router.post(
@@ -44,24 +56,19 @@ async def detect_rings(
         debug=DEBUG,
     )
 
-    (
-        img_in,
-        img_pre,
-        devernay_edges,
-        devernay_curves_f,
-        devernay_curves_s,
-        devernay_curves_c,
-        devernay_curves_p,
-    ) = treediskrings.run()
+    result = treediskrings.run()
 
-    # read the output image OUTPUT_DIR/output.png
-    output_path = OUTPUT_DIR / "output.png"
-    pil_image = Image.open(output_path)
+    if len(result) != 2:
+        raise HTTPException(
+            status_code=500, detail="Unexpected response format from tree disk analysis"
+        )
 
-    # Save the PIL Image to a BytesIO object
-    img_byte_arr = BytesIO()
-    pil_image.save(img_byte_arr, format="PNG")
-    img_byte_arr.seek(0)
+    devernay_curves_p, img_out = result
+
+    # Convert the image to base64
+    img_base64 = numpy_to_base64(img_out)
 
     # Return the image as a response
-    return Response(content=img_byte_arr.getvalue(), media_type="image/png")
+    return JSONResponse(
+        content={"devernay_curves_p": devernay_curves_p, "base64": img_base64}
+    )
