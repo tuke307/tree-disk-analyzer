@@ -2435,15 +2435,15 @@ ultralytics = ">=8.3.28,<9.0.0"
 
 [[package]]
 name = "tree-disk-rings"
-version = "0.4.8"
+version = "0.4.9"
 description = "A package for tree disk rings detection in images"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
-    {file = "tree_disk_rings-0.4.8-py3-none-any.whl", hash = "sha256:77f6fed19a081e5bf202bf132eac55cbcff2abaa5c9ea33b219d83768a329519"},
-    {file = "tree_disk_rings-0.4.8.tar.gz", hash = "sha256:7e44de040b6869bf0d9ab92631f51680bdc6a31c6fe48a6e97c5434d97769917"},
+    {file = "tree_disk_rings-0.4.9-py3-none-any.whl", hash = "sha256:9b9b6bab32c641b86adc4420711f571e40b1caf0cdf5cdf123f373013627de03"},
+    {file = "tree_disk_rings-0.4.9.tar.gz", hash = "sha256:bba130d33e747321170d58a47a81732a49472bef8f7f7ea78a63ba9289f85ccb"},
 ]
 
 [package.dependencies]
@@ -2634,4 +2634,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "f399316bc4472c3bcbbb2244cab2e149cc59f7dae7cdb4c1992fdb5a8e36323b"
+content-hash = "d2f2ea79db49f339ff646da71cb8cb31e9ba8fd78fbf3f703f0ce99ff40561fb"
