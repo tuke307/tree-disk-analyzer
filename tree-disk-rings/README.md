@@ -104,5 +104,5 @@ pytest
 
 3. Compile the external C code:
 ```bash
-cd ./externas/devernay_1.0 && make clean && make
+cd ./externals/devernay_1.0 && make clean && make
 ```
