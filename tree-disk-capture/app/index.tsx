@@ -23,12 +23,8 @@ export default function Home() {
       </View>
 
       <View className="flex-1 mt-8">
-        <ScrollView className="flex-1">
-          <View>
-            <Text className="text-xl font-bold mb-4">History</Text>
-            <HistoryList captures={captures} />
-          </View>
-        </ScrollView>
+        <Text className="text-xl font-bold mb-4">History</Text>
+        <HistoryList captures={captures} />
       </View>
     </View>
   );

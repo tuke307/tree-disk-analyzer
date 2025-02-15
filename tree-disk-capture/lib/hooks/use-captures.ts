@@ -8,8 +8,6 @@ import { createNewCapture } from '../database/helpers/helpers';
 
 
 type DrizzleDB = ReturnType<typeof drizzle>;
-const db = useSQLiteContext();
-const drizzleDb = drizzle(db, { schema });
 
 async function handleAnalysisUpdate(db: DrizzleDB, analysis: AnalysisWithRelations): Promise<Analysis> {
   return await db.transaction(async (tx) => {
@@ -82,7 +80,9 @@ async function handleAnalysisUpdate(db: DrizzleDB, analysis: AnalysisWithRelatio
 
 export function useCaptures() {
   const [captures, setCaptures] = useState<CaptureWithAnalysis[]>([]);
-  
+  const db = useSQLiteContext();
+  const drizzleDb = drizzle(db, { schema });
+
   const loadCaptures = async () => {
     try {
       const allRows = await drizzleDb.query.capture.findMany({
@@ -96,7 +96,7 @@ export function useCaptures() {
           },
         },
       });
-      
+
       console.info('Captures length:', allRows.length);
 
       setCaptures(allRows as CaptureWithAnalysis[]);

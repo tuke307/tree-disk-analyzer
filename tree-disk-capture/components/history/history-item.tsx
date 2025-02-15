@@ -16,11 +16,11 @@ export function HistoryItem({ capture }: Props) {
     <Button
       variant="outline"
       onPress={() => router.push(`/${capture.id}`)}
-      className="flex-1 w-full p-0 overflow-hidden"
-      style={{ minHeight: 100 }}
+      className="w-full p-0"
+      style={{ height: 100 }}
     >
       <View className="flex-row items-center w-full p-2 gap-4">
-        <View className="w-20 h-20 rounded-lg bg-muted-foreground">
+        <View className="w-20 h-20 rounded-lg bg-muted-foreground overflow-hidden">
           <Image
             source={{ uri: capture.imageBase64 }}
             transition={1000}
