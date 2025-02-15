@@ -18,7 +18,7 @@ def test_treediskringss_without_save():
         cx=1204,
         cy=1264,
         save_results=False,
-        debug=True,
+        debug=False,
     )
 
     # Run the detector
@@ -47,7 +47,7 @@ def test_treediskrings_with_save():
         cx=1204,
         cy=1264,
         save_results=True,
-        debug=True,
+        debug=False,
     )
 
     # Run the detector
