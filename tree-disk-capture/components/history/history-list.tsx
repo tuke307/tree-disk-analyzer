@@ -14,7 +14,6 @@ export function HistoryList({ captures }: Props) {
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => <HistoryItem capture={item} />}
       ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-      contentContainerStyle={{ padding: 8 }}
     />
   );
 }
