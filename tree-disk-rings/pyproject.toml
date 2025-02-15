@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tree-disk-rings"
-version = "0.4.9"
+version = "0.4.10"
 description = "A package for tree disk rings detection in images"
 authors = ["Tony <tonymeissner70@gmail.com>"]
 license = "MIT"
@@ -11,8 +11,9 @@ keywords = ["tree", "rings", "image processing"]
 packages = [{ include = "treediskrings", from = "src" }]
 
 include = [
-    "src/treediskrings/externals/linux/devernay.out",
-    "src/treediskrings/externals/macos/devernay.out",
+    "src/treediskrings/externals/linux-x86_64/devernay.out",
+    "src/treediskrings/externals/linux-arm/devernay.out",
+    "src/treediskrings/externals/macos-arm64/devernay.out",
 ]
 
 [tool.poetry.dependencies]

@@ -7,9 +7,31 @@ import cv2
 import numpy as np
 import pandas as pd
 from importlib import resources
-import sys
+import platform
 
 from ..config import config
+
+
+def get_architecture() -> str:
+    machine = platform.machine().lower()
+    if machine.startswith("arm") or "aarch" in machine:
+        return "arm64"
+    elif machine in ("amd64", "x86_64"):
+        return "x86_64"
+    else:
+        return "unknown"
+
+
+def get_platform() -> str:
+    system = platform.system().lower()
+    if system == "linux":
+        return "linux"
+    elif system == "darwin":
+        return "macos"
+    elif system == "windows":
+        return "windows"
+    else:
+        return "Unknown"
 
 
 def get_devernay_path() -> str:
@@ -17,31 +39,41 @@ def get_devernay_path() -> str:
     base_package = "treediskrings.externals"
 
     # Determine subdirectory and binary name based on platform
-    if sys.platform.startswith("linux"):
-        subdir = "linux"
-        binary_name = "devernay.out"
-    elif sys.platform == "darwin":
-        subdir = "macos"
-        binary_name = "devernay.out"
-    elif sys.platform == "win32":
-        logger.warning(
-            "Windows platform detected. Devernay binary not supported on Windows."
-        )
-        # subdir = "windows"
-        # binary_name = "devernay.exe"
+    platform = get_platform()
+    architecture = get_architecture()
+
+    if platform == "linux":
+        if architecture == "x86_64":
+            subdir = "linux-x86_64"
+            binary_name = "devernay.out"
+        elif architecture == "arm64":
+            subdir = "linux-arm"
+            binary_name = "devernay.out"
+        else:
+            raise ValueError(f"Unsupported architecture: {architecture}")
+    elif platform == "macos":
+        if architecture == "x86_64":
+            NotImplementedError(f"macOS x86_64 is not supported")
+        elif architecture == "arm64":
+            subdir = "macos-arm64"
+            binary_name = "devernay.out"
+        else:
+            raise ValueError(f"Unsupported architecture: {architecture}")
+    elif platform == "windows":
+        raise NotImplementedError("Windows is not supported")
     else:
-        raise RuntimeError(f"Unsupported platform: {sys.platform}")
+        raise ValueError(f"Unsupported platform: {platform}")
 
     # Construct the path to the binary using the resources API
     binary_path = resources.files(base_package) / subdir / binary_name
-    binary_path = str(binary_path)  # Convert to string if needed by os functions
+    binary_path = str(binary_path)
 
     # Ensure the file exists
     if not os.path.isfile(binary_path):
         raise FileNotFoundError(f"Binary not found at {binary_path}")
 
     # Make sure it's executable (skip on Windows)
-    if sys.platform != "win32":
+    if platform != "windows":
         os.chmod(binary_path, 0o755)
 
     return binary_path
