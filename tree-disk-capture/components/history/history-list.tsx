@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { HistoryItem } from '@/components/history/history-item';
 import { CaptureWithAnalysis } from '@/lib/database/models';
 
@@ -8,10 +8,13 @@ interface Props {
 
 export function HistoryList({ captures }: Props) {
   return (
-    <View className='flex-1 gap-2'>
-      {captures.map((capture) => (
-        <HistoryItem key={capture.id} capture={capture} />
-      ))}
-    </View>
+    <FlatList
+      className='flex-1'
+      data={captures}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => <HistoryItem capture={item} />}
+      ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+      contentContainerStyle={{ padding: 8 }}
+    />
   );
 }
