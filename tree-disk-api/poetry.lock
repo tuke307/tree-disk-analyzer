@@ -80,7 +80,7 @@ version = "3.4.0"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
 optional = false
 python-versions = ">=3.7.0"
-groups = ["main", "dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "charset_normalizer-3.4.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:4f9fc98dad6c2eaa32fc3af1417d95b5e3d08aff968df0cd320066def971f9a6"},
@@ -217,7 +217,7 @@ files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
-markers = {main = "platform_system == \"Windows\" and (python_version >= \"3.12\" or python_version <= \"3.11\")", dev = "(python_version >= \"3.12\" or python_version <= \"3.11\") and (sys_platform == \"win32\" or platform_system == \"Windows\")"}
+markers = {main = "platform_system == \"Windows\" and (python_version >= \"3.12\" or python_version <= \"3.11\")", dev = "(python_version >= \"3.12\" or python_version <= \"3.11\") and sys_platform == \"win32\""}
 
 [[package]]
 name = "contourpy"
@@ -225,7 +225,7 @@ version = "1.3.0"
 description = "Python library for calculating contours of 2D quadrilateral grids"
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "contourpy-1.3.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:880ea32e5c774634f9fcd46504bf9f080a41ad855f4fef54f5380f5133d343c7"},
@@ -311,7 +311,7 @@ version = "0.12.1"
 description = "Composable style cycles"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "cycler-0.12.1-py3-none-any.whl", hash = "sha256:85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30"},
@@ -366,7 +366,7 @@ version = "3.16.1"
 description = "A platform independent file lock."
 optional = false
 python-versions = ">=3.8"
-groups = ["main", "dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "filelock-3.16.1-py3-none-any.whl", hash = "sha256:2082e5703d51fbf98ea75855d9d5527e33d8ff23099bec374a134febee6946b0"},
@@ -384,7 +384,7 @@ version = "4.54.1"
 description = "Tools to manipulate font files"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "fonttools-4.54.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:7ed7ee041ff7b34cc62f07545e55e1468808691dddfd315d51dd82a6b37ddef2"},
@@ -457,7 +457,7 @@ version = "2024.10.0"
 description = "File-system specification"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "fsspec-2024.10.0-py3-none-any.whl", hash = "sha256:03b9a6785766a4de40368b88906366755e2819e758b83705c88cd7cb5fe81871"},
@@ -520,7 +520,7 @@ version = "0.7"
 description = "Version of the glob module that can capture patterns and supports recursive wildcards"
 optional = false
 python-versions = "*"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "glob2-0.7.tar.gz", hash = "sha256:85c3dbd07c8aa26d63d7aacee34fa86e9a91a3873bc30bf62ec46e531f92ab8c"},
@@ -634,7 +634,7 @@ version = "2.36.0"
 description = "Library for reading and writing a wide range of image, video, scientific, and volumetric data formats."
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "imageio-2.36.0-py3-none-any.whl", hash = "sha256:471f1eda55618ee44a3c9960911c35e647d9284c68f077e868df633398f137f0"},
@@ -682,7 +682,7 @@ version = "3.1.4"
 description = "A very fast and expressive template engine."
 optional = false
 python-versions = ">=3.7"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "jinja2-3.1.4-py3-none-any.whl", hash = "sha256:bc5dd2abb727a5319567b7a813e6a2e7318c39f4f487cfe6c89c6f9c7d25197d"},
@@ -701,7 +701,7 @@ version = "1.4.2"
 description = "Lightweight pipelining with Python functions"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "joblib-1.4.2-py3-none-any.whl", hash = "sha256:06d478d5674cbc267e7496a410ee875abd68e4340feff4490bcb7afb88060ae6"},
@@ -714,7 +714,7 @@ version = "1.4.7"
 description = "A fast implementation of the Cassowary constraint solver"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "kiwisolver-1.4.7-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:8a9c83f75223d5e48b0bc9cb1bf2776cf01563e00ade8775ffe13b0b6e1af3a6"},
@@ -839,7 +839,7 @@ version = "0.4"
 description = "Makes it easy to load subpackages and functions on demand."
 optional = false
 python-versions = ">=3.7"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "lazy_loader-0.4-py3-none-any.whl", hash = "sha256:342aa8e14d543a154047afb4ba8ef17f5563baad3fc610d7b15b213b0f119efc"},
@@ -860,7 +860,7 @@ version = "3.0.2"
 description = "Safely add untrusted strings to HTML/XML markup."
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "MarkupSafe-3.0.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:7e94c425039cde14257288fd61dcfb01963e658efbc0ff54f5306b06054700f8"},
@@ -932,7 +932,7 @@ version = "3.9.2"
 description = "Python plotting package"
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "matplotlib-3.9.2-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:9d78bbc0cbc891ad55b4f39a48c22182e9bdaea7fc0e5dbd364f49f729ca1bbb"},
@@ -997,7 +997,7 @@ version = "1.3.0"
 description = "Python library for arbitrary-precision floating-point arithmetic"
 optional = false
 python-versions = "*"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "mpmath-1.3.0-py3-none-any.whl", hash = "sha256:a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c"},
@@ -1016,7 +1016,7 @@ version = "8.4.0"
 description = "Simple yet flexible natural sorting in Python."
 optional = false
 python-versions = ">=3.7"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "natsort-8.4.0-py3-none-any.whl", hash = "sha256:4732914fb471f56b5cce04d7bae6f164a592c7712e1c85f9ef585e197299521c"},
@@ -1033,7 +1033,7 @@ version = "3.4.2"
 description = "Python package for creating and manipulating graphs and networks"
 optional = false
 python-versions = ">=3.10"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "networkx-3.4.2-py3-none-any.whl", hash = "sha256:df5d4365b724cf81b8c6a7312509d0c22386097011ad1abe274afd5e9d3bbc5f"},
@@ -1054,7 +1054,7 @@ version = "1.26.4"
 description = "Fundamental package for array computing in Python"
 optional = false
 python-versions = ">=3.9"
-groups = ["main", "dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "numpy-1.26.4-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:9ff0f4f29c51e2803569d7a51c2304de5554655a60c5d776e35b4a41413830d0"},
@@ -1101,7 +1101,7 @@ version = "12.4.5.8"
 description = "CUBLAS native runtime libraries"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_cublas_cu12-12.4.5.8-py3-none-manylinux2014_aarch64.whl", hash = "sha256:0f8aa1706812e00b9f19dfe0cdb3999b092ccb8ca168c0db5b8ea712456fd9b3"},
@@ -1115,7 +1115,7 @@ version = "12.4.127"
 description = "CUDA profiling tools runtime libs."
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_cuda_cupti_cu12-12.4.127-py3-none-manylinux2014_aarch64.whl", hash = "sha256:79279b35cf6f91da114182a5ce1864997fd52294a87a16179ce275773799458a"},
@@ -1129,7 +1129,7 @@ version = "12.4.127"
 description = "NVRTC native runtime libraries"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_cuda_nvrtc_cu12-12.4.127-py3-none-manylinux2014_aarch64.whl", hash = "sha256:0eedf14185e04b76aa05b1fea04133e59f465b6f960c0cbf4e37c3cb6b0ea198"},
@@ -1143,7 +1143,7 @@ version = "12.4.127"
 description = "CUDA Runtime native Libraries"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_cuda_runtime_cu12-12.4.127-py3-none-manylinux2014_aarch64.whl", hash = "sha256:961fe0e2e716a2a1d967aab7caee97512f71767f852f67432d572e36cb3a11f3"},
@@ -1157,7 +1157,7 @@ version = "9.1.0.70"
 description = "cuDNN runtime libraries"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_cudnn_cu12-9.1.0.70-py3-none-manylinux2014_x86_64.whl", hash = "sha256:165764f44ef8c61fcdfdfdbe769d687e06374059fbb388b6c89ecb0e28793a6f"},
@@ -1173,7 +1173,7 @@ version = "11.2.1.3"
 description = "CUFFT native runtime libraries"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_cufft_cu12-11.2.1.3-py3-none-manylinux2014_aarch64.whl", hash = "sha256:5dad8008fc7f92f5ddfa2101430917ce2ffacd86824914c82e28990ad7f00399"},
@@ -1190,7 +1190,7 @@ version = "10.3.5.147"
 description = "CURAND native runtime libraries"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_curand_cu12-10.3.5.147-py3-none-manylinux2014_aarch64.whl", hash = "sha256:1f173f09e3e3c76ab084aba0de819c49e56614feae5c12f69883f4ae9bb5fad9"},
@@ -1204,7 +1204,7 @@ version = "11.6.1.9"
 description = "CUDA solver native runtime libraries"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_cusolver_cu12-11.6.1.9-py3-none-manylinux2014_aarch64.whl", hash = "sha256:d338f155f174f90724bbde3758b7ac375a70ce8e706d70b018dd3375545fc84e"},
@@ -1223,7 +1223,7 @@ version = "12.3.1.170"
 description = "CUSPARSE native runtime libraries"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_cusparse_cu12-12.3.1.170-py3-none-manylinux2014_aarch64.whl", hash = "sha256:9d32f62896231ebe0480efd8a7f702e143c98cfaa0e8a76df3386c1ba2b54df3"},
@@ -1240,7 +1240,7 @@ version = "2.21.5"
 description = "NVIDIA Collective Communication Library (NCCL) Runtime"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_nccl_cu12-2.21.5-py3-none-manylinux2014_x86_64.whl", hash = "sha256:8579076d30a8c24988834445f8d633c697d42397e92ffc3f63fa26766d25e0a0"},
@@ -1252,7 +1252,7 @@ version = "12.4.127"
 description = "Nvidia JIT LTO Library"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_nvjitlink_cu12-12.4.127-py3-none-manylinux2014_aarch64.whl", hash = "sha256:4abe7fef64914ccfa909bc2ba39739670ecc9e820c83ccc7a6ed414122599b83"},
@@ -1266,7 +1266,7 @@ version = "12.4.127"
 description = "NVIDIA Tools Extension"
 optional = false
 python-versions = ">=3"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\""
 files = [
     {file = "nvidia_nvtx_cu12-12.4.127-py3-none-manylinux2014_aarch64.whl", hash = "sha256:7959ad635db13edf4fc65c06a6e9f9e55fc2f92596db928d169c0bb031e88ef3"},
@@ -1280,7 +1280,7 @@ version = "4.11.0.86"
 description = "Wrapper package for OpenCV python bindings."
 optional = false
 python-versions = ">=3.6"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "opencv-contrib-python-headless-4.11.0.86.tar.gz", hash = "sha256:839319098a73264c580c97cb1ca835f7fce3d30e4fa9fa6d4d0618fff551be0b"},
@@ -1306,7 +1306,7 @@ version = "4.11.0.86"
 description = "Wrapper package for OpenCV python bindings."
 optional = false
 python-versions = ">=3.6"
-groups = ["main", "dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "opencv-python-4.11.0.86.tar.gz", hash = "sha256:03d60ccae62304860d232272e4a4fda93c39d595780cb40b161b310244b736a4"},
@@ -1345,7 +1345,7 @@ version = "2.2.3"
 description = "Powerful data structures for data analysis, time series, and statistics"
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "pandas-2.2.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:1948ddde24197a0f7add2bdc4ca83bf2b1ef84a1bc8ccffd95eda17fd836ecb5"},
@@ -1433,7 +1433,7 @@ version = "11.1.0"
 description = "Python Imaging Library (Fork)"
 optional = false
 python-versions = ">=3.9"
-groups = ["main", "dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "pillow-11.1.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:e1abe69aca89514737465752b4bcaf8016de61b3be1397a8fc260ba33321b3a8"},
@@ -1540,7 +1540,7 @@ version = "6.1.0"
 description = "Cross-platform lib for process and system monitoring in Python."
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "psutil-6.1.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:ff34df86226c0227c52f38b919213157588a678d049688eded74c76c8ba4a5d0"},
@@ -1572,7 +1572,7 @@ version = "9.0.0"
 description = "Get CPU info with pure Python"
 optional = false
 python-versions = "*"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "py-cpuinfo-9.0.0.tar.gz", hash = "sha256:3cdbbf3fac90dc6f118bfd64384f309edeadd902d7c8fb17f02ffa1fc3f49690"},
@@ -1713,7 +1713,7 @@ version = "3.2.0"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "pyparsing-3.2.0-py3-none-any.whl", hash = "sha256:93d9577b88da0bbea8cc8334ee8b918ed014968fd2ec383e868fb8afb1ccef84"},
@@ -1767,7 +1767,7 @@ version = "2.9.0.post0"
 description = "Extensions to the standard Python datetime module"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
@@ -1812,7 +1812,7 @@ version = "2024.2"
 description = "World timezone definitions, modern and historical"
 optional = false
 python-versions = "*"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "pytz-2024.2-py2.py3-none-any.whl", hash = "sha256:31c7c1817eb7fae7ca4b8c7ee50c72f93aa2dd863de768e1ef4245d426aa0725"},
@@ -1825,7 +1825,7 @@ version = "6.0.2"
 description = "YAML parser and emitter for Python"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "PyYAML-6.0.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0a9a2848a5b7feac301353437eb7d5957887edbf81d56e903999a75a3d743086"},
@@ -1889,7 +1889,7 @@ version = "2.32.3"
 description = "Python HTTP for Humans."
 optional = false
 python-versions = ">=3.8"
-groups = ["main", "dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "requests-2.32.3-py3-none-any.whl", hash = "sha256:70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6"},
@@ -1913,7 +1913,7 @@ version = "0.24.0"
 description = "Image processing in Python"
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "scikit_image-0.24.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:cb3bc0264b6ab30b43c4179ee6156bc18b4861e78bb329dd8d16537b7bbf827a"},
@@ -1963,7 +1963,7 @@ version = "1.5.2"
 description = "A set of python modules for machine learning and data mining"
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "scikit_learn-1.5.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:299406827fb9a4f862626d0fe6c122f5f87f8910b86fe5daa4c32dcd742139b6"},
@@ -2015,7 +2015,7 @@ version = "1.14.1"
 description = "Fundamental algorithms for scientific computing in Python"
 optional = false
 python-versions = ">=3.10"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "scipy-1.14.1-cp310-cp310-macosx_10_13_x86_64.whl", hash = "sha256:b28d2ca4add7ac16ae8bb6632a3c86e4b9e4d52d3e34267f6e1b0c1f8d87e389"},
@@ -2067,7 +2067,7 @@ version = "0.13.2"
 description = "Statistical data visualization"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "seaborn-0.13.2-py3-none-any.whl", hash = "sha256:636f8336facf092165e27924f223d3c62ca560b1f2bb5dff7ab7fad265361987"},
@@ -2090,7 +2090,7 @@ version = "75.3.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\""
 files = [
     {file = "setuptools-75.3.0-py3-none-any.whl", hash = "sha256:f2504966861356aa38616760c0f66568e535562374995367b4e69c7143cf6bcd"},
@@ -2112,7 +2112,7 @@ version = "2.0.7"
 description = "Manipulation and analysis of geometric objects"
 optional = false
 python-versions = ">=3.7"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "shapely-2.0.7-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:33fb10e50b16113714ae40adccf7670379e9ccf5b7a41d0002046ba2b8f0f691"},
@@ -2172,7 +2172,7 @@ version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
@@ -2230,7 +2230,7 @@ version = "1.13.1"
 description = "Computer algebra system (CAS) in Python"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "sympy-1.13.1-py3-none-any.whl", hash = "sha256:db36cdc64bf61b9b24578b6f7bab1ecdd2452cf008f34faa33776680c26d66f8"},
@@ -2249,7 +2249,7 @@ version = "3.5.0"
 description = "threadpoolctl"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "threadpoolctl-3.5.0-py3-none-any.whl", hash = "sha256:56c1e26c150397e58c4926da8eeee87533b1e32bef131bd4bf6a2f45f3185467"},
@@ -2262,7 +2262,7 @@ version = "2024.9.20"
 description = "Read and write TIFF files"
 optional = false
 python-versions = ">=3.10"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "tifffile-2024.9.20-py3-none-any.whl", hash = "sha256:c54dc85bc1065d972cb8a6ffb3181389d597876aa80177933459733e4ed243dd"},
@@ -2299,7 +2299,7 @@ version = "2.5.1"
 description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
 optional = false
 python-versions = ">=3.8.0"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "torch-2.5.1-cp310-cp310-manylinux1_x86_64.whl", hash = "sha256:71328e1bbe39d213b8721678f9dcac30dfc452a46d586f1d514a6aa0a99d4744"},
@@ -2353,7 +2353,7 @@ version = "0.20.1"
 description = "image and video datasets and models for torch deep learning"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "torchvision-0.20.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:4878fefb96ef293d06c27210918adc83c399d9faaf34cda5a63e129f772328f1"},
@@ -2389,7 +2389,7 @@ version = "4.67.0"
 description = "Fast, Extensible Progress Meter"
 optional = false
 python-versions = ">=3.7"
-groups = ["main", "dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "tqdm-4.67.0-py3-none-any.whl", hash = "sha256:0cd8af9d56911acab92182e88d763100d4788bdf421d251616040cc4d44863be"},
@@ -2412,24 +2412,22 @@ version = "0.1.5"
 description = "A package for tree disk pith detection in images"
 optional = false
 python-versions = ">=3.10"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
-files = []
-develop = true
+files = [
+    {file = "tree_disk_pith-0.1.5-py3-none-any.whl", hash = "sha256:7d1893186118d277254c33703e101ceff4f140725e0e8b7921a238c3a89b8668"},
+    {file = "tree_disk_pith-0.1.5.tar.gz", hash = "sha256:f3406a8ac033157d4796fb275569206823418074c67ee5adb25d927f564d4562"},
+]
 
 [package.dependencies]
-matplotlib = "^3.9.2"
+matplotlib = ">=3.9.2,<4.0.0"
 numpy = ">=1.23.0,<2.0.0"
-opencv-python = "^4.10.0.84"
-pandas = "^2.2.3"
-pillow = "^11.0.0"
-scikit-image = "^0.24.0"
-scikit-learn = "^1.5.2"
-ultralytics = "^8.3.28"
-
-[package.source]
-type = "directory"
-url = "../tree-disk-pith"
+opencv-python = ">=4.10.0.84,<5.0.0.0"
+pandas = ">=2.2.3,<3.0.0"
+pillow = ">=11.0.0,<12.0.0"
+scikit-image = ">=0.24.0,<0.25.0"
+scikit-learn = ">=1.5.2,<2.0.0"
+ultralytics = ">=8.3.28,<9.0.0"
 
 [[package]]
 name = "tree-disk-rings"
@@ -2437,30 +2435,28 @@ version = "0.5.0"
 description = "A package for tree disk rings detection in images"
 optional = false
 python-versions = ">=3.10"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
-files = []
-develop = true
+files = [
+    {file = "tree_disk_rings-0.5.0-py3-none-any.whl", hash = "sha256:93362cbed4791eb46e5b78633dc0e184787b5f6ebfee6baf7966f76b3a95b7c5"},
+    {file = "tree_disk_rings-0.5.0.tar.gz", hash = "sha256:cd6c17d7b58df0affc44c97a4c14241be83aa557c17bdd82fc4db524c04ed1e1"},
+]
 
 [package.dependencies]
-glob2 = "^0.7"
-imageio = "^2.36.0"
-matplotlib = "^3.9.2"
-natsort = "^8.4.0"
+glob2 = ">=0.7,<0.8"
+imageio = ">=2.36.0,<3.0.0"
+matplotlib = ">=3.9.2,<4.0.0"
+natsort = ">=8.4.0,<9.0.0"
 numpy = ">=1.23.0,<2.0.0"
-opencv-contrib-python-headless = "^4.10.0.84"
-opencv-python = "^4.10.0.84"
-pandas = "^2.2.3"
-pillow = "^11.0.0"
-scikit-image = "^0.24.0"
-scikit-learn = "^1.5.2"
-shapely = "^2.0.6"
-torch = "^2.5.1"
-torchvision = "^0.20.1"
-
-[package.source]
-type = "directory"
-url = "../tree-disk-rings"
+opencv-contrib-python-headless = ">=4.10.0.84,<5.0.0.0"
+opencv-python = ">=4.10.0.84,<5.0.0.0"
+pandas = ">=2.2.3,<3.0.0"
+pillow = ">=11.0.0,<12.0.0"
+scikit-image = ">=0.24.0,<0.25.0"
+scikit-learn = ">=1.5.2,<2.0.0"
+shapely = ">=2.0.6,<3.0.0"
+torch = ">=2.5.1,<3.0.0"
+torchvision = ">=0.20.1,<0.21.0"
 
 [[package]]
 name = "tree-disk-segmentation"
@@ -2468,20 +2464,18 @@ version = "0.1.3"
 description = "A package for tree disk segmentation in images"
 optional = false
 python-versions = ">=3.10"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
-files = []
-develop = true
+files = [
+    {file = "tree_disk_segmentation-0.1.3-py3-none-any.whl", hash = "sha256:52f55caf1d5a7f2101e64dc10d54ec1c4bbe79bf5790d414908cf4f2a80c1e87"},
+    {file = "tree_disk_segmentation-0.1.3.tar.gz", hash = "sha256:36b3e73e4fff5e76c093bf8356f1c11572f35406f66ae6d4c07814db90d01c19"},
+]
 
 [package.dependencies]
 numpy = ">=1.23.0,<2.0.0"
-opencv-python = "^4.10.0.84"
-torch = "^2.5.1"
-torchvision = "^0.20.1"
-
-[package.source]
-type = "directory"
-url = "../tree-disk-segmentation"
+opencv-python = ">=4.10.0.84,<5.0.0.0"
+torch = ">=2.5.1,<3.0.0"
+torchvision = ">=0.20.1,<0.21.0"
 
 [[package]]
 name = "triton"
@@ -2489,7 +2483,7 @@ version = "3.1.0"
 description = "A language and compiler for custom Deep Learning operations"
 optional = false
 python-versions = "*"
-groups = ["dev"]
+groups = ["main"]
 markers = "platform_system == \"Linux\" and (python_version >= \"3.12\" or python_version <= \"3.11\") and platform_machine == \"x86_64\" and python_version < \"3.13\""
 files = [
     {file = "triton-3.1.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6b0dd10a925263abbe9fa37dcde67a5e9b2383fc269fdf59f5657cac38c5d1d8"},
@@ -2514,11 +2508,11 @@ description = "Backported and Experimental Type Hints for Python 3.8+"
 optional = false
 python-versions = ">=3.8"
 groups = ["main", "dev"]
-markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
     {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
 ]
+markers = {main = "python_version >= \"3.12\" or python_version <= \"3.11\"", dev = "python_version < \"3.11\""}
 
 [[package]]
 name = "tzdata"
@@ -2526,7 +2520,7 @@ version = "2024.2"
 description = "Provider of IANA time zone data"
 optional = false
 python-versions = ">=2"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "tzdata-2024.2-py2.py3-none-any.whl", hash = "sha256:a48093786cdcde33cad18c2555e8532f34422074448fbc874186f0abd79565cd"},
@@ -2539,7 +2533,7 @@ version = "8.3.28"
 description = "Ultralytics YOLO 🚀 for SOTA object detection, multi-object tracking, instance segmentation, pose estimation and image classification."
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "ultralytics-8.3.28-py3-none-any.whl", hash = "sha256:983beb4ef3960dbbcd10269c5607e365c6be35d34eb1ce154f4a27aa209f4944"},
@@ -2582,7 +2576,7 @@ version = "2.0.11"
 description = "Ultralytics THOP package for fast computation of PyTorch model FLOPs and parameters."
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "ultralytics_thop-2.0.11-py3-none-any.whl", hash = "sha256:49da8b32362a3c3d95cbb89d49311c5ab7f1e5af96a27ded6212a62b2db8549f"},
@@ -2599,7 +2593,7 @@ version = "2.2.3"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
 python-versions = ">=3.8"
-groups = ["main", "dev"]
+groups = ["main"]
 markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
 files = [
     {file = "urllib3-2.2.3-py3-none-any.whl", hash = "sha256:ca899ca043dcb1bafa3e262d73aa25c465bfb49e0bd9dd5d59f1d0acba2f8fac"},
@@ -2636,4 +2630,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "1d75797ea901fa13948ec2fa27f2233d30f8c2009c9c72db7e22203469fe70dd"
+content-hash = "dbb58d7bbc264b538281fffc850c05058579fcb920c0de2db3dede75f86c49be"
