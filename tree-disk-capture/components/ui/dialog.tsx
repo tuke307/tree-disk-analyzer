@@ -1,7 +1,7 @@
 import * as DialogPrimitive from '@rn-primitives/dialog';
 import * as React from 'react';
 import { Platform, StyleSheet, View, type ViewProps } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, useReducedMotion } from 'react-native-reanimated';
 import { XIcon } from '@/lib/icons/XIcon';
 import { cn } from '@/lib/utils/ui';
 
@@ -36,6 +36,8 @@ const DialogOverlayNative = React.forwardRef<
     DialogPrimitive.OverlayRef,
     DialogPrimitive.OverlayProps
 >(({ className, children, ...props }, ref) => {
+    const reduceMotion = useReducedMotion();
+
     return (
         <DialogPrimitive.Overlay
             style={StyleSheet.absoluteFill}
@@ -43,7 +45,10 @@ const DialogOverlayNative = React.forwardRef<
             {...props}
             ref={ref}
         >
-            <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(150)}>
+            <Animated.View
+                entering={reduceMotion ? undefined : FadeIn.duration(150)}
+                exiting={reduceMotion ? undefined : FadeOut.duration(150)}
+            >
                 <>{children}</>
             </Animated.View>
         </DialogPrimitive.Overlay>
