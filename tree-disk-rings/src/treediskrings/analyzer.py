@@ -12,7 +12,7 @@ from .processing.postprocessing import postprocessing
 from .config import config
 
 
-def tree_ring_detection(img_in: cv2.typing.MatLike) -> Tuple[
+def tree_ring_detection(img_in: np.ndarray) -> Tuple[
     np.ndarray,
     np.ndarray,
     np.ndarray,
@@ -25,7 +25,7 @@ def tree_ring_detection(img_in: cv2.typing.MatLike) -> Tuple[
     Delineate tree rings over pine cross-section images. Implements Algorithm 1 from the paper.
 
     Args:
-        img_in (cv2.typing.MatLike): Segmented input image. Background must be white (255,255,255).
+        img_in (np.ndarray): Segmented input image. Background must be white (255,255,255).
 
     Returns:
         Tuple containing:

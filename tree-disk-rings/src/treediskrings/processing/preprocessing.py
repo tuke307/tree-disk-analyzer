@@ -30,12 +30,12 @@ def get_image_shape(img_in: np.ndarray) -> Tuple[int, int]:
     return height, width
 
 
-def resize(img_in: cv2.typing.MatLike) -> np.ndarray:
+def resize(img_in: np.ndarray) -> np.ndarray:
     """
     Resize image and keep the center of the image in the same position. Implements Algorithm 2 in the supplementary material.
 
     Args:
-        img_in (cv2.typing.MatLike): Image to resize.
+        img_in (np.ndarray): Image to resize.
 
     Returns:
         np.ndarray: Resized image, resized y's center coordinate, resized x's center coordinate.
@@ -67,13 +67,13 @@ def resize(img_in: cv2.typing.MatLike) -> np.ndarray:
 
 
 def resize_image_using_pil_lib(
-    img_in: cv2.typing.MatLike, target_width, target_height
+    img_in: np.ndarray, target_width, target_height
 ) -> np.ndarray:
     """
     Resize image using PIL library.
 
     Args:
-        img_in (cv2.typing.MatLike): Input image.
+        img_in (np.ndarray): Input image.
 
     Returns:
         np.ndarray: Matrix with the resized image.
@@ -194,7 +194,7 @@ def rgb2gray(img_r: np.ndarray) -> np.ndarray:
     return cv2.cvtColor(img_r, cv2.COLOR_BGR2GRAY)
 
 
-def preprocessing(img_in: cv2.typing.MatLike) -> np.ndarray:
+def preprocessing(img_in: np.ndarray) -> np.ndarray:
     """
     Image preprocessing steps. Following actions are made:
     - Image resize
@@ -203,7 +203,7 @@ def preprocessing(img_in: cv2.typing.MatLike) -> np.ndarray:
     Implements Algorithm 1 in the supplementary material.
 
     Args:
-        img_in (cv2.typing.MatLike): Segmented image.
+        img_in (np.ndarray): Segmented image.
 
     Returns:
         np.ndarray: Equalized image, pith y's coordinate after resize, pith x's coordinate after resize.
