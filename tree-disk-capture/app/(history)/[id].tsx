@@ -65,48 +65,58 @@ export default function CaptureDetails() {
     setError(null);
     setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
 
-    try {
-      const newAnalysis = createNewAnalysis();
+    let currentCapture = capture;
+    const newAnalysis = createNewAnalysis();
 
-      console.log('Starting analysis for capture:', capture.id);
+    try {
+      console.log('Starting analysis for capture:', currentCapture.id);
 
       // Step 1: Segmentation
-      const segBase64Image = await segmentImage(capture.imageBase64);
-      setAnalysisProgress(p => ({ ...p, segmentation: true }));
-      const newSegmentation = createNewSegmentation(segBase64Image);
-      newAnalysis.segmentation = newSegmentation;
+      const segBase64Image = await segmentImage(currentCapture.imageBase64);
+      newAnalysis.segmentation = createNewSegmentation(segBase64Image);
+      setAnalysisProgress(prev => ({ ...prev, segmentation: true }));
+
+      currentCapture = { ...currentCapture, analysis: newAnalysis };
+      let savedCapture = await updateCapture(currentCapture);
+      if (savedCapture) {
+        setCapture(savedCapture);
+        setAnalysisData(savedCapture.analysis || newAnalysis);
+        currentCapture = savedCapture;
+      }
 
       // Step 2: Pith Detection
       const pithData = await detectPith(segBase64Image);
-      setAnalysisProgress(p => ({ ...p, pithDetection: true }));
-      const newPith = createNewPith(pithData.x, pithData.y);
-      newAnalysis.pith = newPith;
+      newAnalysis.pith = createNewPith(pithData.x, pithData.y);
+      setAnalysisProgress(prev => ({ ...prev, pithDetection: true }));
+
+      currentCapture = { ...currentCapture, analysis: newAnalysis };
+      savedCapture = await updateCapture(currentCapture);
+      if (savedCapture) {
+        setCapture(savedCapture);
+        setAnalysisData(savedCapture.analysis || newAnalysis);
+        currentCapture = savedCapture;
+      }
 
       // Step 3: Ring Detection
       const { age, base64 } = await detectRings(segBase64Image, pithData.x, pithData.y);
-      setAnalysisProgress(p => ({ ...p, ringDetection: true }));
-      const newRings = createNewRings(base64);
-      newAnalysis.rings = newRings;
+      newAnalysis.rings = createNewRings(base64);
       newAnalysis.predictedAge = age;
+      setAnalysisProgress(prev => ({ ...prev, ringDetection: true }));
 
-      console.log('Analysis complete:', newAnalysis.id);
-
-      const updatedCapture: CaptureWithAnalysis = {
-        ...capture,
-        analysis: newAnalysis
-      };
-
-      const savedCapture = await updateCapture(updatedCapture);
-
+      currentCapture = { ...currentCapture, analysis: newAnalysis };
+      savedCapture = await updateCapture(currentCapture);
       if (savedCapture) {
-        setAnalysisData(savedCapture.analysis || null);
         setCapture(savedCapture);
+        setAnalysisData(savedCapture.analysis || newAnalysis);
+        currentCapture = savedCapture;
       }
     } catch (error) {
       console.error('Analysis failed:', error);
       setError('Analysis failed. Please try again.');
       setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
     } finally {
+      console.log('Analysis complete:', newAnalysis.id);
+
       setIsAnalyzing(false);
     }
   };
