@@ -59,6 +59,7 @@ tree-disk-rings \
     --sigma 4.0 \
     --th_low 10 \
     --th_high 25 \
+    --min_chain_length 2 \
     --save_results \
     --debug
 ```
@@ -76,7 +77,7 @@ tree-disk-rings \
 | `--th_high` | float | No | 20.0 | High threshold for gradient magnitude |
 | `--height` | int | No | 0 | Height after resizing (0 to keep original) |
 | `--width` | int | No | 0 | Width after resizing (0 to keep original) |
-| `--alpha` | float | No | 30.0 | Edge filtering parameter (collinearity threshold) |
+| `--alpha` | float | No | 30.0 | Collinearity threshold in degrees. Defines the maximum allowable angle between an edge's direction and its gradient. |
 | `--nr` | int | No | 360 | Number of rays |
 | `--min_chain_length` | int | No | 2 | Minimum chain length |
 | `--debug` | flag | No | False | Enable debug mode |
