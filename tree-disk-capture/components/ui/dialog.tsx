@@ -13,31 +13,28 @@ const DialogPortal = DialogPrimitive.Portal;
 
 const DialogClose = DialogPrimitive.Close;
 
-const DialogOverlayWeb = React.forwardRef<
-    DialogPrimitive.OverlayRef,
-    DialogPrimitive.OverlayProps & { children?: React.ReactNode }
->(({ className, children, ...props }, ref) => {
-    const { open } = DialogPrimitive.useRootContext();
-    return (
-        <DialogPrimitive.Overlay
-            className={cn(
-                'bg-black/80 flex justify-center items-center p-2 absolute top-0 right-0 bottom-0 left-0',
-                open ? 'web:animate-in web:fade-in-0' : 'web:animate-out web:fade-out-0',
-                className
-            )}
-            {...props}
-            ref={ref}
-        >
-            {children}
-        </DialogPrimitive.Overlay>
-    );
-});
+const DialogOverlayWeb = React.forwardRef<DialogPrimitive.OverlayRef, DialogPrimitive.OverlayProps>(
+    ({ className, ...props }, ref) => {
+        const { open } = DialogPrimitive.useRootContext();
+        return (
+            <DialogPrimitive.Overlay
+                className={cn(
+                    'bg-black/80 flex justify-center items-center p-2 absolute top-0 right-0 bottom-0 left-0',
+                    open ? 'web:animate-in web:fade-in-0' : 'web:animate-out web:fade-out-0',
+                    className
+                )}
+                {...props}
+                ref={ref}
+            />
+        );
+    }
+);
 
 DialogOverlayWeb.displayName = 'DialogOverlayWeb';
 
 const DialogOverlayNative = React.forwardRef<
     DialogPrimitive.OverlayRef,
-    DialogPrimitive.OverlayProps & { children: React.ReactNode }
+    DialogPrimitive.OverlayProps
 >(({ className, children, ...props }, ref) => {
     return (
         <DialogPrimitive.Overlay
@@ -47,7 +44,7 @@ const DialogOverlayNative = React.forwardRef<
             ref={ref}
         >
             <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(150)}>
-                {children}
+                <>{children}</>
             </Animated.View>
         </DialogPrimitive.Overlay>
     );
@@ -57,11 +54,8 @@ DialogOverlayNative.displayName = 'DialogOverlayNative';
 
 const DialogOverlay = Platform.select({
     web: DialogOverlayWeb,
-    ios: DialogOverlayNative,
-    android: DialogOverlayNative,
-}) as React.ForwardRefExoticComponent<
-    DialogPrimitive.OverlayProps & { children?: React.ReactNode } & React.RefAttributes<DialogPrimitive.OverlayRef>
->;
+    default: DialogOverlayNative,
+});
 
 const DialogContent = React.forwardRef<
     DialogPrimitive.ContentRef,
