@@ -152,7 +152,7 @@ class Drawing:
     def radii(
         ray: "Ray",
         img: np.ndarray,
-        color: Tuple[int, int, int] = (255, 0, 0),
+        color: Tuple[int, int, int] = Color.blue,
         thickness: int = 1,
     ) -> np.ndarray:
         """
