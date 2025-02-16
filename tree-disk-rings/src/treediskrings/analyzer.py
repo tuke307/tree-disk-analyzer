@@ -39,11 +39,9 @@ def tree_ring_detection(img_in: np.ndarray) -> Tuple[
     """
     img_pre = preprocessing(img_in)
 
-    devernay_result_c = canny_deverney_edge_detector(
+    devernay_edges, gradient_x_img, gradient_y_img = canny_deverney_edge_detector(
         img_pre, sigma=config.sigma, low=config.th_low, high=config.th_high
     )
-
-    devernay_edges, gradient_x_img, gradient_y_img = devernay_result_c
 
     devernay_curves_f = filter_edges(
         devernay_edges, gradient_x_img, gradient_y_img, img_pre
