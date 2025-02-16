@@ -131,7 +131,6 @@ export default function RootLayout() {
             <Stack
               screenOptions={{
                 headerShown: false,
-                presentation: 'fullScreenModal'
               }} />
             <PortalHost />
           </ThemeProvider>
