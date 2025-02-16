@@ -383,8 +383,8 @@ def write_filter_curves_to_image(curves: List[Curve], img: np.ndarray) -> np.nda
 
 
 def generate_visualization(
+    img: np.ndarray,
     chain_list: List[Chain] = [],
-    img: Optional[np.ndarray] = None,
     devernay: Optional[np.ndarray] = None,
     filter: Optional[np.ndarray] = None,
 ) -> np.ndarray:
@@ -397,7 +397,14 @@ def generate_visualization(
     elif filter is not None:
         img = write_filter_curves_to_image(filter, img)
 
-    fig = plt.figure(figsize=(10, 10))
+    height, width = img.shape[:2]
+
+    dpi = 100
+    figsize = (width / dpi, height / dpi)
+    fig = plt.figure(
+        figsize=figsize, dpi=dpi
+    )  # changed from fig = plt.figure(figsize=(10, 10))
+
     canvas = FigureCanvas(fig)
     plt.imshow(img, cmap="gray")
 

@@ -64,7 +64,7 @@ def parse_arguments() -> argparse.Namespace:
         "--alpha",
         type=float,
         default=Config.alpha,
-        help="Collinearity threshold in degrees",
+        help="Collinearity threshold in degrees. Defines the maximum allowable angle between an edge's direction and its gradient.",
         metavar="FLOAT",
     )
     parser.add_argument(

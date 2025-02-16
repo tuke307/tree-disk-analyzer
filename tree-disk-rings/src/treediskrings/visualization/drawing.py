@@ -43,7 +43,7 @@ class Drawing:
         text: str,
         image: np.ndarray,
         org: Tuple[int, int],
-        color: Tuple[int, int, int] = (0, 0, 0),
+        color: Tuple[int, int, int] = Color.black,
         fontScale: float = 0.25,
     ) -> np.ndarray:
         """
@@ -94,7 +94,7 @@ class Drawing:
     def curve(
         curve: "Curve",
         img: np.ndarray,
-        color: Tuple[int, int, int] = (0, 255, 0),
+        color: Tuple[int, int, int] = Color.green,
         thickness: int = 1,
     ) -> np.ndarray:
         """
@@ -124,7 +124,7 @@ class Drawing:
     def chain(
         chain: "Chain",
         img: np.ndarray,
-        color: Tuple[int, int, int] = (0, 255, 0),
+        color: Tuple[int, int, int] = Color.green,
         thickness: int = 5,
     ) -> np.ndarray:
         """
@@ -152,7 +152,7 @@ class Drawing:
     def radii(
         ray: "Ray",
         img: np.ndarray,
-        color: Tuple[int, int, int] = (255, 0, 0),
+        color: Tuple[int, int, int] = Color.blue,
         thickness: int = 1,
     ) -> np.ndarray:
         """

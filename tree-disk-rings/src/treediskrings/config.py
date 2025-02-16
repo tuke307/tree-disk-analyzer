@@ -34,9 +34,6 @@ class Config:
     cy: Optional[int] = None
     """Center y-coordinate in the image."""
 
-    sigma: float = 3.0
-    """Gaussian kernel parameter for Canny edge detector. Controls edge smoothing."""
-
     output_height: Optional[int] = None
     """Target height for image resizing. If 0, maintains original height."""
 
@@ -44,6 +41,8 @@ class Config:
     """Target width for image resizing. If 0, maintains original width."""
 
     # -------------- Edge Detection Parameters ----------------
+    sigma: float = 3.0
+    """Gaussian kernel parameter for Canny edge detector. Controls edge smoothing."""
 
     th_low: float = 5.0
     """Low threshold on gradient magnitude for Canny edge detector. Controls edge sensitivity."""
@@ -51,10 +50,10 @@ class Config:
     th_high: float = 20.0
     """High threshold on gradient magnitude for Canny edge detector. Controls edge continuity."""
 
-    alpha: float = 30.0
-    """Edge filtering parameter (collinearity threshold) in degrees."""
-
     # -------------- Processing Settings ----------------
+    alpha: float = 30.0
+    """Collinearity threshold in degrees. Defines the maximum allowable angle between an edge's direction and its gradient."""
+
     nr: int = 360
     """Number of rays for sampling. Higher values give more precise detection."""
 
