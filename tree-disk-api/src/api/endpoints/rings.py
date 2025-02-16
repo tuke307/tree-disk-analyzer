@@ -58,13 +58,10 @@ async def detect_rings(
 
     result = treediskrings.run()
 
-    devernay_curves_p, img_out = result
-
-    # count the number of rings
-    num_rings = len(devernay_curves_p)
+    average_ring_count, img_out = result
 
     # Convert the image to base64
     img_base64 = numpy_to_base64(img_out)
 
     # Return the image as a response
-    return JSONResponse(content={"age": num_rings, "base64": img_base64})
+    return JSONResponse(content={"age": average_ring_count, "base64": img_base64})
