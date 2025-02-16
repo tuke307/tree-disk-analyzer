@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def run() -> Tuple[
-    List[Chain],
+    int,
     np.ndarray,
 ]:
     """
@@ -26,7 +26,7 @@ def run() -> Tuple[
 
     Returns:
         Tuple containing:
-            - devernay_curves_p (List[Chain]): Chain lists after postprocessing stage.
+            - average_ring_count (int): Average ring count.
             - output visualization (np.ndarray): Output visualization image.
     """
     # Set up logging based on debug setting
@@ -57,6 +57,7 @@ def run() -> Tuple[
             devernay_curves_s,
             devernay_curves_c,
             devernay_curves_p,
+            average_ring_count,
         ) = tree_ring_detection(img_in)
 
         exec_time = time.time() - start_time
@@ -82,13 +83,13 @@ def run() -> Tuple[
         logger.info(f"Processing completed in {exec_time:.2f} seconds")
 
         return (
-            devernay_curves_p,
+            average_ring_count,
             vis_images["output"],
         )
 
     except Exception as e:
         logger.error(f"Error during processing: {str(e)}", exc_info=True)
         return (
-            [],
+            0,
             np.array([]),
         )
