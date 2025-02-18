@@ -1,4 +1,4 @@
-from typing import Tuple, List, Dict, Any
+from typing import Optional, Tuple, List, Dict, Any
 import numpy as np
 import logging
 import matplotlib.pyplot as plt
@@ -29,14 +29,14 @@ def save_results(
     devernay_edges: np.ndarray,
     devernay_curves_f: List[Curve],
     devernay_curves_s: List[Chain],
-    devernay_curves_c: List[Chain],
-    devernay_curves_p: List[Chain],
+    devernay_curves_c: Optional[List[Chain]] = None,
+    devernay_curves_p: Optional[List[Chain]] = None,
     save_to_disk: bool = True,
 ) -> Dict[str, np.ndarray]:
     """Save detection results to disk and return rendered visualizations."""
 
     # Save labelme JSON
-    if save_to_disk:
+    if save_to_disk and devernay_curves_p:
         labelme_data = chain_to_labelme(img_in, chain_list=devernay_curves_p)
         json_path = config.output_dir / "labelme.json"
         write_json(labelme_data, json_path)
@@ -55,14 +55,21 @@ def save_results(
         "edges": generate_visualization(img=img_pre, devernay=devernay_edges),
         "filter": generate_visualization(img=img_pre, filter=devernay_curves_f),
         "chains": generate_visualization(img=img_in, chain_list=devernay_curves_s),
-        "connect": generate_visualization(img=img_in, chain_list=devernay_curves_c),
-        "postprocessing": generate_visualization(
-            img=img_in, chain_list=devernay_curves_p
-        ),
-        "output": generate_visualization(
-            img=img_in, chain_list=get_completed_chains(devernay_curves_p)
-        ),
     }
+
+    # Add optional visualizations
+    if devernay_curves_c is not None:
+        visualizations["connect"] = generate_visualization(
+            img=img_in, chain_list=devernay_curves_c
+        )
+
+    if devernay_curves_p is not None:
+        visualizations["postprocessing"] = generate_visualization(
+            img=img_in, chain_list=devernay_curves_p
+        )
+        visualizations["output"] = generate_visualization(
+            img=img_in, chain_list=get_completed_chains(devernay_curves_p)
+        )
 
     # Save visualizations to disk
     if save_to_disk:

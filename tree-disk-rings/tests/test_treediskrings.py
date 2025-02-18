@@ -18,17 +18,18 @@ def test_treediskringss_without_save():
         cx=1204,
         cy=1264,
         save_results=False,
-        debug=False,
+        debug=True,
     )
 
     # Run the detector
     (
-        devernay_curves_p,
+        avg_ring_count,
         img_out,
-    ) = tda.run()
+    ) = tda.run_age_detect()
 
     # Add assertions to verify the expected behavior
-    assert devernay_curves_p is not None, "The result should not be None"
+    assert avg_ring_count is not None, "The result should not be None"
+    assert avg_ring_count == 24, "The average ring count should be 24"
 
 
 def test_treediskrings_with_save():
@@ -42,17 +43,18 @@ def test_treediskrings_with_save():
         cx=1204,
         cy=1264,
         save_results=True,
-        debug=False,
+        debug=True,
     )
 
     # Run the detector
     (
-        devernay_curves_p,
+        avg_ring_count,
         img_out,
-    ) = tda.run()
+    ) = tda.run_age_detect()
 
     # Add assertions to verify the expected behavior
-    assert devernay_curves_p is not None, "The result should not be None"
+    assert avg_ring_count is not None, "The result should not be None"
+    assert avg_ring_count == 24, "The average ring count should be 24"
 
 
 if __name__ == "__main__":
