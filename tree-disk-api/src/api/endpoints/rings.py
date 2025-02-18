@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, UploadFile, File, HTTPException
+from fastapi import APIRouter, Query, Response, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 import treediskrings
 from PIL import Image
@@ -32,6 +32,9 @@ def numpy_to_base64(img_array: np.ndarray) -> str:
 async def detect_rings(
     cx: int,
     cy: int,
+    sigma: float = Query(3.0, description="Sigma parameter (optional)"),
+    th_low: float = Query(5.0, description="Low threshold (optional)"),
+    th_high: float = Query(20.0, description="High threshold (optional)"),
     image: UploadFile = File(...),
 ) -> Response:
     """
@@ -52,11 +55,14 @@ async def detect_rings(
         output_dir=OUTPUT_DIR,
         cx=cx,
         cy=cy,
+        sigma=sigma,
+        th_low=th_low,
+        th_high=th_high,
         save_results=SAVE_RESULTS,
         debug=DEBUG,
     )
 
-    result = treediskrings.run()
+    result = treediskrings.run_age_detect()
 
     average_ring_count, img_out = result
 
