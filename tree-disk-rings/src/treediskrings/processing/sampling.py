@@ -230,7 +230,7 @@ def draw_ray_curve_and_intersections(
 def sampling_edges(
     l_ch_f: List[Curve],
     img_pre: np.ndarray,
-) -> Tuple[List[Chain], List[Node]]:
+) -> Tuple[List[Chain], List[Node], int]:
     """
     Samples Devernay curves using ray directions. Implements Algorithm 6 in the supplementary material.
 
@@ -242,19 +242,35 @@ def sampling_edges(
         Tuple[List[Chain], List[Node]]:
             - l_ch_s: Sampled edges curves (list of Chain objects).
             - l_nodes_s: List of nodes.
+            - average_ring_count: Average ring count.
     """
     height, width = img_pre.shape[:2]
     center = (config.cy, config.cx)
 
+    # Build rays from the center using the configured number of rays (config.nr)
     l_rays = build_rays(height, width, center)
+
+    # Compute intersections between rays and curves, returning nodes and chains.
     l_nodes_s, l_ch_s = intersections_between_rays_and_devernay_curves(
         l_rays, l_ch_f, center, height, width
     )
     generate_virtual_center_chain(l_ch_s, l_nodes_s, height, width)
 
+    # Calculate average ring count based on intersections along the rays.
+    counts = []
+    for ray in l_rays:
+        count = 0
+        for curve in l_ch_f:
+            if ray.geometry.intersects(curve.geometry):
+                inter = ray.geometry.intersection(curve.geometry)
+                if not inter.is_empty:
+                    count += 1
+        counts.append(count)
+    average_ring_count = int(round(np.mean(counts))) if counts else 0
+
     # Debug purposes, not illustrated in the paper
     if config.debug:
-        img_draw = np.zeros((img_pre.shape[0], img_pre.shape[1], 3), dtype=np.uint8)
+        img_draw = np.zeros((height, width, 3), dtype=np.uint8)
         draw_ray_curve_and_intersections(
             l_nodes_s,
             l_rays,
@@ -263,4 +279,4 @@ def sampling_edges(
             f"{config.output_dir}/dots_curve_and_rays.png",
         )
 
-    return l_ch_s, l_nodes_s
+    return l_ch_s, l_nodes_s, average_ring_count
