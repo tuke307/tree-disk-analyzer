@@ -1,85 +1,103 @@
 import { useState, useEffect } from 'react';
-import { Capture, CaptureWithAnalysis, AnalysisWithRelations, Analysis } from '@/lib/database/models';
 import * as schema from '@/lib/database/models';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
 import { eq } from 'drizzle-orm';
-import { createNewCapture } from '../database/helpers/helpers';
 
 
 type DrizzleDB = ReturnType<typeof drizzle>;
 
-async function handleAnalysisUpdate(db: DrizzleDB, analysis: AnalysisWithRelations): Promise<Analysis> {
+async function handleAnalysisUpdate(db: DrizzleDB, analysis: schema.AnalysisWithRelations): Promise<schema.Analysis> {
   return await db.transaction(async (tx) => {
-    // Update or create segmentation
+    // Handle segmentation
     let segmentationId = analysis.segmentationId;
     if (analysis.segmentation) {
-      const result = await tx
-        .insert(schema.segmentation)
-        .values(analysis.segmentation)
-        .onConflictDoUpdate({
-          target: schema.segmentation.id,
-          set: { imageBase64: analysis.segmentation.imageBase64 }
-        })
-        .returning();
-      segmentationId = result[0].id;
+      if (segmentationId) {
+        // Update existing segmentation
+        await tx
+          .update(schema.segmentation)
+          .set({ imageBase64: analysis.segmentation.imageBase64 })
+          .where(eq(schema.segmentation.id, segmentationId));
+      } else {
+        // Create new segmentation
+        const result = await tx
+          .insert(schema.segmentation)
+          .values({ imageBase64: analysis.segmentation.imageBase64 })
+          .returning();
+        segmentationId = result[0].id;
+      }
     }
 
-    // Update or create pith
+    // Handle pith
     let pithId = analysis.pithId;
     if (analysis.pith) {
-      const result = await tx
-        .insert(schema.pith)
-        .values(analysis.pith)
-        .onConflictDoUpdate({
-          target: schema.pith.id,
-          set: { x: analysis.pith.x, y: analysis.pith.y }
-        })
-        .returning();
-      pithId = result[0].id;
+      if (pithId) {
+        // Update existing pith
+        await tx
+          .update(schema.pith)
+          .set({ x: analysis.pith.x, y: analysis.pith.y })
+          .where(eq(schema.pith.id, pithId));
+      } else {
+        // Create new pith
+        const result = await tx
+          .insert(schema.pith)
+          .values({ x: analysis.pith.x, y: analysis.pith.y })
+          .returning();
+        pithId = result[0].id;
+      }
     }
 
-    // Update or create rings
+    // Handle rings
     let ringsId = analysis.ringsId;
     if (analysis.rings) {
-      const result = await tx
-        .insert(schema.rings)
-        .values(analysis.rings)
-        .onConflictDoUpdate({
-          target: schema.rings.id,
-          set: { imageBase64: analysis.rings.imageBase64 }
-        })
-        .returning();
-      ringsId = result[0].id;
+      if (ringsId) {
+        // Update existing rings
+        await tx
+          .update(schema.rings)
+          .set({ imageBase64: analysis.rings.imageBase64 })
+          .where(eq(schema.rings.id, ringsId));
+      } else {
+        // Create new rings
+        const result = await tx
+          .insert(schema.rings)
+          .values({ imageBase64: analysis.rings.imageBase64 })
+          .returning();
+        ringsId = result[0].id;
+      }
     }
 
-    // Update or create analysis
-    const result = await tx
-      .insert(schema.analysis)
-      .values({
-        id: analysis.id,
-        predictedAge: analysis.predictedAge,
-        segmentationId,
-        pithId,
-        ringsId,
-      })
-      .onConflictDoUpdate({
-        target: schema.analysis.id,
-        set: {
+    // Handle analysis
+    if (analysis.id) {
+      // Update existing analysis
+      const result = await tx
+        .update(schema.analysis)
+        .set({
           predictedAge: analysis.predictedAge,
           segmentationId,
           pithId,
           ringsId,
-        }
-      })
-      .returning();
-
-    return result[0];
+        })
+        .where(eq(schema.analysis.id, analysis.id))
+        .returning();
+      return result[0];
+    } else {
+      // Create new analysis
+      const result = await tx
+        .insert(schema.analysis)
+        .values({
+          predictedAge: analysis.predictedAge,
+          segmentationId,
+          pithId,
+          ringsId,
+        })
+        .returning();
+      return result[0];
+    }
   });
 }
 
 export function useCaptures() {
-  const [captures, setCaptures] = useState<CaptureWithAnalysis[]>([]);
+  const [captures, setCaptures] = useState<schema.CaptureWithAnalysis[]>([]);
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
 
@@ -99,13 +117,13 @@ export function useCaptures() {
 
       console.info('Captures length:', allRows.length);
 
-      setCaptures(allRows as CaptureWithAnalysis[]);
+      setCaptures(allRows as schema.CaptureWithAnalysis[]);
     } catch (error) {
       console.error('Error loading captures:', error);
     }
   };
 
-  const getCaptureById = async (id: string): Promise<CaptureWithAnalysis | undefined> => {
+  const getCaptureById = async (id: string): Promise<schema.CaptureWithAnalysis | undefined> => {
     try {
       const result = await drizzleDb.query.capture.findFirst({
         where: eq(schema.capture.id, id),
@@ -122,48 +140,57 @@ export function useCaptures() {
 
       console.info('Capture by id:', result?.id);
 
-      return result as CaptureWithAnalysis;
+      return result as schema.CaptureWithAnalysis;
     } catch (error) {
       console.error('Error getting capture by id:', error);
       return undefined;
     }
   };
 
-  const addCapture = async (newCapture: Partial<Capture>): Promise<Capture | undefined> => {
+  const addCapture = async (newCapture: schema.NewCapture): Promise<schema.Capture | undefined> => {
     try {
-      const captureToInsert = await createNewCapture(newCapture);
-      await drizzleDb.insert(schema.capture).values(captureToInsert);
+      const insertedCaptures = await drizzleDb.insert(schema.capture).values({...newCapture}).returning();
 
-      console.info('Capture added id:', captureToInsert.id);
+      const insertedCapture = insertedCaptures[0];
+
+      console.info('Capture added id:', insertedCapture.id);
 
       await loadCaptures();
-      return captureToInsert;
+      return insertedCapture;
     } catch (error) {
       console.error('Error adding capture:', error);
       return undefined;
     }
   };
 
-  const updateCapture = async (updatedCapture: CaptureWithAnalysis): Promise<CaptureWithAnalysis | undefined> => {
+  const updateCapture = async (updatedCapture: schema.CaptureWithAnalysis): Promise<schema.CaptureWithAnalysis | undefined> => {
     try {
-      let analysisId: number | null = updatedCapture.analysisId ?? null;
-
+      console.info('Updated capture:', updatedCapture.id);
+      
       if (updatedCapture.analysis) {
         const analysisResult = await handleAnalysisUpdate(drizzleDb, updatedCapture.analysis);
-        analysisId = analysisResult.id;
+        
+        await drizzleDb
+          .update(schema.capture)
+          .set({
+            title: updatedCapture.title,
+            imageBase64: updatedCapture.imageBase64,
+            width: updatedCapture.width,
+            height: updatedCapture.height,
+            analysisId: analysisResult.id,
+          })
+          .where(eq(schema.capture.id, updatedCapture.id));
+      } else {
+        await drizzleDb
+          .update(schema.capture)
+          .set({
+            title: updatedCapture.title,
+            imageBase64: updatedCapture.imageBase64,
+            width: updatedCapture.width,
+            height: updatedCapture.height,
+          })
+          .where(eq(schema.capture.id, updatedCapture.id));
       }
-
-      await drizzleDb
-        .update(schema.capture)
-        .set({
-          title: updatedCapture.title,
-          imageBase64: updatedCapture.imageBase64,
-          timestamp: updatedCapture.timestamp,
-          width: updatedCapture.width,
-          height: updatedCapture.height,
-          analysisId: analysisId,
-        })
-        .where(eq(schema.capture.id, updatedCapture.id));
 
       console.info('Capture updated id:', updatedCapture.id);
 
