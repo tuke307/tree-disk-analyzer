@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, Dimensions } from 'react-native';
+import { View, ScrollView, Dimensions, Platform } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useCaptures } from '@/lib/hooks/use-captures';
 import { Text } from '@/components/ui/text';
@@ -15,25 +15,35 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { detectPith, detectRings, segmentImage } from '@/lib/api/api';
 import { ImageOverlay } from '@/components/history/image-overlay';
-import { Analysis, AnalysisWithRelations, Capture, CaptureWithAnalysis, Pith, Rings, Segmentation } from '@/lib/database/models';
+import { AnalysisWithRelations, Capture, CaptureWithAnalysis } from '@/lib/database/models';
 import { ProgressStep } from '@/components/history/progress-step';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createNewAnalysis, createNewPith, createNewRings, createNewSegmentation } from '@/lib/database/helpers/helpers';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { InfoIcon } from '@/lib/icons/InfoIcon';
 
 export default function CaptureDetails() {
   const { id, analyze } = useLocalSearchParams();
   const navigation = useNavigation();
   const router = useRouter();
   const { getCaptureById, deleteCapture, updateCapture } = useCaptures();
+  const insets = useSafeAreaInsets();
 
   const [capture, setCapture] = useState<CaptureWithAnalysis | null>(null);
   const [title, setTitle] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [edgeParams, setEdgeParams] = useState({
+    sigma: 3.0,
+    th_l: 5.0,
+    th_h: 20.0,
+  });
 
   // Calculate display dimensions based on screen width
   const screenWidth = Dimensions.get('window').width * 0.9; // 90% of screen width for padding
@@ -97,8 +107,15 @@ export default function CaptureDetails() {
         currentCapture = savedCapture;
       }
 
-      // Step 3: Ring Detection
-      const { age, base64 } = await detectRings(segBase64Image, pithData.x, pithData.y);
+      // Step 3: Ring Detection using the edgeParams values
+      const { age, base64 } = await detectRings(
+        segBase64Image,
+        pithData.x,
+        pithData.y,
+        edgeParams.sigma,
+        edgeParams.th_l,
+        edgeParams.th_h
+      );
       newAnalysis.rings = createNewRings(base64);
       newAnalysis.predictedAge = age;
       setAnalysisProgress(prev => ({ ...prev, ringDetection: true }));
@@ -213,6 +230,119 @@ export default function CaptureDetails() {
           </View>
         </View>
 
+        {/* Edge Detection Settings Popover */}
+        <View className="items-start">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Text>Edge Detection Settings</Text>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Edge Detection Settings</DialogTitle>
+                <DialogDescription>
+                  Adjust parameters for edge detection.
+                </DialogDescription>
+              </DialogHeader>
+
+              <View className="flex-col gap-4">
+                <View>
+                  <View className="flex-row items-center">
+                    <Label>Sigma</Label>
+                    <Tooltip delayDuration={150}>
+                      <TooltipTrigger asChild>
+                        <Button variant='ghost' size="icon">
+                          <InfoIcon size={16} className='text-foreground' />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent insets={insets}>
+                        <Text>Controls smoothing. Increase for noisy images, decrease for detailed images.</Text>
+                      </TooltipContent>
+                    </Tooltip>
+                  </View>
+
+                  <Input
+                    keyboardType="numeric"
+                    value={edgeParams.sigma.toString()}
+                    onChangeText={(text) =>
+                      setEdgeParams(prev => ({
+                        ...prev,
+                        sigma: parseFloat(text) || 0,
+                      }))
+                    }
+                    placeholder="sigma: default 3.0"
+                  />
+                </View>
+
+                <View>
+                  <View className="flex-row items-center">
+                    <Label>Low Threshold</Label>
+                    <Tooltip delayDuration={150}>
+                      <TooltipTrigger asChild>
+                        <Button variant='ghost' size="icon">
+                          <InfoIcon size={16} className='text-foreground' />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent insets={insets}>
+                        <Text>Helps connect weak edges. Typically set relative to th_h.</Text>
+                      </TooltipContent>
+                    </Tooltip>
+                  </View>
+
+                  <Input
+                    keyboardType="numeric"
+                    value={edgeParams.th_l.toString()}
+                    onChangeText={(text) =>
+                      setEdgeParams(prev => ({
+                        ...prev,
+                        th_l: parseFloat(text) || 0,
+                      }))
+                    }
+                    placeholder="low threshold: default 5.0"
+                  />
+                </View>
+
+                <View>
+                  <View className="flex-row items-center">
+                    <Label>High Threshold</Label>
+                    <Tooltip delayDuration={150}>
+                      <TooltipTrigger asChild>
+                        <Button variant='ghost' size="icon">
+                          <InfoIcon size={16} className='text-foreground' />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent insets={insets}>
+                        <Text>Sets the bar for strong edges. Adjust based on image contrast.</Text>
+                      </TooltipContent>
+                    </Tooltip>
+                  </View>
+
+                  <Input
+                    keyboardType="numeric"
+                    value={edgeParams.th_h.toString()}
+                    onChangeText={(text) =>
+                      setEdgeParams(prev => ({
+                        ...prev,
+                        th_h: parseFloat(text) || 0,
+                      }))
+                    }
+                    placeholder="high threshold: default 20.0"
+                  />
+                </View>
+              </View>
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button>
+                    <Text>OK</Text>
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </View>
+
         {/* Overlay Controls */}
         <Card className="w-full">
           <CardHeader>
@@ -252,7 +382,7 @@ export default function CaptureDetails() {
           </CardContent>
         </Card>
 
-        {/* Content Container */}
+        {/* Capture Details */}
         <Card className="w-full">
           <CardHeader>
             <CardTitle>Capture Details</CardTitle>
