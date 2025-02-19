@@ -15,7 +15,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { detectPith, detectRings, segmentImage } from '@/lib/api/api';
 import { ImageOverlay } from '@/components/history/image-overlay';
 import { AnalysisWithRelations, Capture, CaptureWithAnalysis } from '@/lib/database/models';
@@ -23,7 +22,6 @@ import { ProgressStep } from '@/components/history/progress-step';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { createNewAnalysis, createNewPith, createNewRings, createNewSegmentation } from '@/lib/database/helpers/helpers';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { InfoIcon } from '@/lib/icons/InfoIcon';
@@ -75,39 +73,54 @@ export default function CaptureDetails() {
     setError(null);
     setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
 
-    let currentCapture = capture;
-    const newAnalysis = createNewAnalysis();
+    const newAnalysis: any = {
+      ...capture.analysis
+    };
 
     try {
-      console.log('Starting analysis for capture:', currentCapture.id);
+      console.log('Starting analysis for capture:', capture.id);
 
       // Step 1: Segmentation
-      const segBase64Image = await segmentImage(currentCapture.imageBase64);
-      newAnalysis.segmentation = createNewSegmentation(segBase64Image);
+      const segBase64Image = await segmentImage(capture.imageBase64);
+      newAnalysis.segmentation = {
+        ...capture.analysis?.segmentation,
+        imageBase64: segBase64Image
+      };
       setAnalysisProgress(prev => ({ ...prev, segmentation: true }));
 
-      currentCapture = { ...currentCapture, analysis: newAnalysis };
+      let currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
       let savedCapture = await updateCapture(currentCapture);
-      if (savedCapture) {
+      if (savedCapture && savedCapture.analysis) {
         setCapture(savedCapture);
         setAnalysisData(savedCapture.analysis || newAnalysis);
         currentCapture = savedCapture;
+
+        // Update newAnalysis with latest IDs
+        newAnalysis.id = savedCapture.analysis?.id;
+        newAnalysis.segmentationId = savedCapture.analysis?.segmentationId;
       }
 
       // Step 2: Pith Detection
       const pithData = await detectPith(segBase64Image);
-      newAnalysis.pith = createNewPith(pithData.x, pithData.y);
+      newAnalysis.pith = {
+        ...capture.analysis?.pith,
+        x: pithData.x,
+        y: pithData.y
+      };
       setAnalysisProgress(prev => ({ ...prev, pithDetection: true }));
 
       currentCapture = { ...currentCapture, analysis: newAnalysis };
       savedCapture = await updateCapture(currentCapture);
-      if (savedCapture) {
+      if (savedCapture && savedCapture.analysis) {
         setCapture(savedCapture);
         setAnalysisData(savedCapture.analysis || newAnalysis);
         currentCapture = savedCapture;
+        
+        // Update newAnalysis with latest IDs
+        newAnalysis.pithId = savedCapture.analysis?.pithId;
       }
 
-      // Step 3: Ring Detection using the edgeParams values
+      // Step 3: Ring Detection
       const { age, base64 } = await detectRings(
         segBase64Image,
         pithData.x,
@@ -116,7 +129,10 @@ export default function CaptureDetails() {
         edgeParams.th_l,
         edgeParams.th_h
       );
-      newAnalysis.rings = createNewRings(base64);
+      newAnalysis.rings = {
+        ...capture.analysis?.rings,
+        imageBase64: base64
+      };
       newAnalysis.predictedAge = age;
       setAnalysisProgress(prev => ({ ...prev, ringDetection: true }));
 
@@ -157,16 +173,7 @@ export default function CaptureDetails() {
         setTitle(data.title);
 
         if (data.analysis) {
-          const analysisData: AnalysisWithRelations = {
-            id: data.analysis.id,
-            predictedAge: data.analysis.predictedAge,
-            segmentationId: data.analysis.segmentationId,
-            pithId: data.analysis.pithId,
-            ringsId: data.analysis.ringsId,
-            segmentation: data.analysis.segmentation,
-            pith: data.analysis.pith,
-            rings: data.analysis.rings,
-          };
+          const analysisData: AnalysisWithRelations = { ...data.analysis };
 
           setAnalysisData(analysisData);
           setAnalysisProgress({
@@ -208,7 +215,7 @@ export default function CaptureDetails() {
     );
   }
 
-  const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
+  const captureCreatedAt = new Date(capture.createdAt).toLocaleDateString('de-DE');
 
   return (
     <ScrollView className="flex-1">
@@ -396,7 +403,7 @@ export default function CaptureDetails() {
             />
             <View className="flex-row items-center gap-4">
               <Label className="text-lg">Captured</Label>
-              <Text>{formattedDate}</Text>
+              <Text>{captureCreatedAt}</Text>
             </View>
             <View className="flex-row items-center gap-4">
               <Label className="text-lg">Predicted Age</Label>
