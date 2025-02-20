@@ -15,7 +15,7 @@ export const ProgressStep = ({ label, active }: ProgressStepProps) => {
       <Button
         variant="ghost"
         size="icon">
-        {active ? <ActivityIndicator /> : <CheckIcon />}
+        {active ? <CheckIcon /> : <ActivityIndicator />}
       </Button>
       <Text>{label}</Text>
     </View>
