@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function HistoryItem({ capture }: Props) {
-  const formattedDate = new Date(capture.timestamp).toLocaleDateString('de-DE');
+  const captureCreatedAt = new Date(capture.createdAt).toLocaleDateString('de-DE');
 
   return (
     <Button
@@ -33,7 +33,7 @@ export function HistoryItem({ capture }: Props) {
         <View className="flex-1">
           <Text className="text-xl leading-none tracking-tight">{capture.title}</Text>
           <Text className="text-sm text-muted-foreground">
-            Captured: {formattedDate}
+            Captured: {captureCreatedAt}
           </Text>
         </View>
       </View>
