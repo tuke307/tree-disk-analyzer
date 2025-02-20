@@ -1,5 +1,7 @@
-import { cn } from '@/lib/utils/ui';
-import { View, Text } from 'react-native';
+import { CheckIcon } from '@/lib/icons/CheckIcon';
+import { ActivityIndicator, View } from 'react-native';
+import { Button } from '../ui/button';
+import { Text } from '../ui/text';
 
 
 interface ProgressStepProps {
@@ -10,12 +12,11 @@ interface ProgressStepProps {
 export const ProgressStep = ({ label, active }: ProgressStepProps) => {
   return (
     <View className="items-center gap-2">
-      <View className={cn(
-        "w-8 h-8 rounded-full items-center justify-center",
-        active ? "bg-green-500" : "bg-gray-300"
-      )}>
-        <Text className="font-bold">{active ? '✓' : '?'}</Text>
-      </View>
+      <Button
+        variant="ghost"
+        size="icon">
+        {active ? <ActivityIndicator /> : <CheckIcon />}
+      </Button>
       <Text>{label}</Text>
     </View>
   );
