@@ -9,7 +9,7 @@ import { useColorScheme } from "@/lib/hooks/use-color-scheme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoadSkiaWeb } from "@shopify/react-native-skia/lib/module/web";
 import { PortalHost } from '@rn-primitives/portal';
-import { SQLiteProvider, openDatabaseSync } from 'expo-sqlite';
+import { SQLiteDatabase, SQLiteProvider, openDatabaseSync } from 'expo-sqlite';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import migrations from '@/drizzle/migrations';
@@ -34,15 +34,24 @@ export {
 // Prevent the splash screen from auto-hiding before getting the color scheme.
 SplashScreen.preventAutoHideAsync();
 
-const expoDb = openDatabaseSync(EXPO_PUBLIC_DB_FILE_NAME);
-const db = drizzle(expoDb, { schema, logger: true });
+const isWeb = Platform.OS === 'web';
+let expoDb: SQLiteDatabase | null = null;
+let db: ReturnType<typeof drizzle> | null = null;
+
+if (!isWeb) {
+  expoDb = openDatabaseSync(EXPO_PUBLIC_DB_FILE_NAME);
+  if (!expoDb) {
+    throw new Error('Failed to open database');
+  }
+  db = drizzle(expoDb, { schema, logger: true });
+}
 
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
   const [skiaLoaded, setSkiaLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(true);
-  const { success, error } = useMigrations(db, migrations);
+  const { success, error } = !isWeb && db ? useMigrations(db, migrations) : { success: true, error: null };
 
   useDrizzleStudio(expoDb);
   
@@ -54,7 +63,7 @@ export default function RootLayout() {
 
   // Load Skia assets.
   useEffect(() => {
-    if (Platform.OS === "web") {
+    if (isWeb) {
       console.debug("Loading Skia on web...");
       LoadSkiaWeb({ locateFile: () => "/canvaskit.wasm" })
         .then(() => setSkiaLoaded(true))
@@ -92,7 +101,7 @@ export default function RootLayout() {
     try {
       const theme = await AsyncStorage.getItem('theme');
 
-      if (Platform.OS === 'web') {
+      if (isWeb) {
         document.documentElement.classList.add('bg-background');
       }
 
@@ -122,20 +131,30 @@ export default function RootLayout() {
 
   return (
     <Suspense fallback={<ActivityIndicator size="large" />}>
-      <SQLiteProvider
-        databaseName={EXPO_PUBLIC_DB_FILE_NAME}
-        options={{ enableChangeListener: true }}
-        useSuspense>
+      {isWeb ? (
+        // On web, skip the SQLiteProvider entirely.
         <SafeAreaProvider>
-          <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }} />
+          <ThemeProvider value={isDarkColorScheme ? DarkTheme : DefaultTheme}>
+            <Stack screenOptions={{ headerShown: false }} />
             <PortalHost />
           </ThemeProvider>
         </SafeAreaProvider>
-      </SQLiteProvider>
+      ) : (
+        <SQLiteProvider
+          databaseName={EXPO_PUBLIC_DB_FILE_NAME}
+          options={{ enableChangeListener: true }}
+          useSuspense>
+          <SafeAreaProvider>
+            <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                }} />
+              <PortalHost />
+            </ThemeProvider>
+          </SafeAreaProvider>
+        </SQLiteProvider>
+      )}
     </Suspense>
   );
 }
