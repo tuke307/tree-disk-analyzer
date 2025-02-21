@@ -1,1 +1,1 @@
-export const EXPO_PUBLIC_API_URL: string = process.env.EXPO_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+export const EXPO_PUBLIC_API_URL: string = process.env.EXPO_PUBLIC_API_URL || 'https://api-treediskanalyzer-prod.azurewebsites.net';
