@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { Pith, Rings, Segmentation } from '@/lib/database/models';
 
 interface ImageOverlayProps {
-    uri: string;
+    imageBase64: string;
     segmentation?: Segmentation;
     pith?: Pith;
     rings?: Rings;
@@ -28,7 +28,7 @@ const loadSkiaImage = async (uri: string): Promise<SkImage | null> => {
 };
 
 export const ImageOverlay = ({
-    uri,
+    imageBase64,
     segmentation,
     pith,
     rings,
@@ -45,9 +45,9 @@ export const ImageOverlay = ({
 
     useEffect(() => {
         const loadImages = async () => {
-            if (uri) {
+            if (imageBase64) {
                 console.log('Loading base image');
-                const img = await loadSkiaImage(uri);
+                const img = await loadSkiaImage(imageBase64);
                 if (img) {
                     setImage(img);
                 }
@@ -71,7 +71,7 @@ export const ImageOverlay = ({
         };
 
         loadImages();
-    }, [uri, segmentation]);
+    }, [imageBase64, segmentation, rings]);
 
     // Compute scaling ratios if image is loaded.
     const scaleX = image ? width / image.width() : 1;

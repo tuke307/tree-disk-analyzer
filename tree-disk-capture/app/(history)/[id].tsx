@@ -224,7 +224,7 @@ export default function CaptureDetails() {
         <View>
           <View className="rounded-lg overflow-hidden items-center">
             <ImageOverlay
-              uri={capture.imageBase64}
+              imageBase64={capture.imageBase64}
               segmentation={analysisData?.segmentation || capture.analysis?.segmentation}
               pith={analysisData?.pith || capture.analysis?.pith}
               rings={analysisData?.rings || capture.analysis?.rings}
