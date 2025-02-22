@@ -36,13 +36,14 @@ treediskpith.configure(
 
 Basic usage:
 ```bash
-tree-disk-pith --input_image ./input/tree-disk3.png
+tree-disk-pith --input_image ./input/tree-disk3.png --model_path ./models/all_best_yolov8.pt
 ```
 
 Advanced usage with custom parameters:
 ```bash
 tree-disk-pith \
     --input_image input/tree-disk3.png \
+    --model_path ./models/all_best_yolov8.pt \
     --output_dir custom_output/ \
     --new_shape 640 \
     --save_results \
@@ -54,7 +55,7 @@ tree-disk-pith \
 | Argument | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
 | `--input_image` | str | Yes | - | Input image file path |
-| `--output_dir` | str | Yes | - | Output directory path |
+| `--output_dir` | str | Yes | ./output | Output directory path |
 | `--model_path` | str | No | - | Path to the weights file (required if using apd_dl method) |
 | `--new_shape` | int | No | 0 | New shape for resizing the input image. If 0, no resizing is done |
 | `--debug` | flag | No | False | Enable debug mode to save intermediate images and outputs |

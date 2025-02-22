@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def run() -> Tuple[
     np.ndarray,
     np.ndarray,
-    np.ndarray,
+    Optional[np.ndarray],
 ]:
     """
     Main function to run tree ring detection.

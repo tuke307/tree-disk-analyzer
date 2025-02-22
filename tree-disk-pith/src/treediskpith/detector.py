@@ -15,7 +15,9 @@ from .config import config
 logger = logging.getLogger(__name__)
 
 
-def tree_disk_pith_detector(img_in: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def tree_disk_pith_detector(
+    img_in: np.ndarray,
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """
     Detect tree disk pith using configured method.
 
@@ -38,8 +40,12 @@ def tree_disk_pith_detector(img_in: np.ndarray) -> Tuple[np.ndarray, np.ndarray]
         path = str(Path(config.output_dir) / "resized.png")
         save_image(img_processed, path)
 
-    # run detection method
-    pith = apd_dl(img_processed, str(config.output_dir), str(config.model_path))
+    try:
+        # run detection method
+        pith = apd_dl(img_processed, str(config.output_dir), str(config.model_path))
+    except ValueError as e:
+        logger.warning(f"Pith detection failed: {str(e)}")
+        return img_processed, None
 
     # Handle debug visualization
     if config.save_results:
