@@ -27,6 +27,7 @@ def numpy_to_base64(img_array: np.ndarray) -> str:
     "/detect",
     responses={
         429: {"description": "Too Many Requests"},
+        404: {"description": "Pith not found in image"},
     },
 )
 async def detect_rings(
