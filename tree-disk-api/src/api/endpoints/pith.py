@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 import treediskpith
 from PIL import Image
@@ -47,6 +47,10 @@ async def detect_pith(
         debug=DEBUG,
     )
     img_in, img_processed, pith = treediskpith.run()
+
+    # Check if pith was detected
+    if pith is None:
+        raise HTTPException(status_code=404, detail="No pith detected in the image")
 
     data = {
         "x": int(pith[0]),

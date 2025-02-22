@@ -2368,14 +2368,14 @@ telegram = ["requests"]
 
 [[package]]
 name = "tree-disk-pith"
-version = "0.1.5"
+version = "0.1.6"
 description = "A package for tree disk pith detection in images"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "tree_disk_pith-0.1.5-py3-none-any.whl", hash = "sha256:7d1893186118d277254c33703e101ceff4f140725e0e8b7921a238c3a89b8668"},
-    {file = "tree_disk_pith-0.1.5.tar.gz", hash = "sha256:f3406a8ac033157d4796fb275569206823418074c67ee5adb25d927f564d4562"},
+    {file = "tree_disk_pith-0.1.6-py3-none-any.whl", hash = "sha256:fc21430c92e96f28d4644b4756553fe3bd03ae6ca4f94bb905750ce1d426eb92"},
+    {file = "tree_disk_pith-0.1.6.tar.gz", hash = "sha256:f1777b9466c1642a8407768d2a20d1895de0ad42f5a17361698a1c20ccb1219c"},
 ]
 
 [package.dependencies]
@@ -2583,4 +2583,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.5.0)
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "e2e4afd8f9514ed6d3322e75ad681c5e123c06a78e1e69f1b41e9e3ec8a080bd"
+content-hash = "5fbe47a7f17c80976a475f7c9925eb6e3cedfb469484834cead25dd273341bb9"
