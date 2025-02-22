@@ -46,6 +46,7 @@ def main():
         output_dir=args.output_dir,
         new_shape=args.new_shape,
         debug=args.debug,
+        save_results=args.save_results,
         model_path=args.model_path,
     )
 
