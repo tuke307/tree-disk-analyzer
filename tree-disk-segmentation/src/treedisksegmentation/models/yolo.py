@@ -44,14 +44,14 @@ def run_yolo_detection(img_in: np.ndarray) -> dict:
 
 
 def get_polygon_points(
-    detections: dict, class_name: str = "logs"
+    detections: dict, class_name: str = "log"
 ) -> Optional[List[Dict[str, float]]]:
     """
     Extracts polygon points from the detections for the specified class.
 
     Args:
         detections (dict): Detection results in JSON format.
-        class_name (str): The class name to filter predictions (default "logs").
+        class_name (str): The class name to filter predictions (default "log").
 
     Returns:
         Optional[List[Dict[str, float]]]: The list of polygon points if found, otherwise None.
