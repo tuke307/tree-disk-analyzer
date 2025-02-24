@@ -1,22 +1,22 @@
 import os
 import logging
 from pathlib import Path
-from typing import Tuple
+from typing import Dict, List, Optional, Tuple
 import numpy as np
+from PIL import Image
 
 from .config import config
-from .models.utils import load_model
+from .models.yolo import run_yolo_detection, get_polygon_points
 from .utils.file_utils import load_image, save_image
 from .segmentation.segmentation import (
-    salient_object_detection,
+    polygon_to_mask,
     apply_mask,
-    preprocess_image,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def run() -> Tuple[np.ndarray, np.ndarray]:
+def run() -> Tuple[np.ndarray, Optional[List[Dict[str, float]]]]:
     """
     Pipeline to remove the salient object while maintaining the original resolution.
 
@@ -33,20 +33,23 @@ def run() -> Tuple[np.ndarray, np.ndarray]:
 
         logger.info(f"Loading input image: {config.input_image}")
         img_in = load_image(config.input_image)
+        img_pil = Image.fromarray(img_in)
 
-        logger.info("Loading model...")
-        model = load_model(config.model_path)
+        logger.info("Running YOLO object detection...")
+        result_json = run_yolo_detection(img_in)
 
-        logger.info("Preprocessing image...")
-        image_tensor, original_size, original_image = preprocess_image(img_in)
+        logger.info("Extracting polygon points...")
+        polygon_points = get_polygon_points(result_json)
+
+        if not polygon_points:
+            logger.error("No polygon points found in YOLO result.")
+            return np.array([]), None
 
         logger.info("Running salient object detection...")
-        mask = salient_object_detection(model, image_tensor)
+        mask = polygon_to_mask(img_pil, polygon_points)
 
         logger.info("Applying mask to original image...")
-        result_image, mask_original_dim = apply_mask(
-            original_image, mask, original_size
-        )
+        result_image, mask_uint8 = apply_mask(img_pil, mask)
 
         if config.save_results:
             output_path = Path(config.output_dir)
@@ -57,8 +60,8 @@ def run() -> Tuple[np.ndarray, np.ndarray]:
 
         logger.debug(f"Done.")
 
-        return result_image, mask_original_dim
+        return result_image, polygon_points
 
     except Exception as e:
         logger.error(f"Error during processing: {str(e)}", exc_info=True)
-        return None
+        return np.array([]), None
