@@ -8,7 +8,7 @@ root_folder = Path(__file__).parent.parent.absolute()
 def test_treedisksegmentation():
     input_image = root_folder / "input" / "tree-disk1.jpg"
     output_dir = root_folder / "output"
-    model_path = root_folder / "models" / "u2net.pth"
+    model_path = root_folder / "models" / "yolo11s-seg-tree.pt"
 
     tds.configure(
         input_image=input_image,
@@ -18,9 +18,9 @@ def test_treedisksegmentation():
         save_results=True,
     )
 
-    result = tds.run()
+    result_image, masks = tds.run()
 
-    assert result is not None, "The result should not be None"
+    assert masks is not None, "The result_image should not be None"
 
 
 if __name__ == "__main__":

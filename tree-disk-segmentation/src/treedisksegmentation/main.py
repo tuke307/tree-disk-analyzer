@@ -1,22 +1,21 @@
 import os
 import logging
 from pathlib import Path
-from typing import Tuple
+from typing import Dict, List, Optional, Tuple
 import numpy as np
+from PIL import Image
 
 from .config import config
-from .models.utils import load_model
+from .models.yolo import run_yolo_detection
 from .utils.file_utils import load_image, save_image
 from .segmentation.segmentation import (
-    salient_object_detection,
     apply_mask,
-    preprocess_image,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def run() -> Tuple[np.ndarray, np.ndarray]:
+def run() -> Tuple[np.ndarray, Optional[List[np.ndarray]]]:
     """
     Pipeline to remove the salient object while maintaining the original resolution.
 
@@ -32,33 +31,21 @@ def run() -> Tuple[np.ndarray, np.ndarray]:
         config.log_all_configs()
 
         logger.info(f"Loading input image: {config.input_image}")
-        img_in = load_image(config.input_image)
+        img_in = load_image(str(config.input_image))
 
-        logger.info("Loading model...")
-        model = load_model(config.model_path)
+        logger.info("Running YOLO object segmentation...")
+        masks = run_yolo_detection(img_in)
 
-        logger.info("Preprocessing image...")
-        image_tensor, original_size, original_image = preprocess_image(img_in)
-
-        logger.info("Running salient object detection...")
-        mask = salient_object_detection(model, image_tensor)
+        if not masks:
+            return np.array([]), None
 
         logger.info("Applying mask to original image...")
-        result_image, mask_original_dim = apply_mask(
-            original_image, mask, original_size
-        )
-
-        if config.save_results:
-            output_path = Path(config.output_dir)
-            output_image_path = os.path.join(output_path, "output.jpg")
-
-            save_image(output_image_path, result_image)
-            logger.info(f"Result image saved at: {output_image_path}")
+        result_image = apply_mask(img_in, masks)
 
         logger.debug(f"Done.")
 
-        return result_image, mask_original_dim
+        return result_image, masks
 
     except Exception as e:
         logger.error(f"Error during processing: {str(e)}", exc_info=True)
-        return None
+        return np.array([]), None
