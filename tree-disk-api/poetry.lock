@@ -2419,14 +2419,14 @@ torchvision = ">=0.20.1,<0.21.0"
 
 [[package]]
 name = "tree-disk-segmentation"
-version = "0.1.3"
+version = "0.2.0"
 description = "A package for tree disk segmentation in images"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "tree_disk_segmentation-0.1.3-py3-none-any.whl", hash = "sha256:52f55caf1d5a7f2101e64dc10d54ec1c4bbe79bf5790d414908cf4f2a80c1e87"},
-    {file = "tree_disk_segmentation-0.1.3.tar.gz", hash = "sha256:36b3e73e4fff5e76c093bf8356f1c11572f35406f66ae6d4c07814db90d01c19"},
+    {file = "tree_disk_segmentation-0.2.0-py3-none-any.whl", hash = "sha256:e405b8d9e2746b00cadb67586e2fb8631426dbca0fe0ad6380662b37c25b6abd"},
+    {file = "tree_disk_segmentation-0.2.0.tar.gz", hash = "sha256:4b77d2b4b11bd0cb5171cb86b835578c885266a6ec9b43a109c80cc85a362a94"},
 ]
 
 [package.dependencies]
@@ -2434,6 +2434,7 @@ numpy = ">=1.23.0,<2.0.0"
 opencv-python = ">=4.10.0.84,<5.0.0.0"
 torch = ">=2.5.1,<3.0.0"
 torchvision = ">=0.20.1,<0.21.0"
+ultralytics = ">=8.3.78,<9.0.0"
 
 [[package]]
 name = "triton"
@@ -2486,22 +2487,19 @@ files = [
 
 [[package]]
 name = "ultralytics"
-version = "8.3.28"
+version = "8.3.79"
 description = "Ultralytics YOLO 🚀 for SOTA object detection, multi-object tracking, instance segmentation, pose estimation and image classification."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "ultralytics-8.3.28-py3-none-any.whl", hash = "sha256:983beb4ef3960dbbcd10269c5607e365c6be35d34eb1ce154f4a27aa209f4944"},
-    {file = "ultralytics-8.3.28.tar.gz", hash = "sha256:98aa555c10d031d65eb1feda6450807491b63f156b8f1071bfd2ef9eb6ec28a2"},
+    {file = "ultralytics-8.3.79-py3-none-any.whl", hash = "sha256:8427286348e37f5a333d383d54e68ca4daff6e80233ad57f70f3b67c2d820974"},
+    {file = "ultralytics-8.3.79.tar.gz", hash = "sha256:2e8c2f0da24993ba88ab66dcdd80350e831d6f9cdd5652b3c965161b39fb0ae6"},
 ]
 
 [package.dependencies]
 matplotlib = ">=3.3.0"
-numpy = [
-    {version = ">=1.23.0,<2.0.0", markers = "sys_platform == \"darwin\""},
-    {version = ">=1.23.0", markers = "sys_platform != \"darwin\""},
-]
+numpy = ">=1.23.0,<=2.1.1"
 opencv-python = ">=4.6.0"
 pandas = ">=1.1.4"
 pillow = ">=7.1.2"
@@ -2512,16 +2510,16 @@ requests = ">=2.23.0"
 scipy = ">=1.4.1"
 seaborn = ">=0.11.0"
 torch = [
-    {version = ">=1.8.0", markers = "sys_platform != \"win32\""},
     {version = ">=1.8.0,<2.4.0 || >2.4.0", markers = "sys_platform == \"win32\""},
+    {version = ">=1.8.0", markers = "sys_platform != \"win32\""},
 ]
 torchvision = ">=0.9.0"
 tqdm = ">=4.64.0"
 ultralytics-thop = ">=2.0.0"
 
 [package.extras]
-dev = ["coverage[toml]", "ipython", "mkdocs (>=1.6.0)", "mkdocs-jupyter", "mkdocs-macros-plugin (>=1.0.5)", "mkdocs-material (>=9.5.9)", "mkdocs-redirects", "mkdocs-ultralytics-plugin (>=0.1.8)", "mkdocstrings[python]", "pytest", "pytest-cov"]
-export = ["coremltools (>=7.0) ; platform_system != \"Windows\" and python_version <= \"3.11\"", "flatbuffers (>=23.5.26,<100) ; platform_machine == \"aarch64\"", "h5py (!=3.11.0) ; platform_machine == \"aarch64\"", "keras", "numpy (==1.23.5) ; platform_machine == \"aarch64\"", "onnx (>=1.12.0)", "openvino (>=2024.0.0)", "scikit-learn (>=1.3.2) ; platform_system != \"Windows\" and python_version <= \"3.11\"", "tensorflow (>=2.0.0)", "tensorflowjs (>=3.9.0)", "tensorstore (>=0.1.63) ; platform_machine == \"aarch64\" and python_version >= \"3.9\""]
+dev = ["coverage[toml]", "ipython", "mkdocs (>=1.6.0)", "mkdocs-macros-plugin (>=1.0.5)", "mkdocs-material (>=9.5.9)", "mkdocs-redirects", "mkdocs-ultralytics-plugin (>=0.1.17)", "mkdocstrings[python]", "pytest", "pytest-cov"]
+export = ["coremltools (>=7.0) ; platform_system != \"Windows\" and python_version <= \"3.11\"", "flatbuffers (>=23.5.26,<100) ; platform_machine == \"aarch64\"", "h5py (!=3.11.0) ; platform_machine == \"aarch64\"", "keras", "onnx (>=1.12.0)", "openvino (>=2024.0.0)", "scikit-learn (>=1.3.2) ; platform_system != \"Windows\" and python_version <= \"3.11\"", "tensorflow (>=2.0.0)", "tensorflowjs (>=3.9.0)", "tensorstore (>=0.1.63) ; platform_machine == \"aarch64\" and python_version >= \"3.9\""]
 extra = ["albumentations (>=1.4.6)", "hub-sdk (>=0.0.12)", "ipython", "pycocotools (>=2.0.7)"]
 logging = ["comet", "dvclive (>=2.12.0)", "tensorboard (>=2.13.0)"]
 solutions = ["shapely (>=2.0.0)", "streamlit"]
@@ -2583,4 +2581,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.5.0)
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "5fbe47a7f17c80976a475f7c9925eb6e3cedfb469484834cead25dd273341bb9"
+content-hash = "30accff6fd85abef09c9ef58e779fd7ed924183782763d28534f31d1e310563a"
