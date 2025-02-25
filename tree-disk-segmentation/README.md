@@ -23,15 +23,10 @@ treedisksegmentation.configure(
     save_results=True,
 )
 
-# Run the analysis
+# Run the segmentation
 (
-    img_in,          # Original input image
-    img_pre,         # Preprocessed image
-    devernay_edges,  # Detected edges
-    devernay_curves_f,  # Filtered curves
-    devernay_curves_s,  # Smoothed curves
-    devernay_curves_c,  # Connected curves
-    devernay_curves_p,  # Final processed curves
+    result_image,   # Image with detected tree disks
+    masks,          # List of masks for each detected tree disk
 ) = treedisksegmentation.run()
 ```
 
