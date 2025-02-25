@@ -70,9 +70,11 @@ class Config:
         if self.model_path:
             model_path = Path(self.model_path)
             if not model_path.exists():
-                raise ValueError(f"Model file does not exist: {model_path}")
+                logger.warning(f"Model file does not exist: {model_path}")
+                # raise ValueError(f"Model file does not exist: {model_path}")
             if not model_path.is_file():
-                raise ValueError(f"Model path is not a file: {model_path}")
+                logger.warning(f"Model path is not a file: {model_path}")
+                # raise ValueError(f"Model path is not a file: {model_path}")
             self.model_path = model_path.resolve()
 
     def _log_change(self, param: str, old_value: Any, new_value: Any):
@@ -157,13 +159,5 @@ def configure(**kwargs):
 
     Args:
         **kwargs: Configuration parameters to update.
-
-    Example:
-        >>> configure(
-        ...     input_image="sample.jpg",
-        ...     method="apd_dl",
-        ...     model_path="weights.pth",
-        ...     st_w=7
-        ... )
     """
     config.update(**kwargs)

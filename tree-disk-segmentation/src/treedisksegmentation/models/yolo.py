@@ -37,15 +37,13 @@ def run_yolo_detection(img_in: np.ndarray) -> Optional[List[np.ndarray]]:
         save_txt=config.save_results,
     )
 
-    results_len = len(results)
+    logger.info(f"YOLO detection complete.")
 
-    logger.info(f"YOLO detection complete, {results_len} log(s) found.")
-
-    if results_len == 0:
+    if results or len(results) == 0:
         logger.error("No results found in YOLO detection.")
         return None
 
-    # were just using the first result, so the first log found
+    # were just using the first result
     first_result = results[0]
 
     # xy = first_result.masks.xy  # mask in polygon format
