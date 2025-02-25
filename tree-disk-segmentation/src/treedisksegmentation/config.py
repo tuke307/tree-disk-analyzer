@@ -21,13 +21,13 @@ class Config:
         input (str): Input image file path.
         output_dir (str): Output directory path.
         debug (bool): Enable debug mode for additional logging.
-        model_path (Optional[str]): Path to weights file (required for 'apd_dl' method).
+        model_path (Optional[str]): Path to weights file.
     """
 
     # -------------- Input/Output Settings ----------------
-    input_image: str = ""
-    output_dir: str = "./output/"
-    model_path: Optional[str] = "./models/u2net.pth"
+    input_image: Optional[Path] = None
+    output_dir: Path = Path("./output/")
+    model_path: Optional[Path] = Path("./models/yolo11s-seg-tree.pt")
 
     # -------------- Operation Modes ----------------
     debug: bool = False
@@ -53,12 +53,12 @@ class Config:
                 raise ValueError(f"Input image file does not exist: {input_image}")
             if not input_image.is_file():
                 raise ValueError(f"Input image path is not a file: {input_image}")
-            self.input_image = str(input_image.resolve())
+            self.input_image = input_image.resolve()
 
         # Set up output directory
         output_path = Path(self.output_dir)
         try:
-            self.output_dir = str(ensure_directory(output_path))
+            self.output_dir = ensure_directory(output_path)
         except PermissionError:
             raise ValueError(
                 f"Cannot create output directory (permission denied): {output_path}"
@@ -73,7 +73,7 @@ class Config:
                 raise ValueError(f"Model file does not exist: {model_path}")
             if not model_path.is_file():
                 raise ValueError(f"Model path is not a file: {model_path}")
-            self.model_path = str(model_path.resolve())
+            self.model_path = model_path.resolve()
 
     def _log_change(self, param: str, old_value: Any, new_value: Any):
         """Log a parameter change with timestamp."""
@@ -111,7 +111,7 @@ class Config:
         if needs_validation:
             self._validate_and_set_paths()
 
-    def get_change_history(self, param: str = None) -> Dict:
+    def get_change_history(self, param: Optional[str] = None) -> Dict:
         """
         Get change history for a specific parameter or all parameters.
 
