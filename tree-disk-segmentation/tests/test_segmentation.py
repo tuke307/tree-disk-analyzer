@@ -18,9 +18,9 @@ def test_treedisksegmentation():
         save_results=True,
     )
 
-    result = tds.run()
+    result_image, masks = tds.run()
 
-    assert result is not None, "The result should not be None"
+    assert masks is not None, "The result_image should not be None"
 
 
 if __name__ == "__main__":
