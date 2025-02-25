@@ -10,16 +10,15 @@
             "request": "launch",
             "module": "treedisksegmentation.cli",
             "cwd": "${workspaceFolder}/tree-disk-segmentation/tree-disk-segmentation",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/tree-disk-segmentation/tree-disk-segmentation/src"
-            },
             "args": [
                 "--input_image",
                 "./input/tree-disk1.jpg",
                 "--output",
                 "./output",
                 "--model",
-                "./models/u2net.pth",
+                "./models/yolo11s-seg-tree.pt",
+                "--debug",
+                "--save_results"
             ],
             "console": "integratedTerminal"
         },
@@ -29,16 +28,15 @@
             "request": "launch",
             "module": "treedisksegmentation.cli",
             "cwd": "${workspaceFolder}/tree-disk-segmentation",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/tree-disk-segmentation/src"
-            },
             "args": [
                 "--input_image",
                 "./input/tree-disk2.jpg",
                 "--output",
                 "./output",
                 "--model",
-                "./models/u2net.pth",
+                "./models/yolo11s-seg-tree.pt",
+                "--debug",
+                "--save_results"
             ],
             "console": "integratedTerminal"
         },
@@ -48,16 +46,33 @@
             "request": "launch",
             "module": "treedisksegmentation.cli",
             "cwd": "${workspaceFolder}/tree-disk-segmentation",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/tree-disk-segmentation/src"
-            },
             "args": [
                 "--input_image",
                 "./input/tree-disk3.jpg",
                 "--output",
                 "./output",
                 "--model",
-                "./models/u2net.pth",
+                "./models/yolo11s-seg-tree.pt",
+                "--debug",
+                "--save_results"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "segmentation - tree-disk4",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "treedisksegmentation.cli",
+            "cwd": "${workspaceFolder}/tree-disk-segmentation",
+            "args": [
+                "--input_image",
+                "./input/tree-disk4.jpg",
+                "--output",
+                "./output",
+                "--model",
+                "./models/yolo11s-seg-tree.pt",
+                "--debug",
+                "--save_results"
             ],
             "console": "integratedTerminal"
         },
