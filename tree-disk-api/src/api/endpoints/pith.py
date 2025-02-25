@@ -8,7 +8,7 @@ import logging
 from ...config.settings import (
     OUTPUT_DIR,
     INPUT_DIR,
-    YOLO_MODEL_PATH,
+    YOLO_PITH_MODEL_PATH,
     DEBUG,
     SAVE_RESULTS,
 )
@@ -41,7 +41,7 @@ async def detect_pith(
 
     treediskpith.configure(
         input_image=path,
-        model_path=YOLO_MODEL_PATH,
+        model_path=YOLO_PITH_MODEL_PATH,
         output_dir=OUTPUT_DIR,
         save_results=SAVE_RESULTS,
         debug=DEBUG,
