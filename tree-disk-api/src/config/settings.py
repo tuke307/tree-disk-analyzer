@@ -18,8 +18,8 @@ INPUT_DIR = ROOT_DIR / "input"
 
 # Define model paths
 MODEL_PATH = ROOT_DIR / "models"
-YOLO_MODEL_PATH = MODEL_PATH / "all_best_yolov8.pt"
-U2NET_MODEL_PATH = MODEL_PATH / "u2net.pth"
+YOLO_PITH_MODEL_PATH = MODEL_PATH / "all_best_yolov8.pt"
+YOLO_SEG_MODEL_PATH = MODEL_PATH / "yolo11s-seg-tree.pt"
 
 DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
 SAVE_RESULTS = os.environ.get("SAVE_RESULTS", "false").lower() == "true"
@@ -31,7 +31,7 @@ def log_settings():
     logger.debug(f"OUTPUT_DIR: {OUTPUT_DIR}")
     logger.debug(f"INPUT_DIR: {INPUT_DIR}")
     logger.debug(f"MODEL_PATH: {MODEL_PATH}")
-    logger.debug(f"YOLO_MODEL_PATH: {YOLO_MODEL_PATH}")
-    logger.debug(f"U2NET_MODEL_PATH: {U2NET_MODEL_PATH}")
+    logger.debug(f"YOLO_PITH_MODEL_PATH: {YOLO_PITH_MODEL_PATH}")
+    logger.debug(f"YOLO_SEG_MODEL_PATH: {YOLO_SEG_MODEL_PATH}")
     logger.debug(f"DEBUG: {DEBUG}")
     logger.debug(f"SAVE_RESULTS: {SAVE_RESULTS}")
