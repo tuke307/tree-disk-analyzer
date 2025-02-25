@@ -44,7 +44,7 @@ tree-disk-segmentation --input_image ./input/baumscheibe.jpg --output_dir ./outp
 
 Save intermediate results:
 ```bash
-tree-disk-segmentation --input_image ./input/baumscheibe.jpg --output_dir ./output/output.jpg --model_path ./models/u2net.pth --save_results
+tree-disk-segmentation --input_image ./input/baumscheibe.jpg --output_dir ./output/output.jpg --model_path ./models/yolo11s-seg-tree.pt --save_results
 ```
 
 ## CLI Arguments
@@ -53,7 +53,7 @@ tree-disk-segmentation --input_image ./input/baumscheibe.jpg --output_dir ./outp
 |----------|------|----------|---------|-------------|
 | `--input_image` | str | Yes | - | Path to input image |
 | `--output_dir` | str | No | `./output` | Output directory path |
-| `--model_path` | str | No | `./models/u2net.pth` | Path to the pre-trained model weights |
+| `--model_path` | str | No | `./models/yolo11s-seg-tree.pt` | Path to the pre-trained model weights |
 | `--debug` | flag | No | False | Enable debug mode |
 | `--save_results` | flag | No | False | Save intermediate images, labelme and config file |
 
