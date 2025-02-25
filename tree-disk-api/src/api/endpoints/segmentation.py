@@ -4,11 +4,12 @@ from PIL import Image
 import io
 from io import BytesIO
 import logging
+import cv2
 
 from ...config.settings import (
     OUTPUT_DIR,
     INPUT_DIR,
-    U2NET_MODEL_PATH,
+    YOLO_SEG_MODEL_PATH,
     DEBUG,
     SAVE_RESULTS,
 )
@@ -41,20 +42,19 @@ async def segment_image(
 
     treedisksegmentation.configure(
         input_image=path,
-        model_path=U2NET_MODEL_PATH,
+        model_path=YOLO_SEG_MODEL_PATH,
         output_dir=OUTPUT_DIR,
         save_results=SAVE_RESULTS,
         debug=DEBUG,
     )
-    result_image, mask_original_dim = treedisksegmentation.run()
+    result_image, masks = treedisksegmentation.run()
 
-    # Convert the NumPy array to a PIL Image
-    pil_image = Image.fromarray(result_image.astype("uint8"))
+    # Convert color space from RGB to BGR
+    result_image_rgb = cv2.cvtColor(result_image, cv2.COLOR_RGB2BGR)
 
-    # Save the PIL Image to a BytesIO object
-    img_byte_arr = BytesIO()
-    pil_image.save(img_byte_arr, format="PNG")
-    img_byte_arr.seek(0)
+    # Convert NumPy array directly to bytes
+    success, encoded_img = cv2.imencode(".png", result_image_rgb)
+    if not success:
+        raise ValueError("Could not encode image")
 
-    # Return the image as a response
-    return Response(content=img_byte_arr.getvalue(), media_type="image/png")
+    return Response(content=encoded_img.tobytes(), media_type="image/png")
