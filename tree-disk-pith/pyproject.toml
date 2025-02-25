@@ -26,6 +26,7 @@ tree-disk-pith = "treediskpith.cli:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
+ipykernel = "^6.29.5"
 
 [build-system]
 requires = ["poetry-core"]
