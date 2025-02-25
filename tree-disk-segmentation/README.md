@@ -39,12 +39,12 @@ treedisksegmentation.configure(
 
 Basic usage:
 ```bash
-tree-disk-segmentation --input_image ./input/baumscheibe.jpg --output_dir ./output/output.jpg
+tree-disk-segmentation --input_image ./input/baumscheibe.jpg --output_dir ./output
 ```
 
 Save intermediate results:
 ```bash
-tree-disk-segmentation --input_image ./input/baumscheibe.jpg --output_dir ./output/output.jpg --model_path ./models/yolo11s-seg-tree.pt --save_results
+tree-disk-segmentation --input_image ./input/baumscheibe.jpg --output_dir ./output --model_path ./models/yolo11s-seg-tree.pt --save_results
 ```
 
 ## CLI Arguments
