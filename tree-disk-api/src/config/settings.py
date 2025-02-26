@@ -18,7 +18,7 @@ INPUT_DIR = ROOT_DIR / "input"
 
 # Define model paths
 MODEL_PATH = ROOT_DIR / "models"
-YOLO_PITH_MODEL_PATH = MODEL_PATH / "all_best_yolov8.pt"
+YOLO_PITH_MODEL_PATH = MODEL_PATH / "yolo11s-det-pith.pt"
 YOLO_SEG_MODEL_PATH = MODEL_PATH / "yolo11s-seg-tree.pt"
 
 DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
