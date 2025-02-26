@@ -2368,14 +2368,14 @@ telegram = ["requests"]
 
 [[package]]
 name = "tree-disk-pith"
-version = "0.1.6"
+version = "0.2.0"
 description = "A package for tree disk pith detection in images"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "tree_disk_pith-0.1.6-py3-none-any.whl", hash = "sha256:fc21430c92e96f28d4644b4756553fe3bd03ae6ca4f94bb905750ce1d426eb92"},
-    {file = "tree_disk_pith-0.1.6.tar.gz", hash = "sha256:f1777b9466c1642a8407768d2a20d1895de0ad42f5a17361698a1c20ccb1219c"},
+    {file = "tree_disk_pith-0.2.0-py3-none-any.whl", hash = "sha256:d8da3f63e51af384397d0f6be6c4c62b04fae4f4afb3cbbd89431aab129e56db"},
+    {file = "tree_disk_pith-0.2.0.tar.gz", hash = "sha256:23d9147e25358eddf037011a4bb1caf995e31936ad5e0d11c3a3abd66cc2f3ef"},
 ]
 
 [package.dependencies]
@@ -2419,14 +2419,14 @@ torchvision = ">=0.20.1,<0.21.0"
 
 [[package]]
 name = "tree-disk-segmentation"
-version = "0.2.0"
+version = "0.2.1"
 description = "A package for tree disk segmentation in images"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "tree_disk_segmentation-0.2.0-py3-none-any.whl", hash = "sha256:e405b8d9e2746b00cadb67586e2fb8631426dbca0fe0ad6380662b37c25b6abd"},
-    {file = "tree_disk_segmentation-0.2.0.tar.gz", hash = "sha256:4b77d2b4b11bd0cb5171cb86b835578c885266a6ec9b43a109c80cc85a362a94"},
+    {file = "tree_disk_segmentation-0.2.1-py3-none-any.whl", hash = "sha256:a915e2db07ea275084d9f1c0123520a8978e71181b2b5eb302389e45417b3533"},
+    {file = "tree_disk_segmentation-0.2.1.tar.gz", hash = "sha256:a46da5b54706076f6bd1313c2af974322081b17a9c0649f827cee711c1d5578a"},
 ]
 
 [package.dependencies]
@@ -2581,4 +2581,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.5.0)
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "30accff6fd85abef09c9ef58e779fd7ed924183782763d28534f31d1e310563a"
+content-hash = "c7c7573bf4bd7f212948e4ab59218ab98962f4b18e44d9c525f857903cbf1ed1"
