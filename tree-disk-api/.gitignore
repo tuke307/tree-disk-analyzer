@@ -166,3 +166,4 @@ cython_debug/
 /output/
 /models/
 /input/input_*
+/data/
