@@ -2419,14 +2419,14 @@ torchvision = ">=0.20.1,<0.21.0"
 
 [[package]]
 name = "tree-disk-segmentation"
-version = "0.2.1"
+version = "0.2.2"
 description = "A package for tree disk segmentation in images"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "tree_disk_segmentation-0.2.1-py3-none-any.whl", hash = "sha256:a915e2db07ea275084d9f1c0123520a8978e71181b2b5eb302389e45417b3533"},
-    {file = "tree_disk_segmentation-0.2.1.tar.gz", hash = "sha256:a46da5b54706076f6bd1313c2af974322081b17a9c0649f827cee711c1d5578a"},
+    {file = "tree_disk_segmentation-0.2.2-py3-none-any.whl", hash = "sha256:a9ae7026e7510d5702d899dfdb3b48649a2ad591efec2f7e798fd0c8aa5a97b6"},
+    {file = "tree_disk_segmentation-0.2.2.tar.gz", hash = "sha256:679f2052e8b7fab217c7efac55a347830c9dcf8b55c7aca6d3b3066818faad77"},
 ]
 
 [package.dependencies]
@@ -2581,4 +2581,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.5.0)
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "c7c7573bf4bd7f212948e4ab59218ab98962f4b18e44d9c525f857903cbf1ed1"
+content-hash = "354e5041c1e948efadcf6f01bc09feb2115659f838d8290cacbd942e469abba3"
