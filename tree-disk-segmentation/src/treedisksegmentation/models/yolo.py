@@ -39,7 +39,7 @@ def run_yolo_detection(img_in: np.ndarray) -> Optional[List[np.ndarray]]:
 
     logger.info(f"YOLO detection complete.")
 
-    if results or len(results) == 0:
+    if not results or len(results) == 0:
         logger.error("No results found in YOLO detection.")
         return None
 
