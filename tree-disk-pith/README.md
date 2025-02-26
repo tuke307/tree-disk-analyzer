@@ -36,14 +36,14 @@ treediskpith.configure(
 
 Basic usage:
 ```bash
-tree-disk-pith --input_image ./input/tree-disk3.png --model_path ./models/all_best_yolov8.pt
+tree-disk-pith --input_image ./input/tree-disk4-seg.jpg --model_path ./models/yolo11s-det-pith.pt
 ```
 
 Advanced usage with custom parameters:
 ```bash
 tree-disk-pith \
     --input_image input/tree-disk3.png \
-    --model_path ./models/all_best_yolov8.pt \
+    --model_path ./models/yolo11s-det-pith.pt \
     --output_dir custom_output/ \
     --new_shape 640 \
     --save_results \

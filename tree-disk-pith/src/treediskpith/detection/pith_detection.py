@@ -1,7 +1,9 @@
+from cv2 import log
 import numpy as np
 from ultralytics import YOLO
 from typing import Tuple, Union
 import logging
+from PIL import Image
 
 from ..config import config
 
@@ -10,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def apd_dl(
     img_in: np.ndarray, output_dir: str, model_path: Union[str, str]
-) -> Tuple[float, float]:
+) -> Tuple[int, int]:
     """
     Adaptive Pith Detection using Deep Learning model.
 
@@ -25,23 +27,47 @@ def apd_dl(
     if model_path is None:
         raise ValueError("model_path is None")
 
-    logger.info(f"model_path {model_path}")
-    model = YOLO(model_path, task="detect", verbose=config.debug)
-    logger.info(f"config {config.save_results}")
+    # yolo needs the image as a PIL image
+    img_pil = Image.fromarray(img_in)
+
+    model = YOLO(
+        model_path,
+        task="detect",
+        verbose=config.debug,
+    )
     results = model(
-        img_in,
+        img_pil,
         project=output_dir,
         save=config.save_results,
-        save_txt=config.save_results,
     )
 
+    if not results or len(results) == 0:
+        raise ValueError("No pith detected in the image")
+
+    logger.debug(f"results {results}")
+
+    # just use the first result
+    result = results[0]
+
+    logger.info(f"result {result}")
+
+    # xywh = result.boxes.xywh  # center-x, center-y, width, height
+    # xywhn = result.boxes.xywhn  # normalized
+    # xyxy = result.boxes.xyxy  # top-left-x, top-left-y, bottom-right-x, bottom-right-y
+    # xyxyn = result.boxes.xyxyn  # normalized
+    # names = [result.names[cls.item()] for cls in result.boxes.cls.int()]  # class name of each box
+    # confs = result.boxes.conf  # confidence score of each box
+
     # Get first detection's center coordinates directly from results
-    boxes = results[0].boxes
+    boxes = result.boxes
+
     if len(boxes) > 0:
-        # Get normalized coordinates and convert to pixel values
-        cx = int(boxes[0].xywh[0][0].item())  # Already in pixel coordinates
-        cy = int(boxes[0].xywh[0][1].item())  # Already in pixel coordinates
+        # Get exact floating point coordinates for better precision
+        cx = int(boxes[0].xywh[0][0].item())  # Center x-coordinate
+        cy = int(boxes[0].xywh[0][1].item())  # Center y-coordinate
     else:
         raise ValueError("No pith detected in the image")
+
+    logger.info(f"cx {cx}, cy {cy}")
 
     return (cx, cy)
