@@ -39,7 +39,7 @@ def download_yolo_pith_model():
         )
         return
 
-    file_id = "1_-dDH4DNiL8wbgiPWPaNqne7kbJyZc8z"
+    file_id = "1oqR_F__iz8JFG3U2xtfbzdsFmnx3sP0a"
     url = f"https://drive.google.com/uc?id={file_id}"
 
     logger.info(f"Downloading Google Drive file from: {url}")
