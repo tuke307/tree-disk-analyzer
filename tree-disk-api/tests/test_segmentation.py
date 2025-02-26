@@ -12,7 +12,7 @@ root_folder = Path(__file__).parent.parent.absolute()
 @pytest.mark.parametrize(
     "image_path",
     [
-        ("input/tree-disk4.png"),
+        ("input/tree-disk4.jpg"),
     ],
 )
 def test_segmentation_endpoint(image_path):

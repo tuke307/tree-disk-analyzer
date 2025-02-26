@@ -12,7 +12,7 @@ root_folder = Path(__file__).parent.parent.absolute()
 @pytest.mark.parametrize(
     "image_path, expected_response",
     [
-        ("input/tree-disk4.png", {"x": 1204, "y": 1264}),
+        ("input/tree-disk4-seg.jpg", {"x": 1607, "y": 1245}),
     ],
 )
 def test_pith_endpoint(image_path, expected_response):
