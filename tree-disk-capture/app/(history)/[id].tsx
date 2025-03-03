@@ -307,64 +307,6 @@ export default function CaptureDetails() {
           </View>
         </View>
 
-        {/* Edge Detection Settings Popover */}
-        <View className="items-start">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Text>Edge Detection Settings</Text>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Edge Detection Settings</DialogTitle>
-                <DialogDescription>
-                  Adjust parameters for edge detection.
-                </DialogDescription>
-              </DialogHeader>
-
-              <View className="flex-col gap-4">
-                <View>
-                  <View className="flex-row items-center">
-                    <Label>Sigma</Label>
-                    <Tooltip delayDuration={150}>
-                      <TooltipTrigger asChild>
-                        <Button variant='ghost' size="icon">
-                          <InfoIcon size={16} className='text-foreground' />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent insets={insets}>
-                        <Text>Controls smoothing. Increase for detailled, high-contrast images, decrease for smoother, low-contrast images.</Text>
-                      </TooltipContent>
-                    </Tooltip>
-                  </View>
-
-                  <Slider
-                    minimumValue={0}
-                    maximumValue={6}
-                    step={0.1}
-                    value={edgeParams.sigma}
-                    onValueChange={(value) =>
-                      setEdgeParams(prev => ({
-                        ...prev,
-                        sigma: value,
-                      }))
-                    }
-                  />
-                </View>
-              </View>
-
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button>
-                    <Text>OK</Text>
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </View>
-
         {/* Overlay Controls */}
         <Card className="w-full">
           <CardHeader>
@@ -432,7 +374,66 @@ export default function CaptureDetails() {
           <CardHeader>
             <CardTitle>Analysis</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className='flex-col gap-4'>
+            {/* Edge Detection Settings Popover */}
+            <View className="items-start">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Text>Edge Detection Settings</Text>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Edge Detection Settings</DialogTitle>
+                    <DialogDescription>
+                      Adjust parameters for edge detection.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <View className="flex-col gap-4">
+                    <View>
+                      <View className="flex-row items-center">
+                        <Label>Sigma</Label>
+                        <Tooltip delayDuration={150}>
+                          <TooltipTrigger asChild>
+                            <Button variant='ghost' size="icon">
+                              <InfoIcon size={16} className='text-foreground' />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent insets={insets}>
+                            <Text>Controls smoothing. Increase for detailled, high-contrast images, decrease for smoother, low-contrast images.</Text>
+                          </TooltipContent>
+                        </Tooltip>
+                      </View>
+
+                      <Slider
+                        minimumValue={0}
+                        maximumValue={6}
+                        step={0.1}
+                        value={edgeParams.sigma}
+                        onValueChange={(value) =>
+                          setEdgeParams(prev => ({
+                            ...prev,
+                            sigma: value,
+                          }))
+                        }
+                      />
+                    </View>
+                  </View>
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button>
+                        <Text>OK</Text>
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </View>
+
+            {/* Progress Steps */}
             <View className="flex-col gap-2">
               <View className="flex-row items-center gap-4">
                 <ProgressStep label="Segmentation" active={analysisProgress.segmentation} />
@@ -467,6 +468,8 @@ export default function CaptureDetails() {
                 </Button>
               </View>
             </View>
+
+            {/* Error Message */}
             {error && <Text className="text-destructive">{error}</Text>}
           </CardContent>
         </Card>
