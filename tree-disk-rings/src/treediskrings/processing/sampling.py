@@ -203,7 +203,10 @@ def draw_ray_curve_and_intersections(
     filename: str,
 ) -> None:
     """
-    Draws rays, curves, and intersections on an image and saves it.
+    Draws rays, curves, and intersections on an image and saves it.<br>
+    Rays are blue.<br>
+    Curves are green.<br>
+    Intersection points are red.
 
     Args:
         dots_lists (List[Node]): List of nodes representing intersections.
@@ -230,6 +233,7 @@ def draw_ray_curve_and_intersections(
 def sampling_edges(
     l_ch_f: List[Curve],
     img_pre: np.ndarray,
+    img_in: np.ndarray,
 ) -> Tuple[List[Chain], List[Node], int]:
     """
     Samples Devernay curves using ray directions. Implements Algorithm 6 in the supplementary material.
@@ -248,35 +252,40 @@ def sampling_edges(
     center = (config.cy, config.cx)
 
     # Build rays from the center using the configured number of rays (config.nr)
-    l_rays = build_rays(height, width, center)
+    rays = build_rays(height, width, center)
 
     # Compute intersections between rays and curves, returning nodes and chains.
     l_nodes_s, l_ch_s = intersections_between_rays_and_devernay_curves(
-        l_rays, l_ch_f, center, height, width
+        rays, l_ch_f, center, height, width
     )
-    generate_virtual_center_chain(l_ch_s, l_nodes_s, height, width)
 
-    # Calculate average ring count based on intersections along the rays.
-    counts = []
-    for ray in l_rays:
-        count = 0
-        for curve in l_ch_f:
-            if ray.geometry.intersects(curve.geometry):
-                inter = ray.geometry.intersection(curve.geometry)
-                if not inter.is_empty:
-                    count += 1
-        counts.append(count)
-    average_ring_count = int(round(np.mean(counts))) if counts else 0
+    # Compute average ring count based on the number of intersection points (nodes) per ray
+    average_ring_count = len(l_nodes_s) / config.nr if l_nodes_s else 0
+    average_ring_count = int(round(average_ring_count))
+
+    # call by reference, modifies the list of chains and nodes
+    generate_virtual_center_chain(l_ch_s, l_nodes_s, height, width)
 
     # Debug purposes, not illustrated in the paper
     if config.debug:
         img_draw = np.zeros((height, width, 3), dtype=np.uint8)
+
+        # save with empty background
         draw_ray_curve_and_intersections(
             l_nodes_s,
-            l_rays,
+            rays,
             l_ch_f,
             img_draw,
             f"{config.output_dir}/dots_curve_and_rays.png",
+        )
+
+        # save with preprocess image
+        draw_ray_curve_and_intersections(
+            l_nodes_s,
+            rays,
+            l_ch_f,
+            img_in,
+            f"{config.output_dir}/dots_curve_and_rays_pre.png",
         )
 
     return l_ch_s, l_nodes_s, average_ring_count
