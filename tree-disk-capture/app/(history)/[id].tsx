@@ -196,7 +196,6 @@ export default function CaptureDetails() {
     }
   };
 
-  // Update the handleRetryAnalysis to use the new individual handlers
   const handleRetryAnalysis = async () => {
     if (!capture) return;
 
