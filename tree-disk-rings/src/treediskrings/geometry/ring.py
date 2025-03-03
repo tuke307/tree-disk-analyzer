@@ -6,6 +6,10 @@ from ..geometry.chain import Chain
 
 
 class Ring:
+    """
+    A Ring is a concentric curve that represents a tree ring.
+    """
+
     def __init__(self, chain: Chain, id: int) -> None:
         """
         Initializes a Ring object.

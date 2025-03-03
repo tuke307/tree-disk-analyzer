@@ -2,6 +2,10 @@ from typing import Any
 
 
 class Node:
+    """
+    A Node is a intersection point with a ray.
+    """
+
     def __init__(
         self, x: float, y: float, chain_id: int, radial_distance: float, angle: float
     ) -> None:

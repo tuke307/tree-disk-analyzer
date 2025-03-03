@@ -6,6 +6,10 @@ from ..visualization.color import Color
 
 
 class Curve:
+    """
+    A curve is a set of connected points.
+    """
+
     def __init__(self, pixels_list: List[Tuple[int, int]], name: int):
         """
         Initializes a Curve object.

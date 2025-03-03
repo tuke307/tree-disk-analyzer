@@ -5,6 +5,10 @@ from shapely.geometry import LineString
 
 
 class Ray:
+    """
+    A Ray is a line that starts at the pith and goes to the image border.
+    """
+
     def __init__(self, direction: float, center: Tuple[float, float], M: int, N: int):
         """
         Initializes a Ray object.

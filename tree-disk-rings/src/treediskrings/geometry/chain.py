@@ -28,6 +28,10 @@ class ChainLocation(Enum):
 
 
 class Chain:
+    """
+    A chain is a set of connected nodes.
+    """
+
     def __init__(
         self,
         chain_id: int,
