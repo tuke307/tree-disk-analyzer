@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { InfoIcon } from '@/lib/icons/InfoIcon';
+import Slider from '@react-native-community/slider';
 
 export default function CaptureDetails() {
   const { id, analyze } = useLocalSearchParams();
@@ -39,8 +40,8 @@ export default function CaptureDetails() {
   const [error, setError] = useState<string | null>(null);
   const [edgeParams, setEdgeParams] = useState({
     sigma: 3.0,
-    th_l: 5.0,
-    th_h: 20.0,
+    //th_l: 5.0,
+    //th_h: 20.0,
   });
 
   // Calculate display dimensions based on screen width
@@ -126,8 +127,8 @@ export default function CaptureDetails() {
         pithData.x,
         pithData.y,
         edgeParams.sigma,
-        edgeParams.th_l,
-        edgeParams.th_h
+        //edgeParams.th_l,
+        //edgeParams.th_h
       );
       newAnalysis.rings = {
         ...capture.analysis?.rings,
@@ -264,77 +265,22 @@ export default function CaptureDetails() {
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent insets={insets}>
-                        <Text>Controls smoothing. Increase for noisy images, decrease for detailed images.</Text>
+                        <Text>Controls smoothing. Increase for detailled, high-contrast images, decrease for smoother, low-contrast images.</Text>
                       </TooltipContent>
                     </Tooltip>
                   </View>
 
-                  <Input
-                    keyboardType="numeric"
-                    value={edgeParams.sigma.toString()}
-                    onChangeText={(text) =>
-                      setEdgeParams(prev => ({
-                        ...prev,
-                        sigma: parseFloat(text) || 0,
-                      }))
-                    }
-                    placeholder="sigma: default 3.0"
-                  />
-                </View>
-
-                <View>
-                  <View className="flex-row items-center">
-                    <Label>Low Threshold</Label>
-                    <Tooltip delayDuration={150}>
-                      <TooltipTrigger asChild>
-                        <Button variant='ghost' size="icon">
-                          <InfoIcon size={16} className='text-foreground' />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent insets={insets}>
-                        <Text>Helps connect weak edges. Typically set relative to th_h.</Text>
-                      </TooltipContent>
-                    </Tooltip>
-                  </View>
-
-                  <Input
-                    keyboardType="numeric"
-                    value={edgeParams.th_l.toString()}
-                    onChangeText={(text) =>
-                      setEdgeParams(prev => ({
-                        ...prev,
-                        th_l: parseFloat(text) || 0,
-                      }))
-                    }
-                    placeholder="low threshold: default 5.0"
-                  />
-                </View>
-
-                <View>
-                  <View className="flex-row items-center">
-                    <Label>High Threshold</Label>
-                    <Tooltip delayDuration={150}>
-                      <TooltipTrigger asChild>
-                        <Button variant='ghost' size="icon">
-                          <InfoIcon size={16} className='text-foreground' />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent insets={insets}>
-                        <Text>Sets the bar for strong edges. Adjust based on image contrast.</Text>
-                      </TooltipContent>
-                    </Tooltip>
-                  </View>
-
-                  <Input
-                    keyboardType="numeric"
-                    value={edgeParams.th_h.toString()}
-                    onChangeText={(text) =>
-                      setEdgeParams(prev => ({
-                        ...prev,
-                        th_h: parseFloat(text) || 0,
-                      }))
-                    }
-                    placeholder="high threshold: default 20.0"
+                  <Slider
+                    minimumValue={0}
+                    maximumValue={6}
+                    step={0.1}
+                    value={edgeParams.sigma}
+                      onValueChange={(value) =>
+                        setEdgeParams(prev => ({
+                          ...prev,
+                          sigma: value,
+                        }))
+                      }
                   />
                 </View>
               </View>

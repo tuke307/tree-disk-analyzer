@@ -34,8 +34,8 @@ async def detect_rings(
     cx: int,
     cy: int,
     sigma: float = Query(3.0, description="Sigma parameter (optional)"),
-    th_low: float = Query(5.0, description="Low threshold (optional)"),
-    th_high: float = Query(20.0, description="High threshold (optional)"),
+    # th_low: float = Query(5.0, description="Low threshold (optional)"),
+    # th_high: float = Query(20.0, description="High threshold (optional)"),
     image: UploadFile = File(...),
 ) -> Response:
     """
@@ -57,8 +57,8 @@ async def detect_rings(
         cx=cx,
         cy=cy,
         sigma=sigma,
-        th_low=th_low,
-        th_high=th_high,
+        # th_low=th_low,
+        # th_high=th_high,
         save_results=SAVE_RESULTS,
         debug=DEBUG,
     )
