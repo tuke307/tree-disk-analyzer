@@ -51,7 +51,7 @@ def tree_ring_detection(img_in: np.ndarray) -> Tuple[
     )
 
     devernay_curves_s, l_nodes_s, average_ring_count = sampling_edges(
-        devernay_curves_f, img_pre
+        devernay_curves_f, img_pre, img_in
     )
     devernay_curves_c, l_nodes_c = connect_chains(devernay_curves_s, img_pre)
     devernay_curves_p = postprocessing(devernay_curves_c, l_nodes_c, img_pre)
@@ -98,7 +98,7 @@ def tree_ring_detection_age_detect(
     )
 
     devernay_curves_s, l_nodes_s, average_ring_count = sampling_edges(
-        devernay_curves_f, img_pre
+        devernay_curves_f, img_pre, img_in
     )
 
     return (
