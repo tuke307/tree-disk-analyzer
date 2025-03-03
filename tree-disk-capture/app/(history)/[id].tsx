@@ -74,6 +74,9 @@ export default function CaptureDetails() {
     setError(null);
     setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
 
+    // Set analyze query parameter when starting analysis
+    router.setParams({ analyze: 'true' });
+
     const newAnalysis: any = {
       ...capture.analysis
     };
@@ -152,6 +155,9 @@ export default function CaptureDetails() {
       console.log('Analysis complete:', newAnalysis.id);
 
       setIsAnalyzing(false);
+
+      // Reset analyze query parameter when analysis is complete
+      router.setParams({ analyze: undefined });
     }
   };
 
@@ -198,10 +204,10 @@ export default function CaptureDetails() {
 
   // Trigger analysis automatically if the optional query param "analyze" is "true"
   useEffect(() => {
-    if (analyze === 'true' && capture && !capture.analysis) {
+    if (analyze === 'true' && capture && !capture.analysis && !isAnalyzing) {
       handleRetryAnalysis();
     }
-  }, [analyze, capture]);
+  }, [analyze, capture, isAnalyzing]);
 
   // Set modal header title to current title
   useEffect(() => {
