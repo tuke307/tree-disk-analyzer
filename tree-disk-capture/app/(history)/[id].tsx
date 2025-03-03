@@ -67,6 +67,136 @@ export default function CaptureDetails() {
     rings: true,
   });
 
+  const handleSegmentation = async () => {
+    if (!capture) return;
+
+    setIsAnalyzing(true);
+    setError(null);
+    setAnalysisProgress(prev => ({ ...prev, segmentation: false }));
+
+    const newAnalysis: any = {
+      ...capture.analysis
+    };
+
+    try {
+      console.log('Starting segmentation for capture:', capture.id);
+
+      // Segmentation
+      const segBase64Image = await segmentImage(capture.imageBase64);
+      newAnalysis.segmentation = {
+        ...capture.analysis?.segmentation,
+        imageBase64: segBase64Image
+      };
+      setAnalysisProgress(prev => ({ ...prev, segmentation: true }));
+
+      const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
+      const savedCapture = await updateCapture(currentCapture);
+      if (savedCapture && savedCapture.analysis) {
+        setCapture(savedCapture);
+        setAnalysisData(savedCapture.analysis || newAnalysis);
+      }
+    } catch (error) {
+      console.error('Segmentation failed:', error);
+      setError('Segmentation failed. Please try again.');
+      setAnalysisProgress(prev => ({ ...prev, segmentation: false }));
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handlePithDetection = async () => {
+    if (!capture || !capture.analysis?.segmentation?.imageBase64) {
+      setError('Segmentation must be completed first.');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setError(null);
+    setAnalysisProgress(prev => ({ ...prev, pithDetection: false }));
+
+    const newAnalysis: any = {
+      ...capture.analysis
+    };
+
+    try {
+      console.log('Starting pith detection for capture:', capture.id);
+
+      // Pith Detection
+      const pithData = await detectPith(capture.analysis.segmentation.imageBase64);
+      newAnalysis.pith = {
+        ...capture.analysis?.pith,
+        x: pithData.x,
+        y: pithData.y
+      };
+      setAnalysisProgress(prev => ({ ...prev, pithDetection: true }));
+
+      const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
+      const savedCapture = await updateCapture(currentCapture);
+      if (savedCapture && savedCapture.analysis) {
+        setCapture(savedCapture);
+        setAnalysisData(savedCapture.analysis || newAnalysis);
+      }
+    } catch (error) {
+      console.error('Pith detection failed:', error);
+      setError('Pith detection failed. Please try again.');
+      setAnalysisProgress(prev => ({ ...prev, pithDetection: false }));
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleRingDetection = async () => {
+    if (!capture || !capture.analysis?.segmentation?.imageBase64) {
+      setError('Segmentation must be completed first.');
+      return;
+    }
+
+    if (!capture.analysis?.pith) {
+      setError('Pith detection must be completed first.');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setError(null);
+    setAnalysisProgress(prev => ({ ...prev, ringDetection: false }));
+
+    const newAnalysis: any = {
+      ...capture.analysis
+    };
+
+    try {
+      console.log('Starting ring detection for capture:', capture.id);
+
+      // Ring Detection
+      const { age, base64 } = await detectRings(
+        capture.analysis.segmentation.imageBase64,
+        capture.analysis.pith.x,
+        capture.analysis.pith.y,
+        edgeParams.sigma
+      );
+      newAnalysis.rings = {
+        ...capture.analysis?.rings,
+        imageBase64: base64
+      };
+      newAnalysis.predictedAge = age;
+      setAnalysisProgress(prev => ({ ...prev, ringDetection: true }));
+
+      const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
+      const savedCapture = await updateCapture(currentCapture);
+      if (savedCapture) {
+        setCapture(savedCapture);
+        setAnalysisData(savedCapture.analysis || newAnalysis);
+      }
+    } catch (error) {
+      console.error('Ring detection failed:', error);
+      setError('Ring detection failed. Please try again.');
+      setAnalysisProgress(prev => ({ ...prev, ringDetection: false }));
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  // Update the handleRetryAnalysis to use the new individual handlers
   const handleRetryAnalysis = async () => {
     if (!capture) return;
 
@@ -77,85 +207,19 @@ export default function CaptureDetails() {
     // Set analyze query parameter when starting analysis
     router.setParams({ analyze: 'true' });
 
-    const newAnalysis: any = {
-      ...capture.analysis
-    };
-
     try {
-      console.log('Starting analysis for capture:', capture.id);
-
-      // Step 1: Segmentation
-      const segBase64Image = await segmentImage(capture.imageBase64);
-      newAnalysis.segmentation = {
-        ...capture.analysis?.segmentation,
-        imageBase64: segBase64Image
-      };
-      setAnalysisProgress(prev => ({ ...prev, segmentation: true }));
-
-      let currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
-      let savedCapture = await updateCapture(currentCapture);
-      if (savedCapture && savedCapture.analysis) {
-        setCapture(savedCapture);
-        setAnalysisData(savedCapture.analysis || newAnalysis);
-        currentCapture = savedCapture;
-
-        // Update newAnalysis with latest IDs
-        newAnalysis.id = savedCapture.analysis?.id;
-        newAnalysis.segmentationId = savedCapture.analysis?.segmentationId;
-      }
-
-      // Step 2: Pith Detection
-      const pithData = await detectPith(segBase64Image);
-      newAnalysis.pith = {
-        ...capture.analysis?.pith,
-        x: pithData.x,
-        y: pithData.y
-      };
-      setAnalysisProgress(prev => ({ ...prev, pithDetection: true }));
-
-      currentCapture = { ...currentCapture, analysis: newAnalysis };
-      savedCapture = await updateCapture(currentCapture);
-      if (savedCapture && savedCapture.analysis) {
-        setCapture(savedCapture);
-        setAnalysisData(savedCapture.analysis || newAnalysis);
-        currentCapture = savedCapture;
-        
-        // Update newAnalysis with latest IDs
-        newAnalysis.pithId = savedCapture.analysis?.pithId;
-      }
-
-      // Step 3: Ring Detection
-      const { age, base64 } = await detectRings(
-        segBase64Image,
-        pithData.x,
-        pithData.y,
-        edgeParams.sigma,
-        //edgeParams.th_l,
-        //edgeParams.th_h
-      );
-      newAnalysis.rings = {
-        ...capture.analysis?.rings,
-        imageBase64: base64
-      };
-      newAnalysis.predictedAge = age;
-      setAnalysisProgress(prev => ({ ...prev, ringDetection: true }));
-
-      currentCapture = { ...currentCapture, analysis: newAnalysis };
-      savedCapture = await updateCapture(currentCapture);
-      if (savedCapture) {
-        setCapture(savedCapture);
-        setAnalysisData(savedCapture.analysis || newAnalysis);
-        currentCapture = savedCapture;
+      await handleSegmentation();
+      if (capture.analysis?.segmentation) {
+        await handlePithDetection();
+        if (capture.analysis?.pith) {
+          await handleRingDetection();
+        }
       }
     } catch (error) {
       console.error('Analysis failed:', error);
       setError('Analysis failed. Please try again.');
-      setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
     } finally {
-      console.log('Analysis complete:', newAnalysis.id);
-
       setIsAnalyzing(false);
-
       // Reset analyze query parameter when analysis is complete
       router.setParams({ analyze: undefined });
     }
@@ -281,12 +345,12 @@ export default function CaptureDetails() {
                     maximumValue={6}
                     step={0.1}
                     value={edgeParams.sigma}
-                      onValueChange={(value) =>
-                        setEdgeParams(prev => ({
-                          ...prev,
-                          sigma: value,
-                        }))
-                      }
+                    onValueChange={(value) =>
+                      setEdgeParams(prev => ({
+                        ...prev,
+                        sigma: value,
+                      }))
+                    }
                   />
                 </View>
               </View>
@@ -307,7 +371,7 @@ export default function CaptureDetails() {
           <CardHeader>
             <CardTitle>Overlay Controls</CardTitle>
           </CardHeader>
-          <CardContent className="flex-col gap-2">
+          <CardContent className="flex-col gap-3">
             <View className="flex-row items-center gap-2">
               <Switch
                 checked={overlayVisibility.segmentation}
@@ -365,57 +429,89 @@ export default function CaptureDetails() {
         </Card>
 
         {/* Analysis Progress */}
-        <View className="flex-1 gap-2 mt-4">
-          {isAnalyzing ? (
-            <View className="items-center py-4 gap-4">
-              <Text className="text-lg font-semibold">Analysis Progress</Text>
-              <View className="flex-row gap-4">
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Analysis</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <View className="flex-col gap-2">
+              <View className="flex-row items-center gap-4">
                 <ProgressStep label="Segmentation" active={analysisProgress.segmentation} />
-                <ProgressStep label="Pith Detection" active={analysisProgress.pithDetection} />
-                <ProgressStep label="Ring Detection" active={analysisProgress.ringDetection} />
-              </View>
-              {error && <Text className="text-destructive">{error}</Text>}
-            </View>
-          ) : (
-            <View className="flex-1">
-              <View className="flex-row justify-start gap-4">
-                <Button variant="outline" onPress={handleRetryAnalysis}>
-                  <Text>Retry Analysis</Text>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={handleSegmentation}
+                  disabled={isAnalyzing}>
+                  <Text>Retry</Text>
                 </Button>
+              </View>
 
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="flex-initial" variant="destructive">
+              <View className="flex-row items-center gap-4">
+                <ProgressStep label="Pith Detection" active={analysisProgress.pithDetection} />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={handlePithDetection}
+                  disabled={isAnalyzing}>
+                  <Text>Retry</Text>
+                </Button>
+              </View>
+
+              <View className="flex-row items-center gap-4">
+                <ProgressStep label="Ring Detection" active={analysisProgress.ringDetection} />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={handleRingDetection}
+                  disabled={isAnalyzing}>
+                  <Text>Retry</Text>
+                </Button>
+              </View>
+            </View>
+            {error && <Text className="text-destructive">{error}</Text>}
+          </CardContent>
+        </Card>
+
+        {/* Action Buttons */}
+        <View className="flex-1 gap-2 mt-4">
+          <View className="flex-1">
+            <View className="flex-row justify-start gap-4">
+              <Button variant="outline" onPress={handleRetryAnalysis} disabled={isAnalyzing}>
+                <Text>Retry Analysis</Text>
+              </Button>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="flex-initial" variant="destructive" disabled={isAnalyzing}>
+                    <Text>Delete</Text>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Delete Capture</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to delete this capture? This action cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button>
+                        <Text>Cancel</Text>
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      variant="destructive"
+                      onPress={async () => {
+                        await deleteCapture(capture.id);
+                        router.replace('/');
+                      }}>
                       <Text>Delete</Text>
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Delete Capture</DialogTitle>
-                      <DialogDescription>
-                        Are you sure you want to delete this capture? This action cannot be undone.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button>
-                          <Text>Cancel</Text>
-                        </Button>
-                      </DialogClose>
-                      <Button
-                        variant="destructive"
-                        onPress={async () => {
-                          await deleteCapture(capture.id);
-                          router.replace('/');
-                        }}>
-                        <Text>Delete</Text>
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </View>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </View>
-          )}
+          </View>
         </View>
       </View>
     </ScrollView>
