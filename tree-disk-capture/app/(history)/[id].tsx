@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { InfoIcon } from '@/lib/icons/InfoIcon';
+import Slider from '@react-native-community/slider';
 
 export default function CaptureDetails() {
   const { id, analyze } = useLocalSearchParams();
@@ -39,8 +40,8 @@ export default function CaptureDetails() {
   const [error, setError] = useState<string | null>(null);
   const [edgeParams, setEdgeParams] = useState({
     sigma: 3.0,
-    th_l: 5.0,
-    th_h: 20.0,
+    //th_l: 5.0,
+    //th_h: 20.0,
   });
 
   // Calculate display dimensions based on screen width
@@ -66,21 +67,21 @@ export default function CaptureDetails() {
     rings: true,
   });
 
-  const handleRetryAnalysis = async () => {
+  const handleSegmentation = async () => {
     if (!capture) return;
 
     setIsAnalyzing(true);
     setError(null);
-    setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
+    setAnalysisProgress(prev => ({ ...prev, segmentation: false }));
 
     const newAnalysis: any = {
       ...capture.analysis
     };
 
     try {
-      console.log('Starting analysis for capture:', capture.id);
+      console.log('Starting segmentation for capture:', capture.id);
 
-      // Step 1: Segmentation
+      // Segmentation
       const segBase64Image = await segmentImage(capture.imageBase64);
       newAnalysis.segmentation = {
         ...capture.analysis?.segmentation,
@@ -88,20 +89,40 @@ export default function CaptureDetails() {
       };
       setAnalysisProgress(prev => ({ ...prev, segmentation: true }));
 
-      let currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
-      let savedCapture = await updateCapture(currentCapture);
+      const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
+      const savedCapture = await updateCapture(currentCapture);
       if (savedCapture && savedCapture.analysis) {
         setCapture(savedCapture);
         setAnalysisData(savedCapture.analysis || newAnalysis);
-        currentCapture = savedCapture;
-
-        // Update newAnalysis with latest IDs
-        newAnalysis.id = savedCapture.analysis?.id;
-        newAnalysis.segmentationId = savedCapture.analysis?.segmentationId;
       }
+    } catch (error) {
+      console.error('Segmentation failed:', error);
+      setError('Segmentation failed. Please try again.');
+      setAnalysisProgress(prev => ({ ...prev, segmentation: false }));
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
-      // Step 2: Pith Detection
-      const pithData = await detectPith(segBase64Image);
+  const handlePithDetection = async () => {
+    if (!capture || !capture.analysis?.segmentation?.imageBase64) {
+      setError('Segmentation must be completed first.');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setError(null);
+    setAnalysisProgress(prev => ({ ...prev, pithDetection: false }));
+
+    const newAnalysis: any = {
+      ...capture.analysis
+    };
+
+    try {
+      console.log('Starting pith detection for capture:', capture.id);
+
+      // Pith Detection
+      const pithData = await detectPith(capture.analysis.segmentation.imageBase64);
       newAnalysis.pith = {
         ...capture.analysis?.pith,
         x: pithData.x,
@@ -109,25 +130,49 @@ export default function CaptureDetails() {
       };
       setAnalysisProgress(prev => ({ ...prev, pithDetection: true }));
 
-      currentCapture = { ...currentCapture, analysis: newAnalysis };
-      savedCapture = await updateCapture(currentCapture);
+      const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
+      const savedCapture = await updateCapture(currentCapture);
       if (savedCapture && savedCapture.analysis) {
         setCapture(savedCapture);
         setAnalysisData(savedCapture.analysis || newAnalysis);
-        currentCapture = savedCapture;
-        
-        // Update newAnalysis with latest IDs
-        newAnalysis.pithId = savedCapture.analysis?.pithId;
       }
+    } catch (error) {
+      console.error('Pith detection failed:', error);
+      setError('Pith detection failed. Please try again.');
+      setAnalysisProgress(prev => ({ ...prev, pithDetection: false }));
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
-      // Step 3: Ring Detection
+  const handleRingDetection = async () => {
+    if (!capture || !capture.analysis?.segmentation?.imageBase64) {
+      setError('Segmentation must be completed first.');
+      return;
+    }
+
+    if (!capture.analysis?.pith) {
+      setError('Pith detection must be completed first.');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setError(null);
+    setAnalysisProgress(prev => ({ ...prev, ringDetection: false }));
+
+    const newAnalysis: any = {
+      ...capture.analysis
+    };
+
+    try {
+      console.log('Starting ring detection for capture:', capture.id);
+
+      // Ring Detection
       const { age, base64 } = await detectRings(
-        segBase64Image,
-        pithData.x,
-        pithData.y,
-        edgeParams.sigma,
-        edgeParams.th_l,
-        edgeParams.th_h
+        capture.analysis.segmentation.imageBase64,
+        capture.analysis.pith.x,
+        capture.analysis.pith.y,
+        edgeParams.sigma
       );
       newAnalysis.rings = {
         ...capture.analysis?.rings,
@@ -136,21 +181,46 @@ export default function CaptureDetails() {
       newAnalysis.predictedAge = age;
       setAnalysisProgress(prev => ({ ...prev, ringDetection: true }));
 
-      currentCapture = { ...currentCapture, analysis: newAnalysis };
-      savedCapture = await updateCapture(currentCapture);
+      const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
+      const savedCapture = await updateCapture(currentCapture);
       if (savedCapture) {
         setCapture(savedCapture);
         setAnalysisData(savedCapture.analysis || newAnalysis);
-        currentCapture = savedCapture;
+      }
+    } catch (error) {
+      console.error('Ring detection failed:', error);
+      setError('Ring detection failed. Please try again.');
+      setAnalysisProgress(prev => ({ ...prev, ringDetection: false }));
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleRetryAnalysis = async () => {
+    if (!capture) return;
+
+    setIsAnalyzing(true);
+    setError(null);
+    setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
+
+    // Set analyze query parameter when starting analysis
+    router.setParams({ analyze: 'true' });
+
+    try {
+      await handleSegmentation();
+      if (capture.analysis?.segmentation) {
+        await handlePithDetection();
+        if (capture.analysis?.pith) {
+          await handleRingDetection();
+        }
       }
     } catch (error) {
       console.error('Analysis failed:', error);
       setError('Analysis failed. Please try again.');
-      setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
     } finally {
-      console.log('Analysis complete:', newAnalysis.id);
-
       setIsAnalyzing(false);
+      // Reset analyze query parameter when analysis is complete
+      router.setParams({ analyze: undefined });
     }
   };
 
@@ -197,10 +267,10 @@ export default function CaptureDetails() {
 
   // Trigger analysis automatically if the optional query param "analyze" is "true"
   useEffect(() => {
-    if (analyze === 'true' && capture && !capture.analysis) {
+    if (analyze === 'true' && capture && !capture.analysis && !isAnalyzing) {
       handleRetryAnalysis();
     }
-  }, [analyze, capture]);
+  }, [analyze, capture, isAnalyzing]);
 
   // Set modal header title to current title
   useEffect(() => {
@@ -237,125 +307,12 @@ export default function CaptureDetails() {
           </View>
         </View>
 
-        {/* Edge Detection Settings Popover */}
-        <View className="items-start">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Text>Edge Detection Settings</Text>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Edge Detection Settings</DialogTitle>
-                <DialogDescription>
-                  Adjust parameters for edge detection.
-                </DialogDescription>
-              </DialogHeader>
-
-              <View className="flex-col gap-4">
-                <View>
-                  <View className="flex-row items-center">
-                    <Label>Sigma</Label>
-                    <Tooltip delayDuration={150}>
-                      <TooltipTrigger asChild>
-                        <Button variant='ghost' size="icon">
-                          <InfoIcon size={16} className='text-foreground' />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent insets={insets}>
-                        <Text>Controls smoothing. Increase for noisy images, decrease for detailed images.</Text>
-                      </TooltipContent>
-                    </Tooltip>
-                  </View>
-
-                  <Input
-                    keyboardType="numeric"
-                    value={edgeParams.sigma.toString()}
-                    onChangeText={(text) =>
-                      setEdgeParams(prev => ({
-                        ...prev,
-                        sigma: parseFloat(text) || 0,
-                      }))
-                    }
-                    placeholder="sigma: default 3.0"
-                  />
-                </View>
-
-                <View>
-                  <View className="flex-row items-center">
-                    <Label>Low Threshold</Label>
-                    <Tooltip delayDuration={150}>
-                      <TooltipTrigger asChild>
-                        <Button variant='ghost' size="icon">
-                          <InfoIcon size={16} className='text-foreground' />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent insets={insets}>
-                        <Text>Helps connect weak edges. Typically set relative to th_h.</Text>
-                      </TooltipContent>
-                    </Tooltip>
-                  </View>
-
-                  <Input
-                    keyboardType="numeric"
-                    value={edgeParams.th_l.toString()}
-                    onChangeText={(text) =>
-                      setEdgeParams(prev => ({
-                        ...prev,
-                        th_l: parseFloat(text) || 0,
-                      }))
-                    }
-                    placeholder="low threshold: default 5.0"
-                  />
-                </View>
-
-                <View>
-                  <View className="flex-row items-center">
-                    <Label>High Threshold</Label>
-                    <Tooltip delayDuration={150}>
-                      <TooltipTrigger asChild>
-                        <Button variant='ghost' size="icon">
-                          <InfoIcon size={16} className='text-foreground' />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent insets={insets}>
-                        <Text>Sets the bar for strong edges. Adjust based on image contrast.</Text>
-                      </TooltipContent>
-                    </Tooltip>
-                  </View>
-
-                  <Input
-                    keyboardType="numeric"
-                    value={edgeParams.th_h.toString()}
-                    onChangeText={(text) =>
-                      setEdgeParams(prev => ({
-                        ...prev,
-                        th_h: parseFloat(text) || 0,
-                      }))
-                    }
-                    placeholder="high threshold: default 20.0"
-                  />
-                </View>
-              </View>
-
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button>
-                    <Text>OK</Text>
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </View>
-
         {/* Overlay Controls */}
         <Card className="w-full">
           <CardHeader>
             <CardTitle>Overlay Controls</CardTitle>
           </CardHeader>
-          <CardContent className="flex-col gap-2">
+          <CardContent className="flex-col gap-3">
             <View className="flex-row items-center gap-2">
               <Switch
                 checked={overlayVisibility.segmentation}
@@ -413,57 +370,150 @@ export default function CaptureDetails() {
         </Card>
 
         {/* Analysis Progress */}
-        <View className="flex-1 gap-2 mt-4">
-          {isAnalyzing ? (
-            <View className="items-center py-4 gap-4">
-              <Text className="text-lg font-semibold">Analysis Progress</Text>
-              <View className="flex-row gap-4">
-                <ProgressStep label="Segmentation" active={analysisProgress.segmentation} />
-                <ProgressStep label="Pith Detection" active={analysisProgress.pithDetection} />
-                <ProgressStep label="Ring Detection" active={analysisProgress.ringDetection} />
-              </View>
-              {error && <Text className="text-destructive">{error}</Text>}
-            </View>
-          ) : (
-            <View className="flex-1">
-              <View className="flex-row justify-start gap-4">
-                <Button variant="outline" onPress={handleRetryAnalysis}>
-                  <Text>Retry Analysis</Text>
-                </Button>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Analysis</CardTitle>
+          </CardHeader>
+          <CardContent className='flex-col gap-4'>
+            {/* Edge Detection Settings Popover */}
+            <View className="items-start">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Text>Edge Detection Settings</Text>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Edge Detection Settings</DialogTitle>
+                    <DialogDescription>
+                      Adjust parameters for edge detection.
+                    </DialogDescription>
+                  </DialogHeader>
 
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="flex-initial" variant="destructive">
+                  <View className="flex-col gap-4">
+                    <View>
+                      <View className="flex-row items-center">
+                        <Label>Sigma</Label>
+                        <Tooltip delayDuration={150}>
+                          <TooltipTrigger asChild>
+                            <Button variant='ghost' size="icon">
+                              <InfoIcon size={16} className='text-foreground' />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent insets={insets}>
+                            <Text>Controls smoothing. Increase for detailled, high-contrast images, decrease for smoother, low-contrast images.</Text>
+                          </TooltipContent>
+                        </Tooltip>
+                      </View>
+
+                      <Slider
+                        minimumValue={0}
+                        maximumValue={6}
+                        step={0.1}
+                        value={edgeParams.sigma}
+                        onValueChange={(value) =>
+                          setEdgeParams(prev => ({
+                            ...prev,
+                            sigma: value,
+                          }))
+                        }
+                      />
+                    </View>
+                  </View>
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button>
+                        <Text>OK</Text>
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </View>
+
+            {/* Progress Steps */}
+            <View className="flex-col gap-2">
+              <View className="flex-row items-center gap-4">
+                <ProgressStep label="Segmentation" active={analysisProgress.segmentation} />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={handleSegmentation}
+                  disabled={isAnalyzing}>
+                  <Text>Retry</Text>
+                </Button>
+              </View>
+
+              <View className="flex-row items-center gap-4">
+                <ProgressStep label="Pith Detection" active={analysisProgress.pithDetection} />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={handlePithDetection}
+                  disabled={isAnalyzing}>
+                  <Text>Retry</Text>
+                </Button>
+              </View>
+
+              <View className="flex-row items-center gap-4">
+                <ProgressStep label="Ring Detection" active={analysisProgress.ringDetection} />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={handleRingDetection}
+                  disabled={isAnalyzing}>
+                  <Text>Retry</Text>
+                </Button>
+              </View>
+            </View>
+
+            {/* Error Message */}
+            {error && <Text className="text-destructive">{error}</Text>}
+          </CardContent>
+        </Card>
+
+        {/* Action Buttons */}
+        <View className="flex-1 gap-2 mt-4">
+          <View className="flex-1">
+            <View className="flex-row justify-start gap-4">
+              <Button variant="outline" onPress={handleRetryAnalysis} disabled={isAnalyzing}>
+                <Text>Retry Analysis</Text>
+              </Button>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="flex-initial" variant="destructive" disabled={isAnalyzing}>
+                    <Text>Delete</Text>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Delete Capture</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to delete this capture? This action cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button>
+                        <Text>Cancel</Text>
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      variant="destructive"
+                      onPress={async () => {
+                        await deleteCapture(capture.id);
+                        router.replace('/');
+                      }}>
                       <Text>Delete</Text>
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Delete Capture</DialogTitle>
-                      <DialogDescription>
-                        Are you sure you want to delete this capture? This action cannot be undone.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button>
-                          <Text>Cancel</Text>
-                        </Button>
-                      </DialogClose>
-                      <Button
-                        variant="destructive"
-                        onPress={async () => {
-                          await deleteCapture(capture.id);
-                          router.replace('/');
-                        }}>
-                        <Text>Delete</Text>
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </View>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </View>
-          )}
+          </View>
         </View>
       </View>
     </ScrollView>

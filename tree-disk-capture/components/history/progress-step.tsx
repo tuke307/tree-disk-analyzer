@@ -11,7 +11,7 @@ interface ProgressStepProps {
 
 export const ProgressStep = ({ label, active }: ProgressStepProps) => {
   return (
-    <View className="items-center gap-2">
+    <View className="flex flex-row items-center gap-2">
       <Button
         variant="ghost"
         size="icon">

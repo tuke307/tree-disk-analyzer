@@ -90,14 +90,12 @@ export async function detectRings(
   cx: number,
   cy: number,
   sigma = 3.0,
-  th_low = 5.0,
-  th_high = 20.0
 ): Promise<{ age: number; base64: string }> {
   try {
     const formData = new FormData();
     formData.append('image', await base64ToBlob(base64));
 
-    const response = await fetchWithTimeout(`${EXPO_PUBLIC_API_URL}/rings/detect?cx=${cx}&cy=${cy}&sigma=${sigma}&th_low=${th_low}&th_high=${th_high}`, {
+    const response = await fetchWithTimeout(`${EXPO_PUBLIC_API_URL}/rings/detect?cx=${cx}&cy=${cy}&sigma=${sigma}`, {
       method: 'POST',
       body: formData,
     });
