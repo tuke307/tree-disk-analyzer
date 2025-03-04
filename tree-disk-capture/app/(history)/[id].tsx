@@ -55,10 +55,10 @@ export default function CaptureDetails() {
   // Initialize with existing analysis data if available
   const [analysisData, setAnalysisData] = useState<AnalysisWithRelations | null>(null);
 
-  const [analysisProgress, setAnalysisProgress] = useState({
-    segmentation: Boolean(capture?.analysis?.segmentation),
-    pithDetection: Boolean(capture?.analysis?.pith),
-    ringDetection: Boolean(capture?.analysis?.rings),
+  const [loadingProgress, setLoadingProgress] = useState({
+    segmentation: false,
+    pithDetection: false,
+    ringDetection: false,
   });
 
   const [overlayVisibility, setOverlayVisibility] = useState({
@@ -72,7 +72,7 @@ export default function CaptureDetails() {
 
     setIsAnalyzing(true);
     setError(null);
-    setAnalysisProgress(prev => ({ ...prev, segmentation: false }));
+    setLoadingProgress(prev => ({ ...prev, segmentation: true }));
 
     const newAnalysis: any = {
       ...capture.analysis
@@ -87,7 +87,6 @@ export default function CaptureDetails() {
         ...capture.analysis?.segmentation,
         imageBase64: segBase64Image
       };
-      setAnalysisProgress(prev => ({ ...prev, segmentation: true }));
 
       const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
       const savedCapture = await updateCapture(currentCapture);
@@ -98,8 +97,8 @@ export default function CaptureDetails() {
     } catch (error) {
       console.error('Segmentation failed:', error);
       setError('Segmentation failed. Please try again.');
-      setAnalysisProgress(prev => ({ ...prev, segmentation: false }));
     } finally {
+      setLoadingProgress(prev => ({ ...prev, segmentation: false }));
       setIsAnalyzing(false);
     }
   };
@@ -112,7 +111,7 @@ export default function CaptureDetails() {
 
     setIsAnalyzing(true);
     setError(null);
-    setAnalysisProgress(prev => ({ ...prev, pithDetection: false }));
+    setLoadingProgress(prev => ({ ...prev, pithDetection: true }));
 
     const newAnalysis: any = {
       ...capture.analysis
@@ -128,7 +127,6 @@ export default function CaptureDetails() {
         x: pithData.x,
         y: pithData.y
       };
-      setAnalysisProgress(prev => ({ ...prev, pithDetection: true }));
 
       const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
       const savedCapture = await updateCapture(currentCapture);
@@ -139,8 +137,8 @@ export default function CaptureDetails() {
     } catch (error) {
       console.error('Pith detection failed:', error);
       setError('Pith detection failed. Please try again.');
-      setAnalysisProgress(prev => ({ ...prev, pithDetection: false }));
     } finally {
+      setLoadingProgress(prev => ({ ...prev, pithDetection: false }));
       setIsAnalyzing(false);
     }
   };
@@ -158,7 +156,7 @@ export default function CaptureDetails() {
 
     setIsAnalyzing(true);
     setError(null);
-    setAnalysisProgress(prev => ({ ...prev, ringDetection: false }));
+    setLoadingProgress(prev => ({ ...prev, ringDetection: true }));
 
     const newAnalysis: any = {
       ...capture.analysis
@@ -179,7 +177,6 @@ export default function CaptureDetails() {
         imageBase64: base64
       };
       newAnalysis.predictedAge = age;
-      setAnalysisProgress(prev => ({ ...prev, ringDetection: true }));
 
       const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
       const savedCapture = await updateCapture(currentCapture);
@@ -190,8 +187,8 @@ export default function CaptureDetails() {
     } catch (error) {
       console.error('Ring detection failed:', error);
       setError('Ring detection failed. Please try again.');
-      setAnalysisProgress(prev => ({ ...prev, ringDetection: false }));
     } finally {
+      setLoadingProgress(prev => ({ ...prev, ringDetection: false }));
       setIsAnalyzing(false);
     }
   };
@@ -201,7 +198,7 @@ export default function CaptureDetails() {
 
     setIsAnalyzing(true);
     setError(null);
-    setAnalysisProgress({ segmentation: false, pithDetection: false, ringDetection: false });
+    setLoadingProgress({ segmentation: true, pithDetection: true, ringDetection: true });
 
     // Set analyze query parameter when starting analysis
     router.setParams({ analyze: 'true' });
@@ -219,6 +216,14 @@ export default function CaptureDetails() {
       setError('Analysis failed. Please try again.');
     } finally {
       setIsAnalyzing(false);
+
+      // Reset loading progress
+      setLoadingProgress({
+        segmentation: false,
+        pithDetection: false,
+        ringDetection: false,
+      });
+
       // Reset analyze query parameter when analysis is complete
       router.setParams({ analyze: undefined });
     }
@@ -246,7 +251,7 @@ export default function CaptureDetails() {
           const analysisData: AnalysisWithRelations = { ...data.analysis };
 
           setAnalysisData(analysisData);
-          setAnalysisProgress({
+          setLoadingProgress({
             segmentation: !!data.analysis.segmentation,
             pithDetection: !!data.analysis.pith,
             ringDetection: !!data.analysis.rings,
