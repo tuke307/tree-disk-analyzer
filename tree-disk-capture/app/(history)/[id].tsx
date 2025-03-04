@@ -436,7 +436,11 @@ export default function CaptureDetails() {
             {/* Progress Steps */}
             <View className="flex-col gap-2">
               <View className="flex-row items-center gap-4">
-                <ProgressStep label="Segmentation" active={analysisProgress.segmentation} />
+                <ProgressStep
+                  label="Segmentation"
+                  loading={loadingProgress.segmentation}
+                  success={!!capture?.analysis?.segmentation}
+                />
                 <Button
                   variant="outline"
                   size="sm"
@@ -447,7 +451,11 @@ export default function CaptureDetails() {
               </View>
 
               <View className="flex-row items-center gap-4">
-                <ProgressStep label="Pith Detection" active={analysisProgress.pithDetection} />
+                <ProgressStep
+                  label="Pith Detection"
+                  loading={loadingProgress.pithDetection}
+                  success={!!capture.analysis?.pith}
+                />
                 <Button
                   variant="outline"
                   size="sm"
@@ -458,7 +466,11 @@ export default function CaptureDetails() {
               </View>
 
               <View className="flex-row items-center gap-4">
-                <ProgressStep label="Ring Detection" active={analysisProgress.ringDetection} />
+                <ProgressStep
+                  label="Ring Detection"
+                  loading={loadingProgress.ringDetection}
+                  success={!!capture.analysis?.rings}
+                />
                 <Button
                   variant="outline"
                   size="sm"
