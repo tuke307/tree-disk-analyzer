@@ -251,11 +251,6 @@ export default function CaptureDetails() {
           const analysisData: AnalysisWithRelations = { ...data.analysis };
 
           setAnalysisData(analysisData);
-          setLoadingProgress({
-            segmentation: !!data.analysis.segmentation,
-            pithDetection: !!data.analysis.pith,
-            ringDetection: !!data.analysis.rings,
-          });
         } else {
           setAnalysisData(null);
         }
