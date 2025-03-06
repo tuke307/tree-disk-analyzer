@@ -24,7 +24,7 @@ export const ProgressStep = ({ label, loading, success }: ProgressStepProps) => 
         {loading ? (
           <ActivityIndicator />
         ) : (
-          success ? <CheckIcon /> : <XIcon />
+          success ? <CheckIcon className='text-foreground' /> : <XIcon className='text-foreground' />
         )}
       </Button>
       <Text>{label}</Text>
