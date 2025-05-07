@@ -38,20 +38,18 @@ const isWeb = Platform.OS === 'web';
 let expoDb: SQLiteDatabase | null = null;
 let db: ReturnType<typeof drizzle> | null = null;
 
-if (!isWeb) {
-  expoDb = openDatabaseSync(EXPO_PUBLIC_DB_FILE_NAME);
-  if (!expoDb) {
-    throw new Error('Failed to open database');
-  }
-  db = drizzle(expoDb, { schema, logger: true });
+expoDb = openDatabaseSync(EXPO_PUBLIC_DB_FILE_NAME);
+if (!expoDb) {
+  throw new Error('Failed to open database');
 }
+db = drizzle(expoDb, { schema, logger: true });
 
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
   const [skiaLoaded, setSkiaLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(true);
-  const { success, error } = !isWeb && db ? useMigrations(db, migrations) : { success: true, error: null };
+  const { success, error } = db ? useMigrations(db, migrations) : { success: false, error: null };
 
   useDrizzleStudio(expoDb);
   
@@ -131,30 +129,20 @@ export default function RootLayout() {
 
   return (
     <Suspense fallback={<ActivityIndicator size="large" />}>
-      {isWeb ? (
-        // On web, skip the SQLiteProvider entirely.
+      <SQLiteProvider
+        databaseName={EXPO_PUBLIC_DB_FILE_NAME}
+        options={{ enableChangeListener: true }}
+        useSuspense>
         <SafeAreaProvider>
-          <ThemeProvider value={isDarkColorScheme ? DarkTheme : DefaultTheme}>
-            <Stack screenOptions={{ headerShown: false }} />
+          <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }} />
             <PortalHost />
           </ThemeProvider>
         </SafeAreaProvider>
-      ) : (
-        <SQLiteProvider
-          databaseName={EXPO_PUBLIC_DB_FILE_NAME}
-          options={{ enableChangeListener: true }}
-          useSuspense>
-          <SafeAreaProvider>
-            <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                }} />
-              <PortalHost />
-            </ThemeProvider>
-          </SafeAreaProvider>
-        </SQLiteProvider>
-      )}
+      </SQLiteProvider>
     </Suspense>
   );
 }
