@@ -10,14 +10,12 @@ from ..config import config
 logger = logging.getLogger(__name__)
 
 
-def run_yolo_detection(img_in: np.ndarray) -> Optional[List[np.ndarray]]:
+def run_yolo_segmentation(img_in: np.ndarray) -> Optional[List[np.ndarray]]:
     """
-    Uses a YOLO detection model to perform object detection on the input image.
+    Uses a YOLO segmentation model to perform object segmentation on the input image.
 
     Args:
         img_in (np.ndarray): Input image.
-        output_dir (str): Directory to save outputs (if enabled).
-        model_path (str): Path to the trained model weights.
 
     Returns:
         Optional[List[np.ndarray]]: The detected object masks as a list of polygons.
@@ -28,7 +26,7 @@ def run_yolo_detection(img_in: np.ndarray) -> Optional[List[np.ndarray]]:
     # yolo needs the image as a PIL image
     img_pil = Image.fromarray(img_in)
 
-    model = YOLO(config.model_path, task="detect", verbose=config.debug)
+    model = YOLO(config.model_path, task="segment", verbose=config.debug)
 
     results = model(
         img_pil,
@@ -37,10 +35,10 @@ def run_yolo_detection(img_in: np.ndarray) -> Optional[List[np.ndarray]]:
         save_txt=config.save_results,
     )
 
-    logger.info(f"YOLO detection complete.")
+    logger.info(f"YOLO segmentation complete.")
 
     if not results or len(results) == 0:
-        logger.error("No results found in YOLO detection.")
+        logger.error("No results found in YOLO segmentation.")
         return None
 
     # were just using the first result
