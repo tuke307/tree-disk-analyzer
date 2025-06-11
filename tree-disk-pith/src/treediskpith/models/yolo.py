@@ -47,7 +47,7 @@ def run_yolo_detection(img_in: np.ndarray) -> Tuple[int, int]:
     # just use the first result
     result = results[0]
 
-    logger.info(f"result {result}")
+    logger.debug(f"result {result}")
 
     # xywh = result.boxes.xywh  # center-x, center-y, width, height
     # xywhn = result.boxes.xywhn  # normalized
