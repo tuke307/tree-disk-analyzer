@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image
 
 from .config import config
-from .models.yolo import run_yolo_detection
+from .models.yolo import run_yolo_segmentation
 from .utils.file_utils import load_image, save_image
 from .segmentation.segmentation import (
     apply_mask,
@@ -34,7 +34,7 @@ def run() -> Tuple[np.ndarray, Optional[List[np.ndarray]]]:
         img_in = load_image(str(config.input_image))
 
         logger.info("Running YOLO object segmentation...")
-        masks = run_yolo_detection(img_in)
+        masks = run_yolo_segmentation(img_in)
 
         if not masks:
             return np.array([]), None
