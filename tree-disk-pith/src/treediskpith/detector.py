@@ -8,7 +8,7 @@ import pandas as pd
 
 from .visualization.color import Color
 from .processing.image_processing import resize_image_using_pil_lib
-from .detection.pith_detection import apd_dl
+from .models.yolo import run_yolo_detection
 from .utils.file_utils import write_json, save_image
 from .config import config
 
@@ -42,7 +42,7 @@ def tree_disk_pith_detector(
 
     try:
         # run detection method
-        pith = apd_dl(img_processed, str(config.output_dir), str(config.model_path))
+        pith = run_yolo_detection(img_processed)
     except ValueError as e:
         logger.warning(f"Pith detection failed: {str(e)}")
         return img_processed, None

@@ -10,9 +10,7 @@ from ..config import config
 logger = logging.getLogger(__name__)
 
 
-def apd_dl(
-    img_in: np.ndarray, output_dir: str, model_path: Union[str, str]
-) -> Tuple[int, int]:
+def run_yolo_detection(img_in: np.ndarray) -> Tuple[int, int]:
     """
     Adaptive Pith Detection using Deep Learning model.
 
@@ -24,20 +22,20 @@ def apd_dl(
     Returns:
         np.ndarray: Detected center point coordinates.
     """
-    if model_path is None:
+    if config.model_path is None:
         raise ValueError("model_path is None")
 
     # yolo needs the image as a PIL image
     img_pil = Image.fromarray(img_in)
 
     model = YOLO(
-        model_path,
+        config.model_path,
         task="detect",
         verbose=config.debug,
     )
     results = model(
         img_pil,
-        project=output_dir,
+        project=config.output_dir,
         save=config.save_results,
     )
 
