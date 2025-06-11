@@ -166,7 +166,7 @@ cython_debug/
 /output/
 /models/
 /input/input_*
-/data/
+/ground-truth/images/
 /evaluation/1_5_15/
 /evaluation/2_5_15/
 /evaluation/3_5_15/
