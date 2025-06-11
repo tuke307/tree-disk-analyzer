@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "tree-disk-evaluations"
+version = "0.1.0"
+description = ""
+authors = ["Tony <tonymeissner70@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+opencv-python = "^4.11.0.86"
+pillow = "^11.1.0"
+tree-disk-segmentation = {path = "../tree-disk-segmentation", develop = true}
+tree-disk-pith = {path = "../tree-disk-pith", develop = true}
+tree-disk-rings = {path = "../tree-disk-rings", develop = true}
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
