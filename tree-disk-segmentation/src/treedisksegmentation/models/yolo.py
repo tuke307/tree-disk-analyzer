@@ -35,7 +35,7 @@ def run_yolo_segmentation(img_in: np.ndarray) -> Optional[List[np.ndarray]]:
         save_txt=config.save_results,
     )
 
-    logger.info(f"YOLO segmentation complete.")
+    logger.debug(f"YOLO segmentation complete.")
 
     if not results or len(results) == 0:
         logger.error("No results found in YOLO segmentation.")
