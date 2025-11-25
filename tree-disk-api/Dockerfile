@@ -1,53 +1,36 @@
-# Stage 1: Build stage
-FROM python:3.12-slim as builder
+# syntax=docker/dockerfile:1.7
 
-ENV POETRY_VERSION=2.0.0
-ENV POETRY_VENV=/opt/poetry-venv
-ENV POETRY_CACHE_DIR=/opt/.cache
-ENV POETRY_VIRTUALENVS_IN_PROJECT=1
+# Stage 1: build application with uv
+FROM python:3.12-slim AS builder
 
-# Install build dependencies if needed (uncomment below)
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     gcc \
-#     python3-dev \
-#     && rm -rf /var/lib/apt/lists/*
+# Copy uv binaries from the official image (pin to a specific release)
+COPY --from=ghcr.io/astral-sh/uv:0.9.11 /uv /uvx /bin/
 
-# Install Poetry in isolated virtual environment
-RUN python -m venv $POETRY_VENV \
-    && $POETRY_VENV/bin/pip install --no-cache-dir poetry==$POETRY_VERSION
-
-# Add Poetry to PATH
-ENV PATH="$POETRY_VENV/bin:$PATH"
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
 
 WORKDIR /app
 
-# Copy dependency specifications
-COPY pyproject.toml poetry.lock ./
+# Install only dependency tree first for better layer caching
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-install-project --no-editable
 
-# Install project dependencies (production only)
-RUN poetry install --only main
+# Copy the remainder of the source and install the project itself
+COPY . .
+RUN uv sync --locked --no-editable
 
-# Stage 2: Runtime stage
+# Stage 2: runtime image with pre-synced virtual environment
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# Copy virtual environment from builder
-COPY --from=builder /app/.venv .venv
+# Copy virtual environment and application payload from builder
+COPY --from=builder /app /app
 
-# Copy application code
-COPY . .
-
-# Add the source directory to PYTHONPATH so imports resolve correctly
-#ENV PYTHONPATH="/app/src"
-
-# Copy the entrypoint script into the image and set execute permission
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Activate virtual environment
+# Ensure entrypoint is executable and the venv is on PATH
+RUN chmod +x /app/entrypoint.sh
 ENV PATH="/app/.venv/bin:$PATH"
 
 EXPOSE 3100
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]

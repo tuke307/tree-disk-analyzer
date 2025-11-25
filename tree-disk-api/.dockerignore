@@ -25,8 +25,6 @@ venv
 .vscode
 .idea
 
-Dockerfile
-README.md
 docker.compose.yml
 .env*
 
