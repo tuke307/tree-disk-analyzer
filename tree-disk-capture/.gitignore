@@ -23,3 +23,6 @@ expo-env.d.ts
 
 # env file
 .env
+
+# skia sharp
+public/
