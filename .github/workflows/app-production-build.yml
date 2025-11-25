@@ -1,0 +1,46 @@
+name: APP - Production Build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tree-disk-app/**'
+  workflow_dispatch:
+
+env:
+  GITHUB_REGISTRY: ghcr.io
+  IMAGE_NAME: tuke307/tree-disk-app
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # permissions needed to push to ghcr.io
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to ${{ env.GITHUB_REGISTRY }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GITHUB_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./tree-disk-app
+          file: ./tree-disk-app/Dockerfile
+          platforms: linux/amd64
+          push: true
+          cache-from: type=gha,scope=${{ github.workflow }}
+          cache-to: type=gha,mode=max,scope=${{ github.workflow }}
+          tags: |
+            ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
