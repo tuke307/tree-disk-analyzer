@@ -24,8 +24,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { InfoIcon } from '@/lib/icons/InfoIcon';
+import { Icon } from '@/components/ui/icon';
 import Slider from '@react-native-community/slider';
+import { InfoIcon } from 'lucide-react-native';
 
 export default function CaptureDetails() {
   const { id, analyze } = useLocalSearchParams();
@@ -398,7 +399,7 @@ export default function CaptureDetails() {
                         <Tooltip delayDuration={150}>
                           <TooltipTrigger asChild>
                             <Button variant='ghost' size="icon">
-                              <InfoIcon size={16} className='text-foreground' />
+                              <Icon as={InfoIcon} size={16} className='text-foreground' />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent insets={insets}>

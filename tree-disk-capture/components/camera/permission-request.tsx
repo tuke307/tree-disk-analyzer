@@ -1,9 +1,9 @@
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { XIcon } from '@/lib/icons/XIcon';
+import { Icon } from '@/components/ui/icon';
+import { XIcon } from 'lucide-react-native';
 
 interface PermissionRequestProps {
   onRequestPermission: () => void;
@@ -20,7 +20,7 @@ export function PermissionRequest({ onRequestPermission, onClose }: PermissionRe
           variant="ghost"
           size="icon"
         >
-          <XIcon className='text-foreground' />
+          <Icon as={XIcon} className='text-foreground' />
         </Button>
       </View>
 

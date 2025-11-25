@@ -1,29 +1,32 @@
 import "@/global.css";
-import { SplashScreen, Stack } from "expo-router";
-import { Suspense, useEffect, useState } from "react";
-import { ActivityIndicator, Platform } from "react-native";
+import { Stack } from "expo-router";
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from "react";
+import { Platform } from "react-native";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NAV_THEME } from "@/lib/constants/theme";
 import { Theme, ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { useColorScheme } from "@/lib/hooks/use-color-scheme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoadSkiaWeb } from "@shopify/react-native-skia/lib/module/web";
 import { PortalHost } from '@rn-primitives/portal';
-import { SQLiteDatabase, SQLiteProvider, openDatabaseSync } from 'expo-sqlite';
-import { drizzle } from 'drizzle-orm/expo-sqlite';
-import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
-import migrations from '@/drizzle/migrations';
-import { useDrizzleStudio } from 'expo-drizzle-studio-plugin';
+import { SQLiteProvider } from 'expo-sqlite';
 import { EXPO_PUBLIC_DB_FILE_NAME } from "@/lib/constants/database";
-import * as schema from '@/lib/database/models';
+import { ThemeContextProvider, useThemeContext } from "@/lib/hooks/use-theme-context";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
-  colors: NAV_THEME.light,
+  dark: false,
+  colors: {
+    ...DefaultTheme.colors,
+    ...NAV_THEME.light,
+  },
 };
 const DARK_THEME: Theme = {
   ...DarkTheme,
-  colors: NAV_THEME.dark,
+  dark: true,
+  colors: {
+    ...DarkTheme.colors,
+    ...NAV_THEME.dark,
+  },
 };
 
 export {
@@ -32,129 +35,65 @@ export {
 } from 'expo-router';
 
 // Prevent the splash screen from auto-hiding before getting the color scheme.
-SplashScreen.preventAutoHideAsync();
-
-const isWeb = Platform.OS === 'web';
-let expoDb: SQLiteDatabase | null = null;
-let db: ReturnType<typeof drizzle> | null = null;
-
-if (!isWeb) {
-  expoDb = openDatabaseSync(EXPO_PUBLIC_DB_FILE_NAME);
-  if (!expoDb) {
-    throw new Error('Failed to open database');
-  }
-  db = drizzle(expoDb, { schema, logger: true });
+if (Platform.OS !== 'web') {
+  // Silently handle splash screen errors in Expo Go
+  (async () => {
+    try {
+      await SplashScreen.preventAutoHideAsync();
+    } catch (error) {
+      // Ignore - splash screen not available in Expo Go
+    }
+  })();
 }
 
-export default function RootLayout() {
-  const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
-  const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
-  const [skiaLoaded, setSkiaLoaded] = useState(false);
-  const [isMounted, setIsMounted] = useState(true);
-  const { success, error } = !isWeb && db ? useMigrations(db, migrations) : { success: true, error: null };
+function RootLayoutContent() {
+  const { colorScheme, isLoaded } = useThemeContext();
 
-  useDrizzleStudio(expoDb);
-  
-  // Load theme from AsyncStorage.
   useEffect(() => {
-    loadTheme();
-    return () => setIsMounted(false);
-  }, []);
-
-  // Load Skia assets.
-  useEffect(() => {
-    if (isWeb) {
-      console.debug("Loading Skia on web...");
+    if (Platform.OS === 'web') {
+      // Adds the background color to the html element to prevent white background on overscroll.
+      document.documentElement.classList.add('bg-background');
+      // Load Skia on web
       LoadSkiaWeb({ locateFile: () => "/canvaskit.wasm" })
-        .then(() => setSkiaLoaded(true))
-        .catch((error) => {
-          console.error("Failed to load Skia on web:", error);
-          setSkiaLoaded(true);
-        });
-    } else {
-      setSkiaLoaded(true);
+        .catch((error) => console.error("Failed to load Skia on web:", error));
     }
   }, []);
 
-  // Hide the splash screen once both color scheme & Skia are loaded.
   useEffect(() => {
-    if (isColorSchemeLoaded) {
-      hideSplashScreen();
+    if (isLoaded && Platform.OS !== 'web') {
+      SplashScreen.hideAsync().catch(() => {
+        // Ignore errors in Expo Go where splash screen might not be registered
+      });
     }
-  }, [isColorSchemeLoaded]);
+  }, [isLoaded]);
 
-  useEffect(() => {
-    if (!success && error) {
-      console.error('Failed to run migrations:', error);
-    }
-  }, [success, error]);
-
-  const hideSplashScreen = async () => {
-    try {
-      await SplashScreen.hideAsync();
-    } catch (error) {
-      console.error('Failed to hide splash screen:', error);
-    }
-  };
-
-  const loadTheme = async () => {
-    try {
-      const theme = await AsyncStorage.getItem('theme');
-
-      if (isWeb) {
-        document.documentElement.classList.add('bg-background');
-      }
-
-      if (!theme) {
-        await AsyncStorage.setItem('theme', colorScheme);
-      } else {
-        const colorTheme = theme === 'dark' ? 'dark' : 'light';
-        if (colorTheme !== colorScheme) {
-          setColorScheme(colorTheme);
-        }
-      }
-
-      if (isMounted) {
-        setIsColorSchemeLoaded(true);
-      }
-    } catch (error) {
-      console.error('Failed to load theme:', error);
-      // Set loaded state even on error to prevent hanging
-      setIsColorSchemeLoaded(true);
-    }
-  };
-
-  // render nothing until both theme and Skia are loaded.
-  if (!isColorSchemeLoaded || !skiaLoaded) {
+  if (!isLoaded) {
     return null;
   }
 
+  const isDarkColorScheme = colorScheme === 'dark';
+
   return (
-    <Suspense fallback={<ActivityIndicator size="large" />}>
-      {isWeb ? (
-        // On web, skip the SQLiteProvider entirely.
-        <SafeAreaProvider>
-          <ThemeProvider value={isDarkColorScheme ? DarkTheme : DefaultTheme}>
-            <Stack screenOptions={{ headerShown: false }} />
-            <PortalHost />
-          </ThemeProvider>
-        </SafeAreaProvider>
-      ) : (
-        <SQLiteProvider
-          databaseName={EXPO_PUBLIC_DB_FILE_NAME}
-          options={{ enableChangeListener: true }}
-          useSuspense>
-          <SafeAreaProvider>
-            <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                }} />
-              <PortalHost />
-            </ThemeProvider>
-          </SafeAreaProvider>
-        </SQLiteProvider>
-      )}
-    </Suspense>
+    <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+      <SafeAreaProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }} />
+        <PortalHost />
+      </SafeAreaProvider>
+    </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeContextProvider>
+      <SQLiteProvider
+        databaseName={EXPO_PUBLIC_DB_FILE_NAME}
+        options={{ enableChangeListener: true }}>
+        <RootLayoutContent />
+      </SQLiteProvider>
+    </ThemeContextProvider>
   );
 }

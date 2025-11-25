@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Stack, useRouter } from 'expo-router';
-import { ArrowLeftIcon } from '@/lib/icons/ArrowLeftIcon';
+import { Icon } from '@/components/ui/icon';
+import { ArrowLeftIcon } from 'lucide-react-native';
 
 export default function HistoryLayout() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function HistoryLayout() {
             size="icon"
             onPress={handleBack}
           >
-            <ArrowLeftIcon className='text-foreground' />
+            <Icon as={ArrowLeftIcon} className='text-foreground' />
           </Button>
         ),
       }}

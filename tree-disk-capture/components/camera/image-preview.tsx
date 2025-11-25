@@ -1,9 +1,10 @@
-import { SafeAreaView, View } from 'react-native';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { Button } from '@/components/ui/button';
-import { RotateCcwIcon } from '@/lib/icons/RotateCcwIcon';
-import { ArrowRightIcon } from '@/lib/icons/ArrowRightIcon';
+import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
+import { ArrowRightIcon, RotateCcwIcon } from 'lucide-react-native';
 
 interface ImagePreviewProps {
   base64: string;
@@ -32,7 +33,7 @@ export function ImagePreview({
         <Button
           onPress={onRetake}
           className='flex-row gap-2 items-center'>
-          <RotateCcwIcon className='text-primary-foreground' />
+          <Icon as={RotateCcwIcon} className='text-primary-foreground' />
           <Text>
             Retake
           </Text>
@@ -42,7 +43,7 @@ export function ImagePreview({
           onPress={onSave}
           className='flex-row gap-2 items-center'
         >
-          <ArrowRightIcon className='text-primary-foreground' />
+          <Icon as={ArrowRightIcon} className='text-primary-foreground' />
           <Text>
             Next
           </Text>

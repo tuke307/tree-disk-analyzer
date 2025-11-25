@@ -1,10 +1,7 @@
 import { View } from 'react-native';
-import { FlashlightIcon } from '@/lib/icons/FlashlightIcon';
-import { FlashlightOffIcon } from '@/lib/icons/FlashlightOffIcon';
-import { XIcon } from '@/lib/icons/XIcon';
-import { CameraIcon } from '@/lib/icons/CameraIcon';
-import { ImagesIcon } from '@/lib/icons/ImagesIcon';
+import { Icon } from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
+import { CameraIcon, InfoIcon, FlashlightIcon, FlashlightOffIcon, ImagesIcon } from 'lucide-react-native';
 
 interface CameraControlsProps {
   onCapture: () => void;
@@ -31,7 +28,7 @@ export function CameraControls({
           variant="ghost"
           size="icon"
         >
-          <XIcon className='text-foreground' />
+          <Icon as={InfoIcon} className='text-foreground' />
         </Button>
 
         <Button
@@ -40,9 +37,9 @@ export function CameraControls({
           size="icon"
         >
           {flashEnabled ? (
-            <FlashlightIcon className='text-foreground' />
+            <Icon as={FlashlightIcon} className='text-foreground' />
           ) : (
-            <FlashlightOffIcon className='text-foreground' />
+            <Icon as={FlashlightOffIcon} className='text-foreground' />
           )}
         </Button>
       </View>
@@ -55,7 +52,7 @@ export function CameraControls({
             variant="ghost"
             size="icon"
           >
-            <ImagesIcon className='text-foreground' />
+            <Icon as={ImagesIcon} className='text-foreground' />
           </Button>
         </View>
 
@@ -66,7 +63,7 @@ export function CameraControls({
             size="icon"
             className='h-12 w-12'
           >
-            <CameraIcon size={32} className='text-foreground' />
+            <Icon as={CameraIcon} size={32} className='text-foreground' />
           </Button>
         </View>
 
