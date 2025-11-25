@@ -67,8 +67,8 @@ export default function CaptureDetails() {
     rings: true,
   });
 
-  const handleSegmentation = async () => {
-    if (!capture) return;
+  const handleSegmentation = async (): Promise<CaptureWithAnalysis | null> => {
+    if (!capture) return null;
 
     setIsAnalyzing(true);
     setError(null);
@@ -93,20 +93,24 @@ export default function CaptureDetails() {
       if (savedCapture && savedCapture.analysis) {
         setCapture(savedCapture);
         setAnalysisData(savedCapture.analysis || newAnalysis);
+        return savedCapture;
       }
+      return null;
     } catch (error) {
       console.error('Segmentation failed:', error);
       setError('Segmentation failed. Please try again.');
+      return null;
     } finally {
       setLoadingProgress(prev => ({ ...prev, segmentation: false }));
       setIsAnalyzing(false);
     }
   };
 
-  const handlePithDetection = async () => {
-    if (!capture || !capture.analysis?.segmentation?.imageBase64) {
+  const handlePithDetection = async (captureOverride?: CaptureWithAnalysis): Promise<CaptureWithAnalysis | null> => {
+    const currentCapture = captureOverride || capture;
+    if (!currentCapture || !currentCapture.analysis?.segmentation?.imageBase64) {
       setError('Segmentation must be completed first.');
-      return;
+      return null;
     }
 
     setIsAnalyzing(true);
@@ -114,44 +118,48 @@ export default function CaptureDetails() {
     setLoadingProgress(prev => ({ ...prev, pithDetection: true }));
 
     const newAnalysis: any = {
-      ...capture.analysis
+      ...currentCapture.analysis
     };
 
     try {
-      console.log('Starting pith detection for capture:', capture.id);
+      console.log('Starting pith detection for capture:', currentCapture.id);
 
       // Pith Detection
-      const pithData = await detectPith(capture.analysis.segmentation.imageBase64);
+      const pithData = await detectPith(currentCapture.analysis.segmentation.imageBase64);
       newAnalysis.pith = {
-        ...capture.analysis?.pith,
+        ...currentCapture.analysis?.pith,
         x: pithData.x,
         y: pithData.y
       };
 
-      const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
-      const savedCapture = await updateCapture(currentCapture);
+      const updatedCapture: CaptureWithAnalysis = { ...currentCapture, analysis: newAnalysis };
+      const savedCapture = await updateCapture(updatedCapture);
       if (savedCapture && savedCapture.analysis) {
         setCapture(savedCapture);
         setAnalysisData(savedCapture.analysis || newAnalysis);
+        return savedCapture;
       }
+      return null;
     } catch (error) {
       console.error('Pith detection failed:', error);
       setError('Pith detection failed. Please try again.');
+      return null;
     } finally {
       setLoadingProgress(prev => ({ ...prev, pithDetection: false }));
       setIsAnalyzing(false);
     }
   };
 
-  const handleRingDetection = async () => {
-    if (!capture || !capture.analysis?.segmentation?.imageBase64) {
+  const handleRingDetection = async (captureOverride?: CaptureWithAnalysis): Promise<CaptureWithAnalysis | null> => {
+    const currentCapture = captureOverride || capture;
+    if (!currentCapture || !currentCapture.analysis?.segmentation?.imageBase64) {
       setError('Segmentation must be completed first.');
-      return;
+      return null;
     }
 
-    if (!capture.analysis?.pith) {
+    if (!currentCapture.analysis?.pith) {
       setError('Pith detection must be completed first.');
-      return;
+      return null;
     }
 
     setIsAnalyzing(true);
@@ -159,34 +167,37 @@ export default function CaptureDetails() {
     setLoadingProgress(prev => ({ ...prev, ringDetection: true }));
 
     const newAnalysis: any = {
-      ...capture.analysis
+      ...currentCapture.analysis
     };
 
     try {
-      console.log('Starting ring detection for capture:', capture.id);
+      console.log('Starting ring detection for capture:', currentCapture.id);
 
       // Ring Detection
       const { age, base64 } = await detectRings(
-        capture.analysis.segmentation.imageBase64,
-        capture.analysis.pith.x,
-        capture.analysis.pith.y,
+        currentCapture.analysis.segmentation.imageBase64,
+        currentCapture.analysis.pith.x,
+        currentCapture.analysis.pith.y,
         edgeParams.sigma
       );
       newAnalysis.rings = {
-        ...capture.analysis?.rings,
+        ...currentCapture.analysis?.rings,
         imageBase64: base64
       };
       newAnalysis.predictedAge = age;
 
-      const currentCapture: CaptureWithAnalysis = { ...capture, analysis: newAnalysis };
-      const savedCapture = await updateCapture(currentCapture);
+      const updatedCapture: CaptureWithAnalysis = { ...currentCapture, analysis: newAnalysis };
+      const savedCapture = await updateCapture(updatedCapture);
       if (savedCapture) {
         setCapture(savedCapture);
         setAnalysisData(savedCapture.analysis || newAnalysis);
+        return savedCapture;
       }
+      return null;
     } catch (error) {
       console.error('Ring detection failed:', error);
       setError('Ring detection failed. Please try again.');
+      return null;
     } finally {
       setLoadingProgress(prev => ({ ...prev, ringDetection: false }));
       setIsAnalyzing(false);
@@ -204,11 +215,11 @@ export default function CaptureDetails() {
     router.setParams({ analyze: 'true' });
 
     try {
-      await handleSegmentation();
-      if (capture.analysis?.segmentation) {
-        await handlePithDetection();
-        if (capture.analysis?.pith) {
-          await handleRingDetection();
+      const segmentedCapture = await handleSegmentation();
+      if (segmentedCapture?.analysis?.segmentation) {
+        const pithCapture = await handlePithDetection(segmentedCapture);
+        if (pithCapture?.analysis?.pith) {
+          await handleRingDetection(pithCapture);
         }
       }
     } catch (error) {
@@ -459,7 +470,7 @@ export default function CaptureDetails() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onPress={handlePithDetection}
+                  onPress={() => handlePithDetection()}
                   disabled={isAnalyzing}>
                   <Text>Retry</Text>
                 </Button>
@@ -474,7 +485,7 @@ export default function CaptureDetails() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onPress={handleRingDetection}
+                  onPress={() => handleRingDetection()}
                   disabled={isAnalyzing}>
                   <Text>Retry</Text>
                 </Button>
