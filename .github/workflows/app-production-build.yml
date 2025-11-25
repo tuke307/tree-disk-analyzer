@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'tree-disk-app/**'
+      - 'tree-disk-capture/**'
   workflow_dispatch:
 
 env:
   GITHUB_REGISTRY: ghcr.io
-  IMAGE_NAME: tuke307/tree-disk-app
+  IMAGE_NAME: tuke307/tree-disk-capture
 
 jobs:
   build:
@@ -35,8 +35,8 @@ jobs:
       - name: Build and Push Image
         uses: docker/build-push-action@v6
         with:
-          context: ./tree-disk-app
-          file: ./tree-disk-app/Dockerfile
+          context: ./tree-disk-capture
+          file: ./tree-disk-capture/Dockerfile
           platforms: linux/amd64
           push: true
           cache-from: type=gha,scope=${{ github.workflow }}
