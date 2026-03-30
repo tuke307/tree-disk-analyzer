@@ -12,6 +12,8 @@ import { SQLiteProvider } from 'expo-sqlite';
 import { EXPO_PUBLIC_DB_FILE_NAME } from "@/lib/constants/database";
 import { ThemeContextProvider, useThemeContext } from "@/lib/hooks/use-theme-context";
 
+const SQLITE_PROVIDER_OPTIONS = { enableChangeListener: true } as const;
+
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
   dark: false,
@@ -91,7 +93,8 @@ export default function RootLayout() {
     <ThemeContextProvider>
       <SQLiteProvider
         databaseName={EXPO_PUBLIC_DB_FILE_NAME}
-        options={{ enableChangeListener: true }}>
+        options={SQLITE_PROVIDER_OPTIONS}
+        useSuspense>
         <RootLayoutContent />
       </SQLiteProvider>
     </ThemeContextProvider>
