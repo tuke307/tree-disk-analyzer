@@ -1,0 +1,29 @@
+info:
+  name: rings
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/rings/detect?cx=1204&cy=1264"
+  params:
+    - name: cx
+      value: "1204"
+      type: query
+    - name: cy
+      value: "1264"
+      type: query
+  body:
+    type: multipart-form
+    data:
+      - name: image
+        type: file
+        value:
+          - /Volumes/Tony SSD/Projekte/Studienarbeit/Baumscheiben/s-l1200.jpg
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
