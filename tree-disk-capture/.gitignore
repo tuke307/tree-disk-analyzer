@@ -26,3 +26,5 @@ expo-env.d.ts
 
 # skia sharp
 public/
+# Generated files
+.eslintrc.js
