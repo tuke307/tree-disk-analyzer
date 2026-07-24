@@ -1,0 +1,4 @@
+name: prod
+variables:
+  - name: API_URLS
+    value: https://api-treediskanalyzer-prod.azurewebsites.net:443

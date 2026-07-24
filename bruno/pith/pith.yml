@@ -1,0 +1,22 @@
+info:
+  name: pith
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/pith/detect"
+  body:
+    type: multipart-form
+    data:
+      - name: image
+        type: file
+        value:
+          - /Volumes/Tony SSD/Projekte/Studienarbeit/Baumscheiben/Baumstamm-Jahresringe.png
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

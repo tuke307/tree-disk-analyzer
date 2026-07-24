@@ -1,23 +1,36 @@
-[tool.poetry]
+[project]
 name = "tree-disk-evaluations"
 version = "0.1.0"
 description = ""
-authors = ["Tony <tonymeissner70@gmail.com>"]
-license = "MIT"
 readme = "README.md"
-package-mode = false
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+	{ name = "Tony", email = "tonymeissner70@gmail.com" }
+]
+dependencies = [
+	"opencv-python>=4.11.0.86,<4.12.0.0",
+	"pillow>=11.1.0,<12.0.0",
+	"tree-disk-segmentation>=0.2.2,<0.3.0",
+	"tree-disk-pith>=0.2.1,<0.3.0",
+	"tree-disk-rings>=0.6.1,<0.7.0"
+]
 
-[tool.poetry.dependencies]
-python = ">=3.10"
-opencv-python = "^4.11.0.86"
-pillow = "^11.1.0"
-tree-disk-segmentation = {path = "../tree-disk-segmentation", develop = true}
-tree-disk-pith = {path = "../tree-disk-pith", develop = true}
-tree-disk-rings = {path = "../tree-disk-rings", develop = true}
-
-[tool.poetry.group.dev.dependencies]
-ipykernel = "^6.29.5"
+[dependency-groups]
+dev = [
+	"ipykernel>=6.29.5,<7.0.0"
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["evaluation"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+	"evaluation",
+	"README.md",
+	"pyproject.toml"
+]

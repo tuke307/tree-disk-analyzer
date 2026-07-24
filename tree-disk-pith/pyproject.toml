@@ -1,33 +1,48 @@
-[tool.poetry]
+[project]
 name = "tree-disk-pith"
 version = "0.2.1"
 description = "A package for tree disk pith detection in images"
-authors = ["Tony <tonymeissner70@gmail.com>"]
-license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/tuke307/tree-disk-analyzer"
-repository = "https://github.com/tuke307/tree-disk-analyzer"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+	{ name = "Tony", email = "tonymeissner70@gmail.com" }
+]
 keywords = ["tree", "pith", "image processing"]
-packages = [{ include = "treediskpith", from = "src" }]
+dependencies = [
+	"numpy>=1.23.0,<2.0.0",
+	"opencv-python>=4.10.0.84,<4.11.0.0",
+	"pandas>=2.2.3,<3.0.0",
+	"matplotlib>=3.9.2,<4.0.0",
+	"scikit-learn>=1.5.2,<2.0.0",
+	"pillow>=11.0.0,<12.0.0",
+	"scikit-image>=0.24.0,<0.25.0",
+	"ultralytics>=8.3.28,<9.0.0"
+]
 
-[tool.poetry.dependencies]
-python = ">=3.10"
-numpy = ">=1.23.0,<2.0.0"
-opencv-python = "^4.10.0.84"
-pandas = "^2.2.3"
-matplotlib = "^3.9.2"
-scikit-learn = "^1.5.2"
-pillow = "^11.0.0"
-scikit-image = "^0.24.0"
-ultralytics = "^8.3.28"
+[project.urls]
+Homepage = "https://github.com/tuke307/tree-disk-analyzer"
+Repository = "https://github.com/tuke307/tree-disk-analyzer"
 
-[tool.poetry.scripts]
+[project.scripts]
 tree-disk-pith = "treediskpith.cli:main"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.4"
-ipykernel = "^6.29.5"
+[dependency-groups]
+dev = [
+	"pytest>=8.3.4,<9.0.0",
+	"ipykernel>=6.29.5,<7.0.0"
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/treediskpith"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+	"src",
+	"README.md",
+	"pyproject.toml"
+]

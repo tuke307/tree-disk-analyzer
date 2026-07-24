@@ -1,8 +1,8 @@
-import { CheckIcon } from '@/lib/icons/CheckIcon';
-import { XIcon } from '@/lib/icons/XIcon';
+import { Icon } from '@/components/ui/icon';
 import { ActivityIndicator, View } from 'react-native';
 import { Button } from '../ui/button';
 import { Text } from '../ui/text';
+import { CheckIcon, XIcon } from 'lucide-react-native';
 
 
 interface ProgressStepProps {
@@ -24,7 +24,7 @@ export const ProgressStep = ({ label, loading, success }: ProgressStepProps) => 
         {loading ? (
           <ActivityIndicator />
         ) : (
-          success ? <CheckIcon className='text-foreground' /> : <XIcon className='text-foreground' />
+          success ? <Icon as={CheckIcon} className='text-foreground' /> : <Icon as={XIcon} className='text-foreground' />
         )}
       </Button>
       <Text>{label}</Text>

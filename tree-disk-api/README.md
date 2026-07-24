@@ -3,34 +3,33 @@
 ## Development
 general setup
 ```bash
-poetry config virtualenvs.in-project true
-poetry env use python
+uv venv .venv
+source .venv/bin/activate
 ```
 
 install dependencies
 ```bash
-poetry install
-eval $(poetry env activate)
+uv sync
 ```
 
 download models
 ```bash
-python -m src.config.preparation
+uv run python -m src.config.preparation
 ```
 
 ## Usage Examples
 
 ### start server (dev)
 ```bash
-uvicorn src.main:app --reload
+uv run uvicorn src.main:app --reload
 ```
 
 ### start server (prod)
 ```bash
-gunicorn src.main:app -c gunicorn.conf.py
+uv run gunicorn src.main:app -c gunicorn.conf.py
 ```
 
 ### test
 ```bash
-pytest
+uv run pytest
 ```

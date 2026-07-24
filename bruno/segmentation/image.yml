@@ -1,0 +1,22 @@
+info:
+  name: image
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/segmentation/image"
+  body:
+    type: multipart-form
+    data:
+      - name: image
+        type: file
+        value:
+          - /Users/tonymeissner/Downloads/output.jpg
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
